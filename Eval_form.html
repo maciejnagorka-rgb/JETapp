@@ -1,0 +1,1019 @@
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal Attack Control Evaluation Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 0;
+            padding: 20px 0; /* Padding tylko na górze i dole */
+            background-color: #000;
+            color: #fff;
+            overflow-y: auto; /* Wymuszenie przewijania */
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+            margin: 0 auto; /* Centrowanie poziome */
+        }
+        h1 {
+            font-size: 1.8em;
+            color: #8b7314;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            page-break-inside: avoid;
+            table-layout: fixed;
+        }
+        table, th, td {
+            border: 1px solid #2F4F2F;
+        }
+        th, td {
+            padding: 5px;
+            text-align: left;
+            color: #fff;
+            font-size: 0.8em;
+            white-space: normal;
+            min-width: 50px;
+            word-break: break-word;
+        }
+        th {
+            background-color: #8b7314;
+            color: #000;
+            font-weight: 700;
+            text-align: center;
+        }
+        td {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        input[type="text"], input[type="date"], textarea {
+            width: 100%;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input[type="text"][name^="task"] {
+            width: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        input[type="text"]:disabled, input[type="date"]:disabled, textarea:disabled {
+            color: #000 !important;
+            background-color: #fff;
+            -webkit-text-fill-color: #000;
+            opacity: 1;
+        }
+        textarea {
+            height: 50px;
+            resize: none;
+            overflow: hidden;
+            min-height: 20px;
+        }
+        input[type="checkbox"] {
+            margin-right: 5px;
+            vertical-align: middle;
+            width: 16px;
+            height: 16px;
+            position: relative;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #2F4F2F;
+        }
+        input[type="checkbox"]:checked::before {
+            content: "☒";
+            font-size: 14pt;
+            color: #ff0000;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        input[type="checkbox"]::before {
+            content: "☐";
+            font-size: 14pt;
+            color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .signature-date {
+            margin-left: 10px;
+            color: #8b7314;
+        }
+        .locked {
+            background-color: #fff;
+            pointer-events: none;
+            color: #000 !important;
+            -webkit-text-fill-color: #000;
+            opacity: 1;
+        }
+        .highlight {
+            background-color: #ffff00;
+            text-decoration: underline;
+        }
+        .button {
+            display: inline-block;
+            margin: 10px 5px;
+            padding: 10px 20px;
+            background-color: #8b7314;
+            border: 2px solid #2F4F2F;
+            border-radius: 5px;
+            color: #000;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #a68a2e;
+        }
+        .button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        .hidden {
+            display: none;
+        }
+        .checkbox-group, .eval-grade {
+            display: inline;
+            margin-right: 10px;
+        }
+        .part-iii-table {
+            table-layout: auto;
+        }
+        .part-iii-table th, .part-iii-table td {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 120px;
+        }
+        @media print {
+            body {
+                background-color: #fff;
+                color: #000;
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                background: none;
+                border: none;
+                padding: 10px;
+                width: 100%;
+                max-width: 800px;
+            }
+            h1 {
+                color: #8b7314;
+                text-align: center;
+                margin: 10px 0;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.8em;
+                table-layout: fixed;
+            }
+            table, th, td {
+                border: 1px solid #8b7314;
+            }
+            th {
+                background-color: #8b7314;
+                color: #000;
+                padding: 5px;
+                text-align: center;
+            }
+            td {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #000;
+                padding: 5px;
+                text-align: left;
+            }
+            .checkbox-symbol {
+                font-size: 1em;
+                margin-right: 5px;
+                vertical-align: middle;
+            }
+            input[type="text"], textarea {
+                border: none;
+                background: transparent;
+                resize: none;
+                width: 100%;
+                font-family: 'Roboto Condensed', sans-serif;
+                color: #000;
+                padding: 5px;
+                box-sizing: border-box;
+            }
+            .signature-date {
+                color: #000;
+            }
+            .button {
+                display: none;
+            }
+        }
+        .print-preview {
+            background-color: #fff;
+            color: #000;
+            padding: 0;
+            margin: 0;
+        }
+        .print-preview table {
+            width: 100% !important;
+            max-width: 100% !important;
+            border-collapse: collapse;
+            font-size: 0.8em;
+            table-layout: fixed;
+        }
+        .print-preview table, .print-preview th, .print-preview td {
+            border: 1px solid #8b7314;
+        }
+        .print-preview th {
+            background-color: #8b7314;
+            color: #000;
+            padding: 5px;
+            text-align: center;
+        }
+        .print-preview td {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #000;
+            padding: 5px;
+            text-align: left;
+        }
+        .print-preview .checkbox-symbol {
+            font-size: 1em;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        .print-preview input[type="text"], .print-preview textarea {
+            border: none;
+            background: transparent;
+            resize: none;
+            width: 100%;
+            font-family: 'Roboto Condensed', sans-serif;
+            color: #000;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        .print-preview .signature-date {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="evalFormContainer">
+        <h1>TERMINAL ATTACK CONTROL EVALUATION</h1>
+        <form id="evalForm">
+            <table>
+                <tr><th colspan="4">Part I – Personal Data</th></tr>
+                <tr>
+                    <td>Name (Last, First, MI)</td>
+                    <td colspan="3"><input type="text" name="name" required></td>
+                </tr>
+                <tr>
+                    <td>Unit</td>
+                    <td colspan="3"><input type="text" name="unit" required></td>
+                </tr>
+                <tr>
+                    <td>Overall Qualification</td>
+                    <td colspan="3">
+                        <span class="checkbox-group"><input type="checkbox" name="qualification" value="JTAC"> JTAC</span>
+                        <span class="checkbox-group"><input type="checkbox" name="qualification" value="JTAC-I"> JTAC-I</span>
+                        <span class="checkbox-group"><input type="checkbox" name="qualification" value="JTAC-E"> JTAC-E</span>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr><th colspan="4">Part II – Evaluation Data</th></tr>
+                <tr>
+                    <td>Evaluation Location</td>
+                    <td colspan="3"><input type="text" name="eval_location" required></td>
+                </tr>
+                <tr>
+                    <td>Evaluation Date</td>
+                    <td><input type="date" name="eval_date" id="eval_date" onchange="updateExpiryDate()" required></td>
+                    <td>Evaluation Type</td>
+                    <td>
+                        <span class="checkbox-group"><input type="checkbox" name="eval_type" value="JTAC" onchange="toggleTaskFields()"> JTAC</span>
+                        <span class="checkbox-group"><input type="checkbox" name="eval_type" value="JTAC-I" onchange="toggleTaskFields()"> JTAC-I</span>
+                        <span class="checkbox-group"><input type="checkbox" name="eval_type" value="JTAC-E" onchange="toggleTaskFields()"> JTAC-E</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Evaluation Expiry Date</td>
+                    <td colspan="3"><input type="date" name="eval_expiry" id="eval_expiry" readonly></td>
+                </tr>
+                <tr>
+                    <td>Type</td>
+                    <td>
+                        <span class="checkbox-group"><input type="checkbox" name="type" value="Initial"> Initial</span>
+                        <span class="checkbox-group"><input type="checkbox" name="type" value="Recurring"> Recurring</span>
+                    </td>
+                    <td>Category</td>
+                    <td>
+                        <span class="checkbox-group"><input type="checkbox" name="category" value="Regular"> Regular</span>
+                        <span class="checkbox-group"><input type="checkbox" name="category" value="Spot"> Spot</span>
+                        <span class="checkbox-group"><input type="checkbox" name="category" value="Concurrent"> Concurrent</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Notification</td>
+                    <td colspan="3">
+                        <span class="checkbox-group"><input type="checkbox" name="notification" value="Prior Notice"> Prior Notice</span>
+                        <span class="checkbox-group"><input type="checkbox" name="notification" value="No Notice"> No Notice</span>
+                    </td>
+                </tr>
+            </table>
+
+            <table class="part-iii-table">
+                <tr><th colspan="4">Part III – Evaluation</th></tr>
+                <tr>
+                    <td>Event description:</td>
+                    <td colspan="3"><textarea name="event_description"></textarea></td>
+                </tr>
+                <tr><th colspan="4">B. Evaluation Tasks and Grades:</th></tr>
+                <tr>
+                    <th>Task</th>
+                    <th>Grade</th>
+                    <th>Task</th>
+                    <th>Grade</th>
+                </tr>
+                <tr>
+                    <td>1. Mission Planning</td>
+                    <td><input type="text" name="task1" placeholder="Q, Q-, U"></td>
+                    <td>24. Night CAS Operations</td>
+                    <td><input type="text" name="task24" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>2. Equipment Preparation</td>
+                    <td><input type="text" name="task2" placeholder="Q, Q-, U"></td>
+                    <td>25. Safety</td>
+                    <td><input type="text" name="task25" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>3. Comm Equipment Operations</td>
+                    <td><input type="text" name="task3" placeholder="Q, Q-, U"></td>
+                    <td>26. JTAC-I Eval Criteria</td>
+                    <td><input type="text" name="task26" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>4. GPS Operations</td>
+                    <td><input type="text" name="task4" placeholder="Q, Q-, U"></td>
+                    <td>26.1. Equipment Preparation</td>
+                    <td><input type="text" name="task26_1" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>5. Transmit/Receive Procedures</td>
+                    <td><input type="text" name="task5" placeholder="Q, Q-, U"></td>
+                    <td>26.2. Lesson Overview/Objectives</td>
+                    <td><input type="text" name="task26_2" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>5.1. Authentication Procedures</td>
+                    <td><input type="text" name="task5_1" placeholder="Q, Q-, U"></td>
+                    <td>26.3. Instruction Effectiveness</td>
+                    <td><input type="text" name="task26_3" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>6. CAS Request Submission</td>
+                    <td><input type="text" name="task6" placeholder="Q, Q-, U"></td>
+                    <td>26.4. Ident. Procedures-Techniques</td>
+                    <td><input type="text" name="task26_4" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>7. Target Analysis</td>
+                    <td><input type="text" name="task7" placeholder="Q, Q-, U"></td>
+                    <td>26.5. Training Aids</td>
+                    <td><input type="text" name="task26_5" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>8. Threat Analysis</td>
+                    <td><input type="text" name="task8" placeholder="Q, Q-, U"></td>
+                    <td>26.6. Knowledge of Subject Matter</td>
+                    <td><input type="text" name="task26_6" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>9. Ground Force Staff Coord</td>
+                    <td><input type="text" name="task9" placeholder="Q, Q-, U"></td>
+                    <td>26.7. Communication</td>
+                    <td><input type="text" name="task26_7" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>10. Ground Commander Coord</td>
+                    <td><input type="text" name="task10" placeholder="Q, Q-, U"></td>
+                    <td>26.8. Time Management</td>
+                    <td><input type="text" name="task26_8" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>11. Fires/Airspace Management</td>
+                    <td><input type="text" name="task11" placeholder="Q, Q-, U"></td>
+                    <td>26.9. Live A/C CAS Control Instructions</td>
+                    <td><input type="text" name="task26_9" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>12. Airspace Management</td>
+                    <td><input type="text" name="task12" placeholder="Q, Q-, U"></td>
+                    <td>26.10. Admin Grade/Document</td>
+                    <td><input type="text" name="task26_10" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>13. Use of Signaling Device</td>
+                    <td><input type="text" name="task13" placeholder="Q, Q-, U"></td>
+                    <td>26.11. Safety</td>
+                    <td><input type="text" name="task26_11" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>14. JTAC to CAS Aircraft Brief</td>
+                    <td><input type="text" name="task14" placeholder="Q, Q-, U"></td>
+                    <td>27. JTAC-E Eval Criteria</td>
+                    <td><input type="text" name="task27" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>14.1. DACAS Systems</td>
+                    <td><input type="text" name="task14_1" placeholder="Q, Q-, U"></td>
+                    <td>27.1. Compliance w. Manuals</td>
+                    <td><input type="text" name="task27_1" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>15. Attack Weapons Utilization</td>
+                    <td><input type="text" name="task15" placeholder="Q, Q-, U"></td>
+                    <td>27.2. Evaluation briefing</td>
+                    <td><input type="text" name="task27_2" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>16. CAS Aircraft Control</td>
+                    <td><input type="text" name="task16" placeholder="Q, Q-, U"></td>
+                    <td>27.3. Discrepancies and Grades</td>
+                    <td><input type="text" name="task27_3" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>17. Ordnance Adjustment</td>
+                    <td><input type="text" name="task17" placeholder="Q, Q-, U"></td>
+                    <td>27.4. Performance assessment</td>
+                    <td><input type="text" name="task27_4" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>18. Post Attack Assessment</td>
+                    <td><input type="text" name="task18" placeholder="Q, Q-, U"></td>
+                    <td>27.5. Assignment of Add Tng</td>
+                    <td><input type="text" name="task27_5" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>19. Area Procedures</td>
+                    <td><input type="text" name="task19" placeholder="Q, Q-, U"></td>
+                    <td>27.6. Mission Debrief</td>
+                    <td><input type="text" name="task27_6" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>20. FAC(A)/JTAC/JFO/RO Interface</td>
+                    <td><input type="text" name="task20" placeholder="Q, Q-, U"></td>
+                    <td>27.7. Supervisor Debrief</td>
+                    <td><input type="text" name="task27_7" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>21. Laser Operations</td>
+                    <td><input type="text" name="task21" placeholder="Q, Q-, U"></td>
+                    <td>27.8. Completed Eval Documentation</td>
+                    <td><input type="text" name="task27_8" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>22. IR pointer Operations</td>
+                    <td><input type="text" name="task22" placeholder="Q, Q-, U"></td>
+                    <td>27.9. Safety</td>
+                    <td><input type="text" name="task27_9" placeholder="Q, Q-, U"></td>
+                </tr>
+                <tr>
+                    <td>23. IAM Operations</td>
+                    <td><input type="text" name="task23" placeholder="Q, Q-, U"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr><th colspan="4">C. Items requiring additional training:</th></tr>
+                <tr>
+                    <td colspan="4"><textarea name="additional_training"></textarea></td>
+                </tr>
+                <tr>
+                    <td>Training Due Date:</td>
+                    <td><input type="date" name="training_due_date"></td>
+                    <td>Training Completion Date:</td>
+                    <td><input type="date" name="training_completion_date"></td>
+                </tr>
+            </table>
+
+            <table>
+                <tr><th colspan="4">Part IV – Remarks</th></tr>
+                <tr>
+                    <td colspan="4"><textarea name="remarks"></textarea></td>
+                </tr>
+                <tr>
+                    <td>JTAC-E name and rank</td>
+                    <td colspan="3"><input type="text" name="jtac_e_name_rank" id="jtac_e_name_rank"></td>
+                </tr>
+                <tr>
+                    <td>JTAC-E Signature</td>
+                    <td colspan="3">
+                        <input type="text" name="jtac_e_signature" id="jtac_e_signature" onblur="lockField('jtac_e_signature', 'jtac_e_date')">
+                        <span id="jtac_e_date" class="signature-date"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Evaluation Grade</td>
+                    <td colspan="3">
+                        <span class="eval-grade"><input type="checkbox" name="eval_grade" value="Q" onclick="toggleEvalGrade(this)"> Q</span>
+                        <span class="eval-grade"><input type="checkbox" name="eval_grade" value="Q-" onclick="toggleEvalGrade(this)"> Q-</span>
+                        <span class="eval-grade"><input type="checkbox" name="eval_grade" value="U" onclick="toggleEvalGrade(this)"> U</span>
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <tr><th colspan="5">Part V – Certification</th></tr>
+                <tr>
+                    <th>Billet</th>
+                    <th>Name and Rank</th>
+                    <th>Concur</th>
+                    <th>Do Not Concur</th>
+                    <th>Signature</th>
+                </tr>
+                <tr>
+                    <td>Service JTAC Program Manager</td>
+                    <td><input type="text" name="service_name_rank"></td>
+                    <td><input type="checkbox" id="service_concur" name="service_concur" value="Concur" onchange="toggleCheckbox('service_concur', 'service_do_not_concur')"></td>
+                    <td><input type="checkbox" id="service_do_not_concur" name="service_do_not_concur" value="Do Not Concur" onchange="toggleCheckbox('service_do_not_concur', 'service_concur')"></td>
+                    <td>
+                        <input type="text" name="service_signature" id="service_signature" onblur="lockField('service_signature', 'service_date')">
+                        <span id="service_date" class="signature-date"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>National JTAC Program Manager</td>
+                    <td><input type="text" name="national_name_rank"></td>
+                    <td><input type="checkbox" id="national_concur" name="national_concur" value="Concur" onchange="toggleCheckbox('national_concur', 'national_do_not_concur')"></td>
+                    <td><input type="checkbox" id="national_do_not_concur" name="national_do_not_concur" value="Do Not Concur" onchange="toggleCheckbox('national_do_not_concur', 'national_concur')"></td>
+                    <td>
+                        <input type="text" name="national_signature" id="national_signature" onblur="lockField('national_signature', 'national_date')">
+                        <span id="national_date" class="signature-date"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Unit commander</td>
+                    <td><input type="text" name="unit_name_rank"></td>
+                    <td><input type="checkbox" id="unit_concur" name="unit_concur" value="Concur" onchange="toggleCheckbox('unit_concur', 'unit_do_not_concur')"></td>
+                    <td><input type="checkbox" id="unit_do_not_concur" name="unit_do_not_concur" value="Do Not Concur" onchange="toggleCheckbox('unit_do_not_concur', 'unit_concur')"></td>
+                    <td>
+                        <input type="text" name="unit_signature" id="unit_signature" onblur="lockField('unit_signature', 'unit_date')">
+                        <span id="unit_date" class="signature-date"></span>
+                    </td>
+                </tr>
+            </table>
+
+            <button type="button" class="button" onclick="uploadForm()">Upload</button>
+            <button type="button" class="button hidden" onclick="saveForm()" id="saveButton">Save</button>
+            <button type="button" class="button" onclick="removeForm()">Remove</button>
+            <a href="profile.html" class="button">Back to Profile</a>
+        </form>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const userRole = currentUser.role || 'JTAC';
+        let isFormUploaded = false;
+
+        function updateExpiryDate() {
+            const evalDateInput = document.getElementById('eval_date');
+            const expiryDateInput = document.getElementById('eval_expiry');
+            if (evalDateInput.value) {
+                const evalDate = new Date(evalDateInput.value);
+                evalDate.setFullYear(evalDate.getFullYear() + 1);
+                expiryDateInput.value = evalDate.toISOString().split('T')[0];
+            }
+        }
+
+        function lockField(signatureId, dateId) {
+            const signatureInput = document.getElementById(signatureId);
+            const dateSpan = document.getElementById(dateId);
+            if (signatureInput.value && !signatureInput.classList.contains('locked')) {
+                signatureInput.classList.add('locked');
+                const signatureText = `Signed by: ${signatureInput.value} on ${new Date().toISOString().split('T')[0]}`;
+                dateSpan.textContent = signatureText;
+                dateSpan.setAttribute('data-signature', signatureText);
+            }
+        }
+
+        function toggleCheckbox(checkboxId, otherCheckboxId) {
+            const checkbox = document.getElementById(checkboxId);
+            const otherCheckbox = document.getElementById(otherCheckboxId);
+            if (checkbox.checked) {
+                otherCheckbox.checked = false;
+            }
+        }
+
+        function toggleEvalGrade(checkbox) {
+            const checkboxes = document.querySelectorAll('input[name="eval_grade"]');
+            checkboxes.forEach(cb => {
+                if (cb !== checkbox) cb.checked = false;
+                cb.classList.toggle('highlight', cb.checked);
+            });
+        }
+
+        function toggleTaskFields() {
+            const evalTypeCheckboxes = document.querySelectorAll('input[name="eval_type"]');
+            const jtacTasks = ['task1', 'task2', 'task3', 'task4', 'task5', 'task5_1', 'task6', 'task7', 'task8', 'task9', 'task10', 'task11', 'task12', 'task13', 'task14', 'task14_1', 'task15', 'task16', 'task17', 'task18', 'task19', 'task20', 'task21', 'task22', 'task23', 'task24', 'task25'];
+            const jtacITasks = ['task26', 'task26_1', 'task26_2', 'task26_3', 'task26_4', 'task26_5', 'task26_6', 'task26_7', 'task26_8', 'task26_9', 'task26_10', 'task26_11'];
+            const jtacETasks = ['task27', 'task27_1', 'task27_2', 'task27_3', 'task27_4', 'task27_5', 'task27_6', 'task27_7', 'task27_8', 'task27_9'];
+
+            let selectedType = null;
+            evalTypeCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    selectedType = checkbox.value;
+                    evalTypeCheckboxes.forEach(cb => {
+                        if (cb !== checkbox) cb.checked = false;
+                    });
+                }
+            });
+
+            document.querySelectorAll('input[name^="task"]').forEach(input => {
+                input.disabled = false;
+                input.classList.remove('locked');
+            });
+
+            if (selectedType === 'JTAC') {
+                jtacITasks.forEach(task => {
+                    const input = document.querySelector(`input[name="${task}"]`);
+                    if (input) {
+                        input.disabled = true;
+                        input.classList.add('locked');
+                    }
+                });
+                jtacETasks.forEach(task => {
+                    const input = document.querySelector(`input[name="${task}"]`);
+                    if (input) {
+                        input.disabled = true;
+                        input.classList.add('locked');
+                    }
+                });
+            } else if (selectedType === 'JTAC-I') {
+                jtacTasks.forEach(task => {
+                    const input = document.querySelector(`input[name="${task}"]`);
+                    if (input) {
+                        input.disabled = true;
+                        input.classList.add('locked');
+                    }
+                });
+                jtacETasks.forEach(task => {
+                    const input = document.querySelector(`input[name="${task}"]`);
+                    if (input) {
+                        input.disabled = true;
+                        input.classList.add('locked');
+                    }
+                });
+            } else if (selectedType === 'JTAC-E') {
+                jtacTasks.forEach(task => {
+                    const input = document.querySelector(`input[name="${task}"]`);
+                    if (input) {
+                        input.disabled = true;
+                        input.classList.add('locked');
+                    }
+                });
+                jtacITasks.forEach(task => {
+                    const input = document.querySelector(`input[name="${task}"]`);
+                    if (input) {
+                        input.disabled = true;
+                        input.classList.add('locked');
+                    }
+                });
+            }
+        }
+
+        function uploadForm() {
+            const allowedRoles = ['JTAC I', 'JTAC I/E', 'JTAC-E', 'Program Manager'];
+            if (!allowedRoles.includes(userRole)) {
+                alert("Only JTAC I, JTAC I/E, JTAC-E, or Program Manager can upload forms.");
+                return;
+            }
+            if (isFormUploaded) {
+                alert("Form has already been uploaded and cannot be modified further.");
+                return;
+            }
+
+            const form = document.getElementById('evalForm');
+            const name = form.querySelector('input[name="name"]').value;
+            const unit = form.querySelector('input[name="unit"]').value;
+            const evalDate = form.querySelector('input[name="eval_date"]').value;
+            const evalLocation = form.querySelector('input[name="eval_location"]').value;
+            const taskInputs = form.querySelectorAll('input[name^="task"]');
+            const evalGrade = form.querySelector('input[name="eval_grade"]:checked');
+
+            if (!name || !unit || !evalDate || !evalLocation) {
+                alert('All required fields (Name, Unit, Evaluation Date, Evaluation Location) must be filled!');
+                return;
+            }
+
+            let hasEmptyTask = false;
+            const validGrades = ['Q', 'Q-', 'U'];
+            taskInputs.forEach(input => {
+                if (!input.disabled) {
+                    const value = input.value.trim().toUpperCase();
+                    if (!value) {
+                        hasEmptyTask = true;
+                        input.style.border = '2px solid red';
+                    } else if (!validGrades.includes(value)) {
+                        hasEmptyTask = true;
+                        input.style.border = '2px solid red';
+                        alert(`Invalid grade for ${input.name}: ${value}. Allowed values are Q, Q-, U.`);
+                    } else {
+                        input.style.border = '';
+                    }
+                }
+            });
+
+            if (hasEmptyTask) {
+                alert('All editable task grade fields must have a valid value (Q, Q-, U)!');
+                return;
+            }
+
+            if (!evalGrade) {
+                alert('Evaluation Grade must be selected (Q, Q-, U)!');
+                return;
+            }
+
+            document.getElementById('saveButton').classList.remove('hidden');
+            alert("Form ready to save. Click 'Save' to save and proceed to preview.");
+            lockFormExceptSignatures();
+            isFormUploaded = true;
+        }
+
+        function lockFormExceptSignatures() {
+            document.querySelectorAll('input[type="text"], input[type="date"], textarea, input[type="checkbox"]').forEach(field => {
+                if (!field.id.includes('signature') && !field.name.includes('name_rank') && field.name !== 'eval_grade') {
+                    field.classList.add('locked');
+                    field.disabled = true;
+                }
+            });
+        }
+
+        async function saveForm() {
+            console.log("saveForm called");
+            if (userRole !== 'Program Manager') {
+                alert("Only Program Manager can save forms.");
+                console.log("Permission denied: User role is", userRole);
+                return;
+            }
+            if (!isFormUploaded) {
+                alert("Form must be uploaded before saving.");
+                console.log("Form not uploaded");
+                return;
+            }
+
+            try {
+                const element = document.getElementById("evalFormContainer");
+                autoResizeTextarea();
+
+                const elementClone = element.cloneNode(true);
+
+                elementClone.querySelectorAll('input[type="text"], input[type="date"]').forEach(input => {
+                    input.setAttribute('value', input.value);
+                });
+
+                elementClone.querySelectorAll('input[type="text"], input[type="date"]').forEach(input => {
+                    const span = document.createElement('span');
+                    span.textContent = input.value || '';
+                    span.style.color = '#000';
+                    input.parentNode.replaceChild(span, input);
+                });
+
+                elementClone.querySelectorAll('textarea').forEach(textarea => {
+                    const div = document.createElement('div');
+                    div.textContent = textarea.value || textarea.getAttribute('data-value') || '';
+                    div.style.color = '#000';
+                    div.style.whiteSpace = 'pre-wrap';
+                    div.style.border = 'none';
+                    div.style.background = 'transparent';
+                    div.style.width = '100%';
+                    div.style.fontFamily = "'Roboto Condensed', sans-serif";
+                    div.style.padding = '5px';
+                    div.style.boxSizing = 'border-box';
+                    textarea.parentNode.replaceChild(div, textarea);
+                });
+
+                elementClone.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    const span = document.createElement('span');
+                    span.className = 'checkbox-symbol';
+                    span.textContent = checkbox.checked ? '☒' : '☐';
+                    span.style.color = checkbox.checked ? '#ff0000' : '#000';
+                    span.style.marginRight = '5px';
+                    span.style.verticalAlign = 'middle';
+                    span.style.display = 'inline-block';
+                    checkbox.parentNode.insertBefore(span, checkbox);
+                    checkbox.remove();
+                });
+
+                elementClone.querySelectorAll('.signature-date').forEach(dateSpan => {
+                    const signatureInput = dateSpan.previousElementSibling;
+                    const signatureText = signatureInput && signatureInput.tagName === 'INPUT' ? signatureInput.value : '';
+                    const dateText = dateSpan.textContent || dateSpan.getAttribute('data-signature') || '';
+                    const combinedSpan = document.createElement('span');
+                    combinedSpan.textContent = signatureText ? `${signatureText} ${dateText}` : dateText;
+                    combinedSpan.style.color = '#000';
+                    dateSpan.parentNode.replaceChild(combinedSpan, dateSpan);
+                    if (signatureInput && signatureInput.tagName === 'INPUT') {
+                        signatureInput.remove();
+                    }
+                });
+
+                elementClone.querySelectorAll('.button').forEach(button => button.remove());
+
+                console.log("Generating PDF...");
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                const pageWidth = pdf.internal.pageSize.getWidth() - 20;
+                const pageHeight = pdf.internal.pageSize.getHeight() - 20;
+                const contentWidthPx = 800;
+                const contentWidthMm = Math.min(contentWidthPx * 0.264583, pageWidth);
+
+                const createContainer = (content) => {
+                    const pdfContainer = document.createElement('div');
+                    pdfContainer.className = 'print-preview';
+                    pdfContainer.style.padding = '0px';
+                    pdfContainer.style.backgroundColor = '#ffffff';
+                    pdfContainer.style.position = 'absolute';
+                    pdfContainer.style.left = '-9999px';
+                    pdfContainer.style.width = `${contentWidthPx}px`;
+                    pdfContainer.style.maxWidth = `${contentWidthPx}px`;
+                    pdfContainer.style.boxSizing = 'border-box';
+                    pdfContainer.style.fontFamily = "'Roboto Condensed', sans-serif";
+
+                    const clone = content.cloneNode(true);
+                    const h1 = clone.querySelector('h1');
+                    if (h1) h1.remove();
+
+                    clone.style.width = `${contentWidthPx}px`;
+                    clone.style.margin = '0';
+                    clone.querySelectorAll('table').forEach(table => {
+                        table.style.width = '100%';
+                        table.style.maxWidth = '100%';
+                        table.style.tableLayout = 'fixed';
+                        table.style.margin = '0';
+                        table.style.borderCollapse = 'collapse';
+                        table.querySelectorAll('th, td').forEach(cell => {
+                            cell.style.wordBreak = 'break-word';
+                            cell.style.boxSizing = 'border-box';
+                            cell.style.border = '1px solid #8b7314';
+                            cell.style.padding = '5px';
+                            cell.style.fontSize = '0.8em';
+                            if (cell.tagName === 'TH') {
+                                cell.style.backgroundColor = '#8b7314';
+                                cell.style.color = '#000';
+                                cell.style.textAlign = 'center';
+                            } else {
+                                cell.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                                cell.style.color = '#000';
+                            }
+                        });
+                    });
+                    pdfContainer.appendChild(clone);
+                    return pdfContainer;
+                };
+
+                const calculateHeight = async (content) => {
+                    const pdfContainer = createContainer(content);
+                    document.body.appendChild(pdfContainer);
+                    try {
+                        const canvas = await html2canvas(pdfContainer, {
+                            scale: 2,
+                            backgroundColor: '#ffffff',
+                            logging: true,
+                            useCORS: true,
+                            windowWidth: contentWidthPx
+                        });
+                        const imgHeight = canvas.height;
+                        const imgWidth = canvas.width;
+                        const heightInMm = (imgHeight * contentWidthMm) / imgWidth;
+                        return { heightInMm, canvas, pdfContainer };
+                    } finally {
+                        document.body.removeChild(pdfContainer);
+                    }
+                };
+
+                const renderPage = async (content, pageNumber) => {
+                    const { canvas, pdfContainer } = await calculateHeight(content);
+                    document.body.appendChild(pdfContainer);
+                    try {
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        const imgWidth = canvas.width;
+                        const imgHeight = canvas.height;
+                        const width = contentWidthMm;
+                        const height = (imgHeight * width) / imgWidth;
+                        const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                        const topMargin = 10;
+                        pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+                        pdf.setFontSize(10);
+                        pdf.setTextColor(0, 0, 0);
+                        pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                    } finally {
+                        document.body.removeChild(pdfContainer);
+                    }
+                };
+
+                const formContent = elementClone.querySelector('form');
+                const tables = formContent.querySelectorAll('table');
+                let currentPageContent = [];
+                let pageNumber = 1;
+
+                for (let i = 0; i < tables.length; i++) {
+                    const table = tables[i];
+                    const testContent = document.createElement('div');
+                    currentPageContent.forEach(item => testContent.appendChild(item.cloneNode(true)));
+                    testContent.appendChild(table.cloneNode(true));
+
+                    const { heightInMm } = await calculateHeight(testContent);
+                    if (heightInMm <= pageHeight || currentPageContent.length === 0) {
+                        currentPageContent.push(table.cloneNode(true));
+                    } else {
+                        console.log(`Rendering page ${pageNumber} with ${currentPageContent.length} tables`);
+                        const pageDiv = document.createElement('div');
+                        currentPageContent.forEach(item => pageDiv.appendChild(item));
+                        await renderPage(pageDiv, pageNumber);
+                        pdf.addPage();
+                        pageNumber++;
+                        currentPageContent = [table.cloneNode(true)];
+                    }
+                }
+
+                if (currentPageContent.length > 0) {
+                    console.log(`Rendering final page ${pageNumber} with ${currentPageContent.length} tables`);
+                    const pageDiv = document.createElement('div');
+                    currentPageContent.forEach(item => pageDiv.appendChild(item));
+                    await renderPage(pageDiv, pageNumber);
+                }
+
+                console.log("Saving to localStorage...");
+                const pdfData = pdf.output('datauristring');
+                let evalFormPDFs = JSON.parse(localStorage.getItem('evalFormPDFs') || '[]');
+                evalFormPDFs.push({
+                    pdf: pdfData,
+                    html: elementClone.outerHTML,
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('evalFormPDFs', JSON.stringify(evalFormPDFs));
+                console.log("Form saved to:", evalFormPDFs);
+
+                console.log("Redirecting to part_5.html");
+                window.location.href = 'part_5.html';
+            } catch (error) {
+                console.error("Error in saveForm:", error);
+                alert('Failed to save form. Please check the console for details.');
+            }
+        }
+
+        function removeForm() {
+            if (userRole === 'Program Manager') {
+                let evalFormPDFs = JSON.parse(localStorage.getItem('evalFormPDFs') || '[]');
+                if (evalFormPDFs.length > 0) {
+                    evalFormPDFs.pop();
+                    localStorage.setItem('evalFormPDFs', JSON.stringify(evalFormPDFs));
+                    alert('Last saved form removed.');
+                } else {
+                    alert('No saved forms to remove.');
+                }
+            } else {
+                alert('Only Program Manager can remove forms.');
+            }
+        }
+
+        function autoResizeTextarea() {
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.style.height = 'auto';
+                textarea.style.height = `${textarea.scrollHeight}px`;
+            });
+        }
+
+        // Zapewnij przewijanie do góry na załadowaniu strony
+        window.addEventListener('load', () => {
+            window.scrollTo(0, 0); // Przewiń do góry
+            autoResizeTextarea();
+        });
+
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', autoResizeTextarea);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IV. Gradesheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 1000px;
+            box-sizing: border-box;
+            border: 1px solid #2F4F2F;
+        }
+        h1 {
+            font-size: 1.8em;
+            color: #8b7314;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .button {
+            display: inline-block;
+            margin: 10px 5px;
+            padding: 10px 20px;
+            background-color: #8b7314;
+            border: 2px solid #2F4F2F;
+            border-radius: 5px;
+            color: #000;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #a68a2e;
+        }
+        .form-selector {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-selector label {
+            color: #8b7314;
+            margin-right: 10px;
+            font-size: 1em;
+        }
+        .form-selector select {
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #8b7314;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .form-selector select option {
+            background: #000;
+            color: #8b7314;
+        }
+        #userInfo {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #8b7314;
+            font-size: 1em;
+            position: absolute;
+            top: 10px;
+            width: 100%;
+        }
+        .buttons-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .scans-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #fileUpload {
+            display: none;
+        }
+        #addFileButton {
+            padding: 5px 10px;
+            background-color: #8b7314;
+            border: 2px solid #2F4F2F;
+            border-radius: 5px;
+            color: #000;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #addFileButton:hover {
+            background-color: #a68a2e;
+        }
+        #fileList {
+            margin-top: 10px;
+            color: #ccc;
+            text-align: left;
+            max-width: 1000px;
+            width: 100%;
+        }
+        #fileList p {
+            margin: 5px 0;
+        }
+        #fileList a {
+            color: #8b7314;
+            text-decoration: none;
+        }
+        #fileList a:hover {
+            text-decoration: underline;
+        }
+        @media print {
+            body {
+                background-color: #fff;
+                color: #000;
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                background: none;
+                border: none;
+                padding: 10px;
+                width: 100%;
+                max-width: none;
+            }
+            h1 {
+                color: #8b7314;
+                text-align: center;
+                margin: 10px 0;
+            }
+            .form-selector, .scans-section, .buttons-container, .button, .form-button {
+                display: none;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.8em;
+                table-layout: fixed;
+            }
+            table, th, td {
+                border: 1px solid #8b7314;
+            }
+            th {
+                background-color: #8b7314;
+                color: #000;
+                padding: 5px;
+                text-align: center;
+            }
+            td {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #000;
+                padding: 5px;
+                text-align: left;
+            }
+            .checkbox-symbol, .radio-symbol {
+                font-size: 1em;
+                margin-right: 5px;
+                vertical-align: middle;
+            }
+            .notes {
+                color: #000;
+                font-size: 0.7em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="userInfo"></div>
+    <div class="container">
+        <h1>IV. Gradesheet</h1>
+        <div class="form-selector">
+            <label for="gradeSheetSelect">Select Grade Sheet: </label>
+            <select id="gradeSheetSelect" onchange="loadGradeSheet()">
+                <option value="">-- Select --</option>
+            </select>
+        </div>
+        <div id="gradeSheetPreview">
+            <p>Please select a grade sheet from the list.</p>
+        </div>
+    </div>
+    <div class="buttons-container">
+        <button class="button" onclick="window.location.href='CAS_trng.html'">IV. CAS Training</button>
+        <button class="button" onclick="window.location.href='Certificates.html'">IV. Certificates</button>
+        <button class="button" onclick="window.location.href='MTL.html'">IV. MTL</button>
+        <button class="button" onclick="window.location.href='test.html'">IV. Test</button>
+        <a href="profile.html" class="button">Back to Profile</a>
+    </div>
+    <div class="scans-section">
+        <input type="file" id="fileUpload" accept="image/*,application/pdf" multiple>
+        <label for="fileUpload" id="addFileButton">Add File</label>
+        <div id="fileList"></div>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const viewedUser = JSON.parse(localStorage.getItem('viewedUser') || '{}');
+        const displayedUser = viewedUser.login ? viewedUser : currentUser;
+
+        document.getElementById('userInfo').textContent = `Logged in as: ${displayedUser.login} (Role: ${displayedUser.role || 'N/A'})`;
+
+        function getUserDocumentsKey() {
+            return `documentsData_${displayedUser.login}`;
+        }
+
+        let documentsData = JSON.parse(localStorage.getItem(getUserDocumentsKey()) || '{}');
+
+        function saveDocumentsData() {
+            localStorage.setItem(getUserDocumentsKey(), JSON.stringify(documentsData));
+        }
+
+        function populateGradeSheetSelector() {
+            const gradeSheetPDFs = JSON.parse(localStorage.getItem('gradeSheetPDFs') || '[]');
+            const gradeSheetSelect = document.getElementById('gradeSheetSelect');
+
+            gradeSheetSelect.innerHTML = '<option value="">-- Select --</option>';
+            gradeSheetPDFs.forEach((sheet, index) => {
+                const timestamp = new Date(sheet.timestamp).toLocaleString();
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `Grade Sheet ${index + 1} - ${timestamp}`;
+                gradeSheetSelect.appendChild(option);
+            });
+            console.log("Loaded grade sheets into dropdown:", gradeSheetPDFs);
+        }
+
+        function loadGradeSheet() {
+            const gradeSheetSelect = document.getElementById('gradeSheetSelect');
+            const selectedIndex = gradeSheetSelect.value;
+
+            if (!selectedIndex) {
+                document.getElementById('gradeSheetPreview').innerHTML = '<p>Please select a grade sheet from the list.</p>';
+                console.log("No grade sheet selected.");
+                return;
+            }
+
+            const gradeSheetPDFs = JSON.parse(localStorage.getItem('gradeSheetPDFs') || '[]');
+            if (!gradeSheetPDFs[selectedIndex] || !gradeSheetPDFs[selectedIndex].html || !gradeSheetPDFs[selectedIndex].pdf) {
+                console.error("Grade sheet data not found or invalid at index:", selectedIndex);
+                alert("Error: Grade sheet data not found or invalid.");
+                return;
+            }
+
+            const sheetHTML = gradeSheetPDFs[selectedIndex].html;
+            const pdfData = gradeSheetPDFs[selectedIndex].pdf;
+            console.log("Loaded grade sheet HTML:", sheetHTML);
+
+            const tempDiv = document.createElement('div');
+            try {
+                tempDiv.innerHTML = sheetHTML;
+            } catch (e) {
+                console.error("Error parsing sheet HTML:", e);
+                alert("Error: Failed to parse grade sheet data.");
+                return;
+            }
+
+            if (!tempDiv.children.length) {
+                console.error("Parsed sheet HTML is empty or invalid.");
+                alert("Error: Grade sheet content is empty or invalid.");
+                return;
+            }
+
+            let newWindow;
+            try {
+                newWindow = window.open('', '_blank');
+                if (!newWindow) {
+                    console.error("Failed to open new window. Possibly blocked by browser.");
+                    alert("Error: Unable to open preview window. Please allow pop-ups and try again.");
+                    return;
+                }
+            } catch (e) {
+                console.error("Error opening new window:", e);
+                alert("Error: Unable to open preview window. Please allow pop-ups and try again.");
+                return;
+            }
+
+            const doc = newWindow.document;
+            doc.open();
+
+            const html = doc.createElement('html');
+            const head = doc.createElement('head');
+            const body = doc.createElement('body');
+
+            const title = doc.createElement('title');
+            title.textContent = 'Grade Sheet Preview';
+            head.appendChild(title);
+
+            const fontLink = doc.createElement('link');
+            fontLink.rel = 'stylesheet';
+            fontLink.href = 'https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap';
+            head.appendChild(fontLink);
+
+            const style = doc.createElement('style');
+            style.textContent = `
+                body {
+                    font-family: 'Roboto Condensed', sans-serif;
+                    margin: 0;
+                    padding: 20px;
+                    background-color: #fff;
+                    color: #000;
+                }
+                h1 {
+                    font-size: 1.8em;
+                    color: #8b7314;
+                    text-align: center;
+                    margin-bottom: 20px;
+                    text-transform: uppercase;
+                }
+                .form-button {
+                    display: inline-block;
+                    margin: 10px 5px;
+                    padding: 10px 20px;
+                    background-color: #8b7314;
+                    border: 2px solid #2F4F2F;
+                    border-radius: 5px;
+                    color: #000;
+                    font-size: 1em;
+                    cursor: pointer;
+                }
+                .button-container {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                table {
+                    width: 100%;
+                    max-width: 1000px;
+                    border-collapse: collapse;
+                    font-size: 0.8em;
+                    table-layout: fixed;
+                    margin: 0 auto;
+                }
+                table, th, td {
+                    border: 1px solid #8b7314;
+                }
+                th {
+                    background-color: #8b7314;
+                    color: #000;
+                    padding: 5px;
+                    text-align: center;
+                }
+                td {
+                    background-color: rgba(255, 255, 255, 0.1);
+                    color: #000;
+                    padding: 5px;
+                    text-align: left;
+                    word-break: break-word;
+                }
+                .checkbox-symbol, .radio-symbol {
+                    font-size: 1em;
+                    margin-right: 5px;
+                    vertical-align: middle;
+                    display: inline-block;
+                }
+                .checkbox-symbol[data-symbol="☒"], .radio-symbol[data-symbol="●"] {
+                    color: #ff0000;
+                }
+                .checkbox-symbol[data-symbol="☐"], .radio-symbol[data-symbol="○"] {
+                    color: #000;
+                }
+                .signature-date {
+                    color: #000;
+                }
+                .notes {
+                    font-size: 0.7em;
+                    color: #000;
+                    margin-top: 10px;
+                }
+                @media print {
+                    .button-container, .form-button {
+                        display: none;
+                    }
+                    body {
+                        padding: 10px;
+                    }
+                    .checkbox-symbol, .radio-symbol {
+                        color: inherit;
+                    }
+                    .checkbox-symbol[data-symbol="☒"], .radio-symbol[data-symbol="●"] {
+                        color: #ff0000;
+                    }
+                    .checkbox-symbol[data-symbol="☐"], .radio-symbol[data-symbol="○"] {
+                        color: #000;
+                    }
+                }
+            `;
+            head.appendChild(style);
+
+            const h1 = doc.createElement('h1');
+            h1.textContent = 'JTAC Terminal Attack Control Gradesheet';
+            body.appendChild(h1);
+
+            const buttonContainer = doc.createElement('div');
+            buttonContainer.className = 'button-container';
+
+            const downloadButton = doc.createElement('button');
+            downloadButton.className = 'form-button';
+            downloadButton.textContent = 'Download PDF';
+            downloadButton.onclick = () => {
+                const link = document.createElement('a');
+                link.href = pdfData;
+                link.download = `GradeSheet_${displayedUser.login || 'unknown'}.pdf`;
+                link.click();
+            };
+            buttonContainer.appendChild(downloadButton);
+
+            const printButton = doc.createElement('button');
+            printButton.className = 'form-button';
+            printButton.textContent = 'Print';
+            printButton.onclick = () => window.print();
+            buttonContainer.appendChild(printButton);
+
+            body.appendChild(buttonContainer);
+            body.appendChild(tempDiv);
+
+            html.appendChild(head);
+            html.appendChild(body);
+            doc.appendChild(html);
+            doc.close();
+        }
+
+        function saveFile(fileData) {
+            documentsData['gradeSheetScans'] = documentsData['gradeSheetScans'] || [];
+            documentsData['gradeSheetScans'].push(fileData);
+            saveDocumentsData();
+        }
+
+        function displayFiles() {
+            const scans = documentsData['gradeSheetScans'] || [];
+            fileList.innerHTML = '';
+            scans.forEach((scan, index) => {
+                const p = document.createElement('p');
+                const a = document.createElement('a');
+                a.href = scan.data;
+                a.textContent = `${index + 1}. ${scan.name} (Uploaded: ${new Date(scan.timestamp).toLocaleString()})`;
+                a.target = '_blank';
+                p.appendChild(a);
+                fileList.appendChild(p);
+            });
+        }
+
+        const fileUpload = document.getElementById('fileUpload');
+        const fileList = document.getElementById('fileList');
+
+        fileUpload.addEventListener('change', function(event) {
+            const files = event.target.files;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const fileData = {
+                        name: file.name,
+                        data: e.target.result,
+                        timestamp: new Date().toISOString()
+                    };
+                    saveFile(fileData);
+                    displayFiles();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        window.onload = function() {
+            populateGradeSheetSelector();
+            displayFiles();
+        };
+    </script>
+</body>
+</html>

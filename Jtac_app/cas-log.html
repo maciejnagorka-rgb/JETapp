@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            margin: 20px;
+            background-color: #000;
+            color: #fff;
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #8b7314;
+        }
+        .form-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .input-section {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .input-section label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #8b7314;
+        }
+        .input-section .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .input-section .row input {
+            padding: 8px;
+            flex: 1 1 auto;
+            min-width: 150px;
+            background-color: #1a1a1a;
+            color: #fff;
+            border: 1px solid #8b7314;
+            border-radius: 5px;
+        }
+        .input-section .row input:invalid {
+            border-color: #ff0000;
+        }
+        .input-section .row button {
+            padding: 10px 20px;
+            background-color: #8b7314;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            flex: 1 1 auto;
+            font-family: 'Orbitron', sans-serif;
+            transition: background-color 0.3s;
+        }
+        .input-section .row button.active {
+            background-color: #ffd700;
+            color: #000;
+            font-weight: bold;
+        }
+        .input-section .row button:disabled {
+            background-color: #555;
+            color: #888;
+            cursor: not-allowed;
+        }
+        .separator {
+            width: 100%;
+            height: 1px;
+            background-color: #8b7314;
+            margin: 10px 0;
+        }
+        .record-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .record-button button {
+            padding: 15px 30px;
+            background-color: #8b7314;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-family: 'Orbitron', sans-serif;
+            transition: background-color 0.3s;
+            margin: 0 5px;
+        }
+        .record-button #recordButton {
+            background-color: #00ff00;
+        }
+        .record-button #recordButton:hover:not(:disabled) {
+            background-color: #00cc00;
+        }
+        .record-button button.delete-button {
+            background-color: #b22222;
+            color: #fff;
+        }
+        .record-button button.reset-button {
+            background-color: #ff4500;
+            color: #fff;
+        }
+        .record-button button:disabled {
+            background-color: #555;
+            color: #888;
+            cursor: not-allowed;
+        }
+        .record-button button:hover:not(:disabled) {
+            background-color: #a68a2e;
+        }
+        .record-button button.delete-button:hover:not(:disabled) {
+            background-color: #dc143c;
+        }
+        .record-button button.reset-button:hover:not(:disabled) {
+            background-color: #ff6347;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #8b7314;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            color: #fff;
+        }
+        th {
+            background-color: #8b7314;
+            color: #000;
+        }
+        td {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .cas-log-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .cas-log-container thead {
+            position: sticky;
+            top: 0;
+            background-color: #8b7314;
+            z-index: 1;
+        }
+        .edit-button {
+            background-color: #8b7314;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .edit-button:hover {
+            background-color: #a68a2e;
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #8b7314;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #a68a2e;
+        }
+        .yellow-row {
+            background-color: #ffff00 !important;
+            color: #000 !important;
+        }
+        .red-row {
+            background-color: #ff0000 !important;
+            color: #000 !important;
+        }
+        .tracker-buttons {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .tracker-buttons button {
+            padding: 8px 16px;
+            background-color: #8b7314;
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 5px;
+        }
+        .tracker-buttons button:hover {
+            background-color: #a68a2e;
+        }
+        footer {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            color: #ccc;
+            text-align: center;
+        }
+        @media print {
+            body { background-color: #fff; color: #fff; }
+            .form-container, .back-button, .tracker-buttons, footer { display: none; }
+            h2 { color: #8b7314; margin: 10px 0; }
+            .cas-log-container { 
+                max-height: none; 
+                overflow: visible; 
+                background: none; 
+            }
+            table { width: 100%; border-collapse: collapse; }
+            table, th, td { border: 1px solid #8b7314; }
+            th { background-color: #8b7314; color: #000; }
+            td { background-color: rgba(255, 255, 255, 0.1); }
+            .yellow-row { background-color: #ffbb00 !important; color: #000 !important; }
+            .red-row { background-color: #ff0000 !important; color: #000 !important; }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='profile.html'">Back</button>
+    <h1>CAS Log Form</h1>
+    <div class="form-container">
+        <div class="input-section">
+            <div class="row">
+                <div><label for="date">Date:</label><input type="date" id="date" required></div>
+                <div><label for="location">Location:</label><input type="text" id="location" required placeholder="Lokalizacja..."></div>
+                <div><label for="noAndTypeOfAC">No and Type of AC:</label><input type="text" id="noAndTypeOfAC" required placeholder="Numer i typ..."></div>
+                <div><label for="nbrOfControls">NBR of Controls:</label><input type="number" id="nbrOfControls" required placeholder="Liczba..." min="1"></div>
+            </div>
+            <div class="row">
+                <button onclick="toggleOption('FW 1')">FW 1</button>
+                <button onclick="toggleOption('FW 2')">FW 2</button>
+                <button onclick="toggleOption('RW')">RW</button>
+                <button onclick="toggleOption('TYPE1')">TYPE 1</button>
+                <button onclick="toggleOption('TYPE2')">TYPE 2</button>
+                <button onclick="toggleOption('TYPE3')">TYPE 3</button>
+                <button onclick="toggleOption('BOT')">BOT</button>
+                <button onclick="toggleOption('BOC')">BOC</button>
+                <button onclick="toggleOption('ORDNANCE')">ORDNANCE</button>
+                <button onclick="toggleOption('TO')">TO</button>
+                <button onclick="toggleOption('VDL')">VDL</button>
+                <button onclick="toggleOption('ETD')">ETD</button>
+                <button onclick="toggleOption('9L_LL')">9L/LL</button>
+                <button onclick="toggleOption('MH')">MH</button>
+                <button onclick="toggleOption('LASER')">LASER</button>
+                <button onclick="toggleOption('DAY')">DAY</button>
+                <button onclick="toggleOption('NIGHT')">NIGHT</button>
+                <button onclick="toggleOption('IR')">IR</button>
+                <button onclick="toggleOption('RO')">RO</button>
+                <button onclick="toggleOption('SEAD')">SEAD</button>
+                <button onclick="toggleOption('URBAN')">URBAN</button>
+            </div>
+            <div class="separator"></div>
+            <div class="row">
+                <button onclick="toggleOption('Comms P.')">Comms P.</button>
+                <button onclick="toggleOption('Decon.')">Decon.</button>
+                <button onclick="toggleOption('Fires decon.')">Fires decon.</button>
+                <button onclick="toggleOption('Fire Sup')">Fire Sup</button>
+                <button onclick="toggleOption('GTP')">GTP</button>
+                <button onclick="toggleOption('INTEL')">INTEL</button>
+                <button onclick="toggleOption('Map Plot')">Map Plot</button>
+                <button onclick="toggleOption('Match TGT Loc.')">Match TGT Loc.</button>
+                <button onclick="toggleOption('Surface Fire')">Surface Fire</button>
+                <button onclick="toggleOption('TACT. TAG Syst.')">TACT. TAG Syst.</button>
+                <button onclick="toggleOption('TGT Acq Day')">TGT Acq Day</button>
+                <button onclick="toggleOption('TGT Acq Night')">TGT Acq Night</button>
+                <button onclick="toggleOption('TGT Acq RO')">TGT Acq RO</button>
+                <button onclick="toggleOption('GPS/LRF')">GPS/LRF</button>
+                <button onclick="toggleOption('UAV')">UAV</button>
+                <button onclick="toggleOption('FAC-A')">FAC-A</button>
+                <button onclick="toggleOption('DA')">DA</button>
+                <button onclick="toggleOption('ACO')">ACO</button>
+                <button onclick="toggleOption('WP')">WP</button>
+                <button onclick="toggleOption('SMK')">SMK</button>
+                <button onclick="toggleOption('IDF')">IDF</button>
+                <button onclick="toggleOption('DF')">DF</button>
+                <button onclick="toggleOption('ATO')">ATO</button>
+            </div>
+            <div class="record-button">
+                <button id="recordButton" onclick="submitForm()">RECORD</button>
+                <button class="delete-button" onclick="deleteLastEntry()">DELETE</button>
+                <button class="reset-button" onclick="resetCasLogData()">RESET DATA</button>
+            </div>
+        </div>
+    </div>
+    <h2>CAS Log</h2>
+    <div class="tracker-buttons">
+        <button onclick="downloadTable('casLogTable', 'CAS_Log')">Download PDF</button>
+        <button onclick="printTable('casLogTable')">Print</button>
+    </div>
+    <div class="cas-log-container">
+        <table id="casLogTable">
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>Location</th>
+                    <th>No and Type of AC</th>
+                    <th>NBR of Controls</th>
+                    <th>TAC</th>
+                    <th>Remarks</th>
+                    <th>Signature</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <footer>
+        <p>© 2025 JTAC App. by MadFrog 69  --- stay froggy---.</p>
+    </footer>
+
+    <script>
+        let selectedOptions = {};
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const viewedUser = JSON.parse(localStorage.getItem('viewedUser') || '{}');
+        const displayedUser = viewedUser.login ? viewedUser : currentUser;
+
+        if (!currentUser.login) {
+            window.location.href = 'index.html';
+        }
+
+        function getUserCasLogKey() {
+            const login = displayedUser.login || '';
+            console.log('Klucz użytkownika:', `casLogData_${login}`);
+            return `casLogData_${login}`;
+        }
+
+        function getUserDocumentsKey() {
+            const login = displayedUser.login || '';
+            return `documentsData_${login}`;
+        }
+
+        let casLogData = JSON.parse(localStorage.getItem(getUserCasLogKey()) || '[]');
+
+        const tacValidity = {
+            'FW 1': 6, 'FW 2': 6, 'RW': 6, 'TYPE1': 6, 'TYPE2': 6, 'TYPE3': 6,
+            'BOT': 6, 'BOC': 6, 'ORDNANCE': 6, 'TO': 6, 'VDL': 6, 'ETD': 6,
+            '9L_LL': 6, 'MH': 6, 'LASER': 6, 'DAY': 6, 'NIGHT': 6, 'IR': 6,
+            'RO': 6, 'SEAD': 6, 'URBAN': 6,
+            'Comms P.': 12, 'Decon.': 12, 'Fires decon.': 12, 'Fire Sup': 12,
+            'GTP': 12, 'INTEL': 12, 'Map Plot': 12, 'Match TGT Loc.': 12,
+            'Surface Fire': 12, 'TACT. TAG Syst.': 12, 'TGT Acq Day': 12,
+            'TGT Acq Night': 12, 'TGT Acq RO': 12, 'GPS/LRF': 12, 'UAV': 12,
+            'FAC-A': 12, 'DA': 12, 'ACO': 12, 'WP': 12, 'SMK': 12, 'IDF': 12,
+            'DF': 12, 'ATO': 12
+        };
+
+        function toggleOption(option) {
+            const dependencies = {
+                RW: ['FW 1', 'FW 2'],
+                TYPE1: ['TYPE2', 'TYPE3'],
+                TYPE2: ['TYPE1', 'TYPE3'],
+                TYPE3: ['TYPE1', 'TYPE2'],
+                BOT: ['BOC'],
+                BOC: ['BOT'],
+                DAY: ['NIGHT', 'IR'],
+                NIGHT: ['DAY'],
+                IR: ['DAY'],
+                TO: ['VDL', 'ETD'],
+                VDL: ['TO', 'ETD'],
+                ETD: ['TO', 'VDL'],
+                '9L_LL': ['MH'],
+                MH: ['9L_LL']
+            };
+
+            if (dependencies[option]) {
+                dependencies[option].forEach(dep => {
+                    if (selectedOptions[dep]) {
+                        selectedOptions[dep] = false;
+                        const button = document.querySelector(`button[onclick="toggleOption('${dep}')"]`);
+                        button.classList.remove('active');
+                    }
+                });
+            }
+
+            selectedOptions[option] = !selectedOptions[option];
+            const button = document.querySelector(`button[onclick="toggleOption('${option}')"]`);
+            button.classList.toggle('active', selectedOptions[option]);
+            updateButtonStates();
+        }
+
+        function updateButtonStates() {
+            const dependencies = {
+                RW: ['FW 1', 'FW 2'],
+                TYPE1: ['TYPE2', 'TYPE3'],
+                TYPE2: ['TYPE1', 'TYPE3'],
+                TYPE3: ['TYPE1', 'TYPE2'],
+                BOT: ['BOC'],
+                BOC: ['BOT'],
+                DAY: ['NIGHT', 'IR'],
+                NIGHT: ['DAY'],
+                IR: ['DAY'],
+                TO: ['VDL', 'ETD'],
+                VDL: ['TO', 'ETD'],
+                ETD: ['TO', 'VDL'],
+                '9L_LL': ['MH'],
+                MH: ['9L_LL']
+            };
+
+            const isBlocked = isAddingBlocked();
+            document.querySelectorAll('.row button').forEach(button => {
+                button.disabled = isBlocked;
+            });
+
+            document.getElementById('recordButton').disabled = isBlocked;
+
+            Object.keys(dependencies).forEach(option => {
+                const button = document.querySelector(`button[onclick="toggleOption('${option}')"]`);
+                if (selectedOptions[option] && !isBlocked) {
+                    dependencies[option].forEach(dep => {
+                        const depButton = document.querySelector(`button[onclick="toggleOption('${dep}')"]`);
+                        depButton.disabled = true;
+                    });
+                }
+            });
+        }
+
+        function isAddingBlocked() {
+            const currentDate = new Date();
+            for (const entry of casLogData) {
+                const tacElements = entry.tac ? entry.tac.split('/') : [];
+                let has6MonthExpired = false;
+                let has12MonthExpired = false;
+
+                for (const tac of tacElements) {
+                    const validityMonths = tacValidity[tac] || 12;
+                    const entryDate = new Date(entry.date);
+                    const timeDiff = (currentDate - entryDate) / (1000 * 60 * 60 * 24 * 30);
+
+                    if (validityMonths === 6 && timeDiff > 6 && timeDiff <= 12 && !entry.remarks) {
+                        has6MonthExpired = true;
+                    }
+                    if ((validityMonths === 6 && timeDiff > 12 && !entry.signature) || 
+                        (validityMonths === 12 && timeDiff > 12 && !entry.signature)) {
+                        has12MonthExpired = true;
+                    }
+                }
+
+                if (has6MonthExpired || has12MonthExpired) return true;
+            }
+            return false;
+        }
+
+        function submitForm() {
+            if (isAddingBlocked()) {
+                alert('Dodawanie nowych wpisów jest zablokowane! Żółte wpisy (6-12 miesięcy dla TAC 6-miesięcznych) wymagają podpisu w Remarks od JTAC, JTAC I lub JTAC I/E (innego niż użytkownik). Czerwone wpisy (>12 miesięcy) wymagają podpisu w Signature od JTAC I lub JTAC I/E.');
+                return;
+            }
+
+            const dateInput = document.getElementById('date');
+            const locationInput = document.getElementById('location');
+            const noAndTypeOfACInput = document.getElementById('noAndTypeOfAC');
+            const nbrOfControlsInput = document.getElementById('nbrOfControls');
+
+            if (!dateInput.value) {
+                alert('Pole Date jest wymagane!');
+                return;
+            }
+            if (!locationInput.value) {
+                alert('Pole Location jest wymagane!');
+                return;
+            }
+            if (!noAndTypeOfACInput.value) {
+                alert('Pole No and Type of AC jest wymagane!');
+                return;
+            }
+            if (!nbrOfControlsInput.value || parseInt(nbrOfControlsInput.value) < 1) {
+                alert('Pole NBR of Controls jest wymagane i musi być większe od 0!');
+                return;
+            }
+
+            const date = dateInput.value;
+            const location = locationInput.value;
+            const noAndTypeOfAC = noAndTypeOfACInput.value;
+            const nbrOfControls = parseInt(nbrOfControlsInput.value);
+            const tacElements = Object.keys(selectedOptions).filter(option => selectedOptions[option]).join('/');
+
+            const casLogEntry = {
+                date,
+                location,
+                noAndTypeOfAC,
+                nbrOfControls,
+                tac: tacElements,
+                remarks: '',
+                signature: ''
+            };
+            casLogData.push(casLogEntry);
+            localStorage.setItem(getUserCasLogKey(), JSON.stringify(casLogData));
+            saveProfileBackup();
+            renderCasLogTable();
+
+            document.getElementById('date').value = '';
+            document.getElementById('location').value = '';
+            document.getElementById('noAndTypeOfAC').value = '';
+            document.getElementById('nbrOfControls').value = '';
+            selectedOptions = {};
+            document.querySelectorAll('.row button').forEach(button => button.classList.remove('active'));
+            updateButtonStates();
+        }
+
+        function renderCasLogTable() {
+            const tbody = document.querySelector('#casLogTable tbody');
+            tbody.innerHTML = '';
+            casLogData.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                const tacElements = entry.tac ? entry.tac.split('/') : [];
+                let isYellow = false;
+                let isRed = false;
+
+                tacElements.forEach(tac => {
+                    const validityMonths = tacValidity[tac] || 12;
+                    const entryDate = new Date(entry.date);
+                    const currentDate = new Date();
+                    const timeDiff = (currentDate - entryDate) / (1000 * 60 * 60 * 24 * 30);
+
+                    if (validityMonths === 6 && timeDiff > 6 && timeDiff <= 12 && !entry.remarks) {
+                        isYellow = true;
+                    }
+                    if ((validityMonths === 6 && timeDiff > 12 && !entry.signature) || 
+                        (validityMonths === 12 && timeDiff > 12 && !entry.signature)) {
+                        isRed = true;
+                    }
+                });
+
+                if (isRed) row.classList.add('red-row');
+                else if (isYellow && !isRed) row.classList.add('yellow-row');
+
+                const canEditSignature = ['JTAC I', 'JTAC I/E'].includes(currentUser.role);
+                const canEditRemarks = ['JTAC', 'JTAC I', 'JTAC I/E'].includes(currentUser.role);
+                row.innerHTML = `
+                    <td>${entry.date}</td>
+                    <td>${entry.location}</td>
+                    <td>${entry.noAndTypeOfAC}</td>
+                    <td>${entry.nbrOfControls}</td>
+                    <td>${entry.tac || 'N/A'}</td>
+                    <td><input type="text" value="${entry.remarks || ''}" ${canEditRemarks ? '' : 'disabled'} onchange="updateRemarks(${index}, this.value)"></td>
+                    <td><input type="text" value="${entry.signature || ''}" ${canEditSignature ? '' : 'disabled'} onchange="updateSignature(${index}, this.value)"></td>
+                    <td>
+                        <button class="edit-button" onclick="editEntry(${index})" style="display: ${canEdit() ? 'inline-block' : 'none'}">Edit</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            updateButtonStates();
+        }
+
+        function updateRemarks(index, value) {
+            if (!['JTAC', 'JTAC I', 'JTAC I/E'].includes(currentUser.role)) {
+                alert('Tylko JTAC, JTAC I lub JTAC I/E mogą edytować pole Remarks!');
+                renderCasLogTable();
+                return;
+            }
+
+            const entry = casLogData[index];
+            const tacElements = entry.tac ? entry.tac.split('/') : [];
+            let isYellow = false;
+
+            tacElements.forEach(tac => {
+                const validityMonths = tacValidity[tac] || 12;
+                const entryDate = new Date(entry.date);
+                const currentDate = new Date();
+                const timeDiff = (currentDate - entryDate) / (1000 * 60 * 60 * 24 * 30);
+
+                if (validityMonths === 6 && timeDiff > 6 && timeDiff <= 12 && !entry.remarks) {
+                    isYellow = true;
+                }
+            });
+
+            if (isYellow && !value) {
+                alert('Żółty wpis (6-12 miesięcy dla TAC 6-miesięcznych) wymaga podpisu w Remarks od JTAC, JTAC I lub JTAC I/E (innego niż użytkownik)!');
+                return;
+            }
+
+            casLogData[index].remarks = value;
+            localStorage.setItem(getUserCasLogKey(), JSON.stringify(casLogData));
+            saveProfileBackup();
+            renderCasLogTable();
+        }
+
+        function updateSignature(index, value) {
+            if (!['JTAC I', 'JTAC I/E'].includes(currentUser.role)) {
+                alert('Tylko JTAC I lub JTAC I/E mogą edytować pole Signature!');
+                renderCasLogTable();
+                return;
+            }
+
+            const entry = casLogData[index];
+            const tacElements = entry.tac ? entry.tac.split('/') : [];
+            let needsSignature = false;
+
+            tacElements.forEach(tac => {
+                const validityMonths = tacValidity[tac] || 12;
+                const entryDate = new Date(entry.date);
+                const currentDate = new Date();
+                const timeDiff = (currentDate - entryDate) / (1000 * 60 * 60 * 24 * 30);
+
+                if ((validityMonths === 6 && timeDiff > 12) || (validityMonths === 12 && timeDiff > 12)) {
+                    needsSignature = true;
+                }
+            });
+
+            if (needsSignature && !value) {
+                alert('Czerwony wpis (>12 miesięcy) wymaga podpisu w Signature od JTAC I lub JTAC I/E!');
+                return;
+            }
+
+            casLogData[index].signature = value;
+            localStorage.setItem(getUserCasLogKey(), JSON.stringify(casLogData));
+            saveProfileBackup();
+            renderCasLogTable();
+        }
+
+        function editEntry(index) {
+            if (!canEdit()) {
+                alert('Tylko JTAC I lub JTAC I/E mogą edytować wpisy!');
+                return;
+            }
+            const entry = casLogData[index];
+            const newDate = prompt('Nowa data (YYYY-MM-DD):', entry.date);
+            const newLocation = prompt('Nowa lokalizacja:', entry.location);
+            const newNoAndTypeOfAC = prompt('Nowy numer i typ AC:', entry.noAndTypeOfAC);
+            const newNbrOfControls = prompt('Nowa liczba kontroli:', entry.nbrOfControls);
+            const newTac = prompt('Nowy TAC (oddzielone "/"):', entry.tac || '');
+            const newRemarks = prompt('Nowe uwagi:', entry.remarks || '');
+
+            if (newDate && newLocation && newNoAndTypeOfAC && newNbrOfControls) {
+                casLogData[index] = {
+                    date: newDate,
+                    location: newLocation,
+                    noAndTypeOfAC: newNoAndTypeOfAC,
+                    nbrOfControls: parseInt(newNbrOfControls),
+                    tac: newTac,
+                    remarks: newRemarks || '',
+                    signature: entry.signature
+                };
+                localStorage.setItem(getUserCasLogKey(), JSON.stringify(casLogData));
+                saveProfileBackup();
+                renderCasLogTable();
+            }
+        }
+
+        function canEdit() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            return currentUser && ['JTAC I', 'JTAC I/E'].includes(currentUser.role);
+        }
+
+        function deleteLastEntry() {
+            if (casLogData.length === 0) {
+                alert('Brak wpisów do usunięcia!');
+                return;
+            }
+            if (casLogData.length > 1 && !canEdit()) {
+                alert('Tylko JTAC I lub JTAC I/E mogą usuwać starsze wpisy!');
+                return;
+            }
+            casLogData.pop();
+            localStorage.setItem(getUserCasLogKey(), JSON.stringify(casLogData));
+            saveProfileBackup();
+            renderCasLogTable();
+            alert('Ostatni wpis został usunięty.');
+        }
+
+        function resetCasLogData() {
+            if (confirm('Czy na pewno chcesz zresetować dane CAS Log dla bieżącego użytkownika?')) {
+                casLogData = [];
+                localStorage.setItem(getUserCasLogKey(), JSON.stringify(casLogData));
+                saveProfileBackup();
+                renderCasLogTable();
+                alert('Dane CAS Log zostały zresetowane dla bieżącego użytkownika!');
+            }
+        }
+
+        function saveProfileBackup() {
+            const login = displayedUser.login || '';
+            const casLogData = JSON.parse(localStorage.getItem(`casLogData_${login}`) || '[]');
+            const documentsData = JSON.parse(localStorage.getItem(`documentsData_${login}`) || '[]');
+            const profileData = {
+                user: displayedUser,
+                casLog: casLogData,
+                documents: documentsData
+            };
+
+            fetch('/api/save-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ login, data: profileData })
+            })
+            .then(response => response.json())
+            .then(data => console.log('Backup zapisany:', data))
+            .catch(error => console.error('Błąd zapisu backupu:', error));
+        }
+
+        function downloadTable(tableId, fileNamePrefix) {
+            const table = document.getElementById(tableId);
+            const container = document.querySelector('.cas-log-container');
+            const h2 = document.querySelector('h2');
+            const content = document.createElement('div');
+            content.appendChild(h2.cloneNode(true));
+            content.appendChild(table.cloneNode(true));
+            const opt = {
+                margin: [0.5, 0.5, 0.5, 0.5],
+                filename: `${fileNamePrefix}_${displayedUser.login || ''}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+            };
+            html2pdf(container).set(opt).save();
+        }
+
+        function printTable(tableId) {
+            const table = document.getElementById(tableId);
+            const container = document.querySelector('.cas-log-container');
+            const h2 = document.querySelector('h2');
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print CAS Log</title>
+                    <style>
+                        body { 
+                            font-family: 'Orbitron', sans-serif; 
+                            margin: 20px; 
+                            background-color: #000; 
+                            color: #fff; 
+                        }
+                        h2 { 
+                            text-align: center; 
+                            margin-bottom: 20px; 
+                            color: #8b7314; 
+                        }
+                        table { 
+                            width: 100%; 
+                            border-collapse: collapse; 
+                            margin-top: 20px; 
+                        }
+                        table, th, td { 
+                            border: 1px solid #8b7314; 
+                        }
+                        th, td { 
+                            padding: 10px; 
+                            text-align: left; 
+                            color: #fff; 
+                        }
+                        th { 
+                            background-color: #8b7314; 
+                            color: #000; 
+                        }
+                        td { 
+                            background-color: rgba(255, 255, 255, 0.1); 
+                        }
+                        .yellow-row { 
+                            background-color: #ffff00 !important; 
+                            color: #000 !important; 
+                        }
+                        .red-row { 
+                            background-color: #ff0000 !important; 
+                            color: #000 !important; 
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${h2.outerHTML}
+                    ${container.outerHTML}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        renderCasLogTable();
+    </script>
+</body>
+</html>

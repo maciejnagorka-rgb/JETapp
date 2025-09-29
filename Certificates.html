@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IV. Certificates</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 1000px;
+            box-sizing: border-box;
+            border: 1px solid #2F4F2F;
+            text-align: center;
+        }
+        h1 {
+            font-size: 1.8em;
+            color: #8b7314;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        #userInfo {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #8b7314;
+            font-size: 1em;
+        }
+        .button, #uploadButton {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #8b7314;
+            border: 2px solid #2F4F2F;
+            border-radius: 5px;
+            color: #000;
+            font-size: 1em;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+        .button:hover, #uploadButton:hover {
+            background-color: #a68a2e;
+        }
+        #certificateUpload {
+            display: none;
+        }
+        #certificateList {
+            margin-top: 20px;
+            text-align: left;
+            color: #ccc;
+        }
+        #certificateList p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="userInfo"></div>
+        <h1>IV. Certificates</h1>
+        <input type="file" id="certificateUpload" accept=".pdf,.jpg,.png" multiple>
+        <label for="certificateUpload" id="uploadButton">Upload Certificates</label>
+        <div id="certificateList"></div>
+        <a href="Part_4.html" class="button">Back</a>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const viewedUser = JSON.parse(localStorage.getItem('viewedUser') || '{}');
+        const displayedUser = viewedUser.login ? viewedUser : currentUser;
+
+        document.getElementById('userInfo').textContent = `Logged in as: ${displayedUser.login}`;
+
+        const certificateUpload = document.getElementById('certificateUpload');
+        const certificateList = document.getElementById('certificateList');
+
+        certificateUpload.addEventListener('change', function(event) {
+            const files = event.target.files;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const fileData = {
+                        name: file.name,
+                        data: e.target.result,
+                        timestamp: new Date().toISOString()
+                    };
+                    saveCertificate(fileData);
+                    displayCertificates();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function saveCertificate(fileData) {
+            const certificates = JSON.parse(localStorage.getItem(`certificates_${displayedUser.login}`) || '[]');
+            certificates.push(fileData);
+            localStorage.setItem(`certificates_${displayedUser.login}`, JSON.stringify(certificates));
+        }
+
+        function displayCertificates() {
+            const certificates = JSON.parse(localStorage.getItem(`certificates_${displayedUser.login}`) || '[]');
+            certificateList.innerHTML = '';
+            certificates.forEach((cert, index) => {
+                const p = document.createElement('p');
+                p.textContent = `${index + 1}. ${cert.name} (Uploaded: ${new Date(cert.timestamp).toLocaleString()})`;
+                certificateList.appendChild(p);
+            });
+        }
+
+        window.onload = function() {
+            displayCertificates();
+        };
+    </script>
+</body>
+</html>

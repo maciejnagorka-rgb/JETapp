@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6MnthReview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 1000px;
+            box-sizing: border-box;
+            border: 1px solid #2F4F2F;
+        }
+        h2 {
+            font-size: 1.4em;
+            color: #8b7314;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #2F4F2F;
+            padding: 5px;
+            text-align: left;
+            color: #fff;
+            font-size: 0.8em;
+            white-space: normal;
+        }
+        th {
+            background-color: #8b7314;
+            color: #000;
+            font-weight: 700;
+            text-align: center;
+        }
+        td {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .button, .edit-button, .row-button, .add-button {
+            background-color: #8b7314;
+            color: #000;
+            border: 2px solid #2F4F2F;
+            border-radius: 5px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin: 2px;
+            transition: background-color 0.3s;
+        }
+        .button:hover, .edit-button:hover, .row-button:hover, .add-button:hover {
+            background-color: #a68a2e;
+        }
+        .add-button {
+            background-color: #00ff00;
+            color: #000;
+            font-weight: bold;
+            padding: 6px 12px;
+        }
+        .add-button:hover {
+            background-color: #00cc00;
+        }
+        .row-button.remove {
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+        }
+        .row-button.remove:hover {
+            background-color: #ff3333;
+        }
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border: 2px solid #2F4F2F;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        .modal h3 {
+            color: #8b7314;
+            margin-bottom: 15px;
+        }
+        .modal label {
+            display: block;
+            margin: 10px 0;
+            color: #8b7314;
+        }
+        .modal input, .modal textarea {
+            width: 100%;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .modal button {
+            background: #8b7314;
+            color: #000;
+            padding: 5px 10px;
+            border: 2px solid #2F4F2F;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .modal button:hover {
+            background: #a68a2e;
+        }
+        .modal button.cancel {
+            background: #ff0000;
+            color: #fff;
+            border: none;
+        }
+        .modal button.cancel:hover {
+            background: #ff3333;
+        }
+        #userInfo {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #8b7314;
+            font-size: 1em;
+        }
+        .button-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        /* Style dla wydruku */
+        @media print {
+            body {
+                background-color: #fff;
+                color: #000;
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                background: none;
+                border: none;
+                padding: 0;
+                width: 100%;
+                max-width: none;
+            }
+            #userInfo, h2 {
+                color: #8b7314;
+                text-align: center;
+                margin: 10px 0;
+            }
+            .button-container, .button, .edit-button, .row-button, .add-button {
+                display: none;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            table, th, td {
+                border: 1px solid #8b7314;
+            }
+            th {
+                background-color: #8b7314;
+                color: #000;
+                padding: 5px;
+                text-align: center;
+            }
+            td {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #000;
+                padding: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="userInfo"></div>
+        <h2>6MnthReview</h2>
+        <div class="button-container">
+            <button class="add-button" onclick="openReviewModal(-1)" id="addReviewButton">Add New Review</button>
+            <button class="edit-button" onclick="editReviewEntries()" id="editReviewButton">Edit</button>
+            <button class="button" onclick="downloadTable('reviewTable', '6MnthReview')">Download PDF</button>
+            <button class="button" onclick="printTable('reviewTable')">Print</button>
+        </div>
+        <table id="reviewTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Reviewer’s Remarks</th>
+                    <th>Reviewer’s Name and Rank, Signature</th>
+                    <th>Actions <button class="add-button" onclick="openReviewModal(-1)" id="addTableButton">ADD</button></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <a href="part_1.html" class="button">Back to Part I</a>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const viewedUser = JSON.parse(localStorage.getItem('viewedUser') || '{}');
+        const displayedUser = viewedUser.login ? viewedUser : currentUser;
+
+        document.getElementById('userInfo').textContent = `Logged in as: ${displayedUser.login} (Role: ${displayedUser.role})`;
+
+        function getUserDocumentsKey() {
+            return `documentsData_${displayedUser.login}`;
+        }
+
+        let documentsData = JSON.parse(localStorage.getItem(getUserDocumentsKey()) || '{}');
+
+        function saveDocumentsData() {
+            localStorage.setItem(getUserDocumentsKey(), JSON.stringify(documentsData));
+        }
+
+        function openReviewModal(index) {
+            if (!['JTAC I', 'JTAC I/E'].includes(currentUser.role)) {
+                alert('Only JTAC I and JTAC I/E can add entries!');
+                return;
+            }
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <h3>${index === -1 ? 'Add' : 'Edit'} Review Entry</h3>
+                <label>Date:</label>
+                <input type="date" id="reviewDate">
+                <label>Reviewer’s Remarks:</label>
+                <textarea id="reviewRemarks"></textarea>
+                <label>Reviewer’s Name and Rank, Signature:</label>
+                <input type="text" id="reviewName">
+                <div style="margin-top: 20px; text-align: right;">
+                    <button onclick="saveReviewEntry(${index})">Save</button>
+                    <button class="cancel" onclick="this.parentElement.parentElement.remove()">Cancel</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            if (index !== -1) {
+                const entry = documentsData['6MnthReview'][index];
+                document.getElementById('reviewDate').value = entry.date;
+                document.getElementById('reviewRemarks').value = entry.remarks;
+                document.getElementById('reviewName').value = entry.name;
+            }
+        }
+
+        function saveReviewEntry(index) {
+            const date = document.getElementById('reviewDate').value;
+            const remarks = document.getElementById('reviewRemarks').value;
+            const name = document.getElementById('reviewName').value;
+
+            if (date && remarks && name) {
+                documentsData['6MnthReview'] = documentsData['6MnthReview'] || [];
+                const newEntry = { date, remarks, name };
+                if (index === -1) {
+                    documentsData['6MnthReview'].push(newEntry);
+                } else {
+                    documentsData['6MnthReview'][index] = newEntry;
+                }
+                saveDocumentsData();
+                renderReviewTable();
+                document.querySelector('.modal').remove();
+            } else {
+                alert('All fields must be filled!');
+            }
+        }
+
+        function removeReviewEntry(index) {
+            if (!['JTAC I', 'JTAC I/E'].includes(currentUser.role)) {
+                alert('Only JTAC I and JTAC I/E can remove entries!');
+                return;
+            }
+            documentsData['6MnthReview'] = documentsData['6MnthReview'] || [];
+            if (documentsData['6MnthReview'].length > 0) {
+                documentsData['6MnthReview'].splice(index, 1);
+                saveDocumentsData();
+                renderReviewTable();
+            }
+        }
+
+        function renderReviewTable() {
+            const tbody = document.querySelector('#reviewTable tbody');
+            tbody.innerHTML = '';
+            const entries = documentsData['6MnthReview'] || [];
+
+            if (entries.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="4" style="text-align: center;">No entries yet. Click "Add New Review" or "ADD" to create a new entry.</td>`;
+                tbody.appendChild(row);
+            } else {
+                entries.forEach((entry, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${entry.date}</td>
+                        <td>${entry.remarks}</td>
+                        <td>${entry.name}</td>
+                        <td>
+                            <button class="row-button" onclick="openReviewModal(${index})">Edit</button>
+                            <button class="row-button remove" onclick="removeReviewEntry(${index})">Remove</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            const addButton = document.getElementById('addReviewButton');
+            addButton.style.display = ['JTAC I', 'JTAC I/E'].includes(currentUser.role) ? 'inline-block' : 'none';
+            const editButton = document.getElementById('editReviewButton');
+            editButton.style.display = ['JTAC I', 'JTAC I/E'].includes(currentUser.role) ? 'inline-block' : 'none';
+            const addTableButton = document.getElementById('addTableButton');
+            addTableButton.style.display = ['JTAC I', 'JTAC I/E'].includes(currentUser.role) ? 'inline-block' : 'none';
+        }
+
+        function editReviewEntries() {
+            renderReviewTable();
+        }
+
+        async function downloadTable(tableId, fileNamePrefix) {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const pageWidth = pdf.internal.pageSize.getWidth() - 20;
+            const pageHeight = pdf.internal.pageSize.getHeight() - 40;
+            const tableWidthPx = 1000; // max-width: 1000px z kontenera
+            const tableWidthMm = Math.min(tableWidthPx * 0.264583, pageWidth);
+
+            const table = document.getElementById(tableId);
+            const rows = table.querySelectorAll('tbody tr');
+            let currentPageRows = [];
+            let pageNumber = 1;
+
+            const createContainer = () => {
+                const pdfContainer = document.createElement('div');
+                pdfContainer.style.padding = '10px';
+                pdfContainer.style.backgroundColor = '#ffffff';
+                pdfContainer.style.position = 'absolute';
+                pdfContainer.style.left = '-9999px';
+
+                const userInfo = document.createElement('div');
+                userInfo.textContent = `Logged in as: ${displayedUser.login} (Role: ${displayedUser.role || 'N/A'})`;
+                userInfo.style.fontFamily = "'Roboto Condensed', sans-serif";
+                userInfo.style.color = '#8b7314';
+                userInfo.style.textAlign = 'center';
+                userInfo.style.fontSize = '14px';
+                userInfo.style.marginBottom = '5px';
+                pdfContainer.appendChild(userInfo);
+
+                const title = document.createElement('h2');
+                title.textContent = '6MnthReview';
+                title.style.fontFamily = "'Roboto Condensed', sans-serif";
+                title.style.color = '#8b7314';
+                title.style.textAlign = 'center';
+                title.style.fontSize = '16px';
+                title.style.marginBottom = '10px';
+                pdfContainer.appendChild(title);
+
+                return pdfContainer;
+            };
+
+            const renderTableFragment = async (rowsToRender) => {
+                const pdfContainer = createContainer();
+                const tableClone = document.createElement('table');
+                tableClone.style.width = `${tableWidthPx}px`;
+                tableClone.style.maxWidth = `${tableWidthPx}px`;
+                tableClone.style.borderCollapse = 'collapse';
+                tableClone.style.fontFamily = "'Roboto Condensed', sans-serif";
+                tableClone.style.boxSizing = 'border-box';
+
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                const headers = ['Date', 'Reviewer’s Remarks', 'Reviewer’s Name and Rank, Signature'];
+                headers.forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.textContent = headerText;
+                    th.style.border = '1px solid #8b7314';
+                    th.style.padding = '5px';
+                    th.style.textAlign = 'center';
+                    th.style.backgroundColor = '#8b7314';
+                    th.style.color = '#000';
+                    th.style.wordBreak = 'break-word';
+                    th.style.boxSizing = 'border-box';
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                tableClone.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                rowsToRender.forEach(row => {
+                    const rowClone = document.createElement('tr');
+                    const cells = Array.from(row.cells).slice(0, -1);
+                    cells.forEach(cell => {
+                        const td = document.createElement('td');
+                        td.textContent = cell.textContent;
+                        td.style.border = '1px solid #8b7314';
+                        td.style.padding = '5px';
+                        td.style.textAlign = 'left';
+                        td.style.color = '#000';
+                        td.style.wordBreak = 'break-word';
+                        td.style.boxSizing = 'border-box';
+                        td.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        rowClone.appendChild(td);
+                    });
+                    tbody.appendChild(rowClone);
+                });
+                tableClone.appendChild(tbody);
+                pdfContainer.appendChild(tableClone);
+
+                return { pdfContainer, tableClone };
+            };
+
+            const calculateHeight = async (rowsToRender) => {
+                const { pdfContainer, tableClone } = await renderTableFragment(rowsToRender);
+                document.body.appendChild(pdfContainer);
+                try {
+                    const canvas = await html2canvas(pdfContainer, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: true
+                    });
+                    const imgHeight = canvas.height;
+                    const imgWidth = canvas.width;
+                    const heightInMm = (imgHeight * tableWidthMm) / imgWidth;
+                    return heightInMm;
+                } finally {
+                    document.body.removeChild(pdfContainer);
+                }
+            };
+
+            let currentHeight = 0;
+            const filteredRows = Array.from(rows).filter(row => row.cells[0].textContent !== 'No entries yet. Click "Add New Review" or "ADD" to create a new entry.');
+            for (let i = 0; i < filteredRows.length; i++) {
+                const testRows = [...currentPageRows, filteredRows[i]];
+                const fragmentHeight = await calculateHeight(testRows);
+
+                if (fragmentHeight <= pageHeight || currentPageRows.length === 0) {
+                    currentPageRows.push(filteredRows[i]);
+                    currentHeight = fragmentHeight;
+                } else {
+                    const { pdfContainer } = await renderTableFragment(currentPageRows);
+                    document.body.appendChild(pdfContainer);
+                    try {
+                        const canvas = await html2canvas(pdfContainer, {
+                            scale: 2,
+                            backgroundColor: '#ffffff',
+                            logging: true
+                        });
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        const imgWidth = canvas.width;
+                        const imgHeight = canvas.height;
+                        const width = tableWidthMm;
+                        const height = (imgHeight * width) / imgWidth;
+
+                        const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                        const topMargin = 10;
+                        pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+
+                        pdf.setFontSize(10);
+                        pdf.setTextColor(0, 0, 0);
+                        pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                    } finally {
+                        document.body.removeChild(pdfContainer);
+                    }
+
+                    if (i < filteredRows.length) {
+                        pdf.addPage();
+                        pageNumber++;
+                        currentPageRows = [filteredRows[i]];
+                        currentHeight = await calculateHeight(currentPageRows);
+                    }
+                }
+            }
+
+            if (currentPageRows.length > 0) {
+                const { pdfContainer } = await renderTableFragment(currentPageRows);
+                document.body.appendChild(pdfContainer);
+                try {
+                    const canvas = await html2canvas(pdfContainer, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: true
+                    });
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
+                    const width = tableWidthMm;
+                    const height = (imgHeight * width) / imgWidth;
+
+                    const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                    const topMargin = 10;
+                    pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                } finally {
+                    document.body.removeChild(pdfContainer);
+                }
+            }
+
+            pdf.save(`${fileNamePrefix}_${displayedUser.login}.pdf`);
+        }
+
+        function printTable(tableId) {
+            const table = document.getElementById(tableId);
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print 6MnthReview</title>
+                    <style>
+                        body {
+                            font-family: 'Roboto Condensed', sans-serif;
+                            margin: 0;
+                            padding: 0;
+                            background-color: #fff;
+                            color: #000;
+                        }
+                        h2 {
+                            font-size: 1.4em;
+                            color: #8b7314;
+                            text-align: center;
+                            margin: 10px 0;
+                        }
+                        .user-info {
+                            text-align: center;
+                            margin: 10px 0;
+                            color: #8b7314;
+                            font-size: 1em;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 8px;
+                            font-size: 0.8em;
+                        }
+                        table, th, td {
+                            border: 1px solid #8b7314;
+                        }
+                        th, td {
+                            padding: 5px;
+                            text-align: left;
+                            color: #000;
+                        }
+                        th {
+                            background-color: #8b7314;
+                            color: #000;
+                            text-align: center;
+                        }
+                        td {
+                            background-color: rgba(255, 255, 255, 0.1);
+                        }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close();">
+                    <div class="user-info">Logged in as: ${displayedUser.login} (Role: ${displayedUser.role || 'N/A'})</div>
+                    <h2>6MnthReview</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Reviewer’s Remarks</th>
+                                <th>Reviewer’s Name and Rank, Signature</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Array.from(table.querySelector('tbody').rows)
+                                .filter(row => row.cells[0].textContent !== 'No entries yet. Click "Add New Review" or "ADD" to create a new entry.')
+                                .map(row => `
+                                    <tr>
+                                        <td>${row.cells[0].textContent}</td>
+                                        <td>${row.cells[1].textContent}</td>
+                                        <td>${row.cells[2].textContent}</td>
+                                    </tr>
+                                `).join('')}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        window.onload = function() {
+            renderReviewTable();
+        };
+    </script>
+</body>
+</html>

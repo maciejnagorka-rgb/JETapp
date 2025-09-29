@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V. EvalLOG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 1.8em;
+            color: #8b7314;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            page-break-inside: avoid;
+        }
+        table, th, td {
+            border: 1px solid #2F4F2F;
+        }
+        th, td {
+            padding: 5px;
+            text-align: left;
+            color: #fff;
+            font-size: 0.8em;
+            white-space: normal;
+            min-width: 50px;
+        }
+        th {
+            background-color: #8b7314;
+            color: #000;
+            font-weight: 700;
+            text-align: center;
+        }
+        td {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .grade-q {
+            background-color: #00ff00;
+            color: #000;
+            text-align: center;
+        }
+        .grade-q-minus {
+            background-color: #ffff00;
+            color: #000;
+            text-align: center;
+        }
+        .grade-u {
+            background-color: #ff0000;
+            color: #000;
+            text-align: center;
+        }
+        .button {
+            display: inline-block;
+            margin: 10px 5px;
+            padding: 10px 20px;
+            background-color: #8b7314;
+            border: 2px solid #2F4F2F;
+            border-radius: 5px;
+            color: #000;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #a68a2e;
+        }
+        .edit-button {
+            background-color: #8b7314;
+            color: #000;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin: 2px;
+        }
+        .edit-button:hover {
+            background-color: #a68a2e;
+        }
+        .row-button {
+            background-color: #8b7314;
+            color: #000;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            padding: 2px 6px;
+            cursor: pointer;
+            font-size: 0.7em;
+            margin: 2px;
+        }
+        .row-button.remove {
+            background-color: #ff0000;
+            color: #fff;
+        }
+        .row-button.remove:hover {
+            background-color: #ff3333;
+        }
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1a1a1a;
+            padding: 20px;
+            border: 2px solid #8b7314;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        .modal h3 {
+            color: #8b7314;
+        }
+        .modal label {
+            display: block;
+            margin: 10px 0;
+            color: #fff;
+        }
+        .modal input, .modal select {
+            width: 100%;
+            padding: 5px;
+            background: #8b7314;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+        }
+        .modal button {
+            background: #8b7314;
+            color: #000;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .modal button.cancel {
+            background: #ff0000;
+            color: #fff;
+        }
+        .button-container {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        /* Style dla wydruku */
+        @media print {
+            body {
+                background-color: #fff;
+                color: #000;
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                background: none;
+                border: none;
+                padding: 10px;
+                width: 100%;
+                max-width: none;
+            }
+            h1 {
+                color: #8b7314;
+                text-align: center;
+                margin: 10px 0;
+            }
+            .button-container, .button, .edit-button, .row-button {
+                display: none;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            table, th, td {
+                border: 1px solid #8b7314;
+            }
+            th {
+                background-color: #8b7314;
+                color: #000;
+                padding: 5px;
+                text-align: center;
+            }
+            td {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #000;
+                padding: 5px;
+                text-align: center;
+            }
+            .grade-q {
+                background-color: #00ff00 !important;
+                color: #000 !important;
+            }
+            .grade-q-minus {
+                background-color: #ffff00 !important;
+                color: #000 !important;
+            }
+            .grade-u {
+                background-color: #ff0000 !important;
+                color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>V. EvalLOG</h1>
+        <div class="button-container">
+            <button class="edit-button" onclick="openAddModal(-1)" id="addEvalButton">Add Evaluation Entry</button>
+            <button class="button" onclick="downloadTable('evalLogTable', 'EvalLOG')">Download PDF</button>
+            <button class="button" onclick="printTable('evalLogTable')">Print</button>
+        </div>
+        <div>
+            <table id="evalLogTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Evaluation Type</th>
+                        <th>Grade</th>
+                        <th>Supervisor’s Name and Rank</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="evalLogBody"></tbody>
+            </table>
+        </div>
+        <a href="Part_5.html" class="button">Back to Part V</a>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const viewedUser = JSON.parse(localStorage.getItem('viewedUser') || '{}');
+        const displayedUser = viewedUser.login ? viewedUser : currentUser;
+
+        function getUserDocumentsKey() {
+            return `documentsData_${displayedUser.login}`;
+        }
+
+        let documentsData = JSON.parse(localStorage.getItem(getUserDocumentsKey()) || '{}');
+
+        function saveDocumentsData() {
+            localStorage.setItem(getUserDocumentsKey(), JSON.stringify(documentsData));
+        }
+
+        function openAddModal(index) {
+            if (!['JTAC I', 'JTAC I/E', 'Program Manager'].includes(currentUser.role)) {
+                alert('Only JTAC I, JTAC I/E, or Program Manager can add entries!');
+                return;
+            }
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <h3>${index === -1 ? 'Add' : 'Edit'} Evaluation Entry</h3>
+                <label>Date:</label>
+                <input type="date" id="evalDate">
+                <label>Evaluation Type:</label>
+                <select id="evalType">
+                    <option value="" selected disabled>Select Type</option>
+                    <option value="JTAC">JTAC</option>
+                    <option value="JTAC-I Classroom">JTAC-I Classroom</option>
+                    <option value="JTAC-I">JTAC-I</option>
+                    <option value="JTAC E">JTAC E</option>
+                </select>
+                <label>Grade:</label>
+                <select id="evalGrade">
+                    <option value="" selected disabled>Select Grade</option>
+                    <option value="Q">Q</option>
+                    <option value="Q-">Q-</option>
+                    <option value="U">U</option>
+                </select>
+                <label>Supervisor’s Name and Rank:</label>
+                <input type="text" id="evalSupervisor">
+                <div style="margin-top: 20px; text-align: right;">
+                    <button onclick="saveEvalEntry(${index})">Save</button>
+                    <button class="cancel" onclick="this.parentElement.parentElement.remove()">Cancel</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            if (index !== -1) {
+                const entry = documentsData.evaluationEntries[index];
+                document.getElementById('evalDate').value = entry.date;
+                document.getElementById('evalType').value = entry.type;
+                document.getElementById('evalGrade').value = entry.grade;
+                document.getElementById('evalSupervisor').value = entry.supervisor;
+            }
+        }
+
+        function saveEvalEntry(index) {
+            const date = document.getElementById('evalDate').value;
+            const type = document.getElementById('evalType').value;
+            const grade = document.getElementById('evalGrade').value;
+            const supervisor = document.getElementById('evalSupervisor').value;
+
+            if (date && type && grade && supervisor) {
+                documentsData['evaluationEntries'] = documentsData['evaluationEntries'] || [];
+                const newEntry = { date, type, grade, supervisor };
+                if (index === -1) {
+                    documentsData['evaluationEntries'].push(newEntry);
+                } else {
+                    documentsData['evaluationEntries'][index] = newEntry;
+                }
+                saveDocumentsData();
+                populateEvalLogTable();
+                document.querySelector('.modal').remove();
+            } else {
+                alert('All fields must be filled!');
+            }
+        }
+
+        function removeEvalEntry(index) {
+            if (!['JTAC I', 'JTAC I/E', 'Program Manager'].includes(currentUser.role)) {
+                alert('Only JTAC I, JTAC I/E, or Program Manager can remove entries!');
+                return;
+            }
+            documentsData['evaluationEntries'] = documentsData['evaluationEntries'] || [];
+            if (documentsData['evaluationEntries'].length > 0) {
+                documentsData['evaluationEntries'].splice(index, 1);
+                saveDocumentsData();
+                populateEvalLogTable();
+            }
+        }
+
+        function populateEvalLogTable() {
+            const documentsData = JSON.parse(localStorage.getItem(getUserDocumentsKey()) || '{}');
+            const evaluations = documentsData.evaluationEntries || [];
+            const tbody = document.getElementById("evalLogBody");
+            tbody.innerHTML = '';
+
+            // Filtrujemy tylko wpisy inne niż "Area 1 Test"
+            const filteredEntries = evaluations.filter(entry => entry.type !== "Area 1 Test");
+
+            if (filteredEntries.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="5" style="text-align: center;">No evaluation entries available.</td>`;
+                tbody.appendChild(row);
+            } else {
+                filteredEntries.forEach((entry, index) => {
+                    const row = document.createElement('tr');
+                    const gradeClass = entry.grade === 'Q' ? 'grade-q' : entry.grade === 'Q-' ? 'grade-q-minus' : 'grade-u';
+                    row.innerHTML = `
+                        <td>${entry.date}</td>
+                        <td>${entry.type}</td>
+                        <td class="${gradeClass}">${entry.grade}</td>
+                        <td>${entry.supervisor}</td>
+                        <td>
+                            <button class="row-button" onclick="openAddModal(${index})">Edit</button>
+                            <button class="row-button remove" onclick="removeEvalEntry(${index})">Remove</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            const addButton = document.getElementById('addEvalButton');
+            addButton.style.display = ['JTAC I', 'JTAC I/E', 'Program Manager'].includes(currentUser.role) ? 'inline-block' : 'none';
+        }
+
+        async function downloadTable(tableId, fileNamePrefix) {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const pageWidth = pdf.internal.pageSize.getWidth() - 20;
+            const pageHeight = pdf.internal.pageSize.getHeight() - 40;
+            const tableWidthPx = 800; // max-width: 800px z kontenera
+            const tableWidthMm = Math.min(tableWidthPx * 0.264583, pageWidth);
+
+            const table = document.getElementById(tableId);
+            const rows = table.querySelectorAll('tbody tr');
+            let currentPageRows = [];
+            let pageNumber = 1;
+
+            const createContainer = () => {
+                const pdfContainer = document.createElement('div');
+                pdfContainer.style.padding = '10px';
+                pdfContainer.style.backgroundColor = '#ffffff';
+                pdfContainer.style.position = 'absolute';
+                pdfContainer.style.left = '-9999px';
+
+                const userInfo = document.createElement('div');
+                userInfo.textContent = `Logged in as: ${displayedUser.login}`;
+                userInfo.style.fontFamily = "'Roboto Condensed', sans-serif";
+                userInfo.style.color = '#8b7314';
+                userInfo.style.textAlign = 'center';
+                userInfo.style.fontSize = '14px';
+                userInfo.style.marginBottom = '5px';
+                pdfContainer.appendChild(userInfo);
+
+                const title = document.createElement('h1');
+                title.textContent = 'V. EvalLOG';
+                title.style.fontFamily = "'Roboto Condensed', sans-serif";
+                title.style.color = '#8b7314';
+                title.style.textAlign = 'center';
+                title.style.fontSize = '18px';
+                title.style.textTransform = 'uppercase';
+                title.style.marginBottom = '10px';
+                pdfContainer.appendChild(title);
+
+                return pdfContainer;
+            };
+
+            const renderTableFragment = async (rowsToRender) => {
+                const pdfContainer = createContainer();
+                const tableClone = document.createElement('table');
+                tableClone.style.width = `${tableWidthPx}px`;
+                tableClone.style.maxWidth = `${tableWidthPx}px`;
+                tableClone.style.borderCollapse = 'collapse';
+                tableClone.style.fontFamily = "'Roboto Condensed', sans-serif";
+                tableClone.style.boxSizing = 'border-box';
+
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                const headers = ['Date', 'Evaluation Type', 'Grade', 'Supervisor’s Name and Rank'];
+                headers.forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.textContent = headerText;
+                    th.style.border = '1px solid #8b7314';
+                    th.style.padding = '5px';
+                    th.style.textAlign = 'center';
+                    th.style.backgroundColor = '#8b7314';
+                    th.style.color = '#000';
+                    th.style.wordBreak = 'break-word';
+                    th.style.boxSizing = 'border-box';
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                tableClone.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                rowsToRender.forEach(row => {
+                    const rowClone = document.createElement('tr');
+                    const cells = Array.from(row.cells).slice(0, -1); // Exclude Actions column
+                    cells.forEach(cell => {
+                        const td = document.createElement('td');
+                        td.textContent = cell.textContent;
+                        td.style.border = '1px solid #8b7314';
+                        td.style.padding = '5px';
+                        td.style.textAlign = 'center';
+                        td.style.color = '#000';
+                        td.style.wordBreak = 'break-word';
+                        td.style.boxSizing = 'border-box';
+                        td.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        if (cell.classList.contains('grade-q')) {
+                            td.style.backgroundColor = '#00ff00';
+                            td.style.color = '#000';
+                        } else if (cell.classList.contains('grade-q-minus')) {
+                            td.style.backgroundColor = '#ffff00';
+                            td.style.color = '#000';
+                        } else if (cell.classList.contains('grade-u')) {
+                            td.style.backgroundColor = '#ff0000';
+                            td.style.color = '#000';
+                        }
+                        rowClone.appendChild(td);
+                    });
+                    tbody.appendChild(rowClone);
+                });
+                tableClone.appendChild(tbody);
+                pdfContainer.appendChild(tableClone);
+
+                return { pdfContainer, tableClone };
+            };
+
+            const calculateHeight = async (rowsToRender) => {
+                const { pdfContainer } = await renderTableFragment(rowsToRender);
+                document.body.appendChild(pdfContainer);
+                try {
+                    const canvas = await html2canvas(pdfContainer, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: true
+                    });
+                    const imgHeight = canvas.height;
+                    const imgWidth = canvas.width;
+                    const heightInMm = (imgHeight * tableWidthMm) / imgWidth;
+                    return heightInMm;
+                } finally {
+                    document.body.removeChild(pdfContainer);
+                }
+            };
+
+            let currentHeight = 0;
+            const filteredRows = Array.from(rows).filter(row => row.cells[0].textContent !== 'No evaluation entries available.');
+            for (let i = 0; i < filteredRows.length; i++) {
+                const testRows = [...currentPageRows, filteredRows[i]];
+                const fragmentHeight = await calculateHeight(testRows);
+
+                if (fragmentHeight <= pageHeight || currentPageRows.length === 0) {
+                    currentPageRows.push(filteredRows[i]);
+                    currentHeight = fragmentHeight;
+                } else {
+                    const { pdfContainer } = await renderTableFragment(currentPageRows);
+                    document.body.appendChild(pdfContainer);
+                    try {
+                        const canvas = await html2canvas(pdfContainer, {
+                            scale: 2,
+                            backgroundColor: '#ffffff',
+                            logging: true
+                        });
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        const imgWidth = canvas.width;
+                        const imgHeight = canvas.height;
+                        const width = tableWidthMm;
+                        const height = (imgHeight * width) / imgWidth;
+
+                        const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                        const topMargin = 10;
+                        pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+
+                        pdf.setFontSize(10);
+                        pdf.setTextColor(0, 0, 0);
+                        pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                    } finally {
+                        document.body.removeChild(pdfContainer);
+                    }
+
+                    if (i < filteredRows.length) {
+                        pdf.addPage();
+                        pageNumber++;
+                        currentPageRows = [filteredRows[i]];
+                        currentHeight = await calculateHeight(currentPageRows);
+                    }
+                }
+            }
+
+            if (currentPageRows.length > 0) {
+                const { pdfContainer } = await renderTableFragment(currentPageRows);
+                document.body.appendChild(pdfContainer);
+                try {
+                    const canvas = await html2canvas(pdfContainer, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: true
+                    });
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
+                    const width = tableWidthMm;
+                    const height = (imgHeight * width) / imgWidth;
+
+                    const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                    const topMargin = 10;
+                    pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                } finally {
+                    document.body.removeChild(pdfContainer);
+                }
+            }
+
+            pdf.save(`${fileNamePrefix}_${displayedUser.login}.pdf`);
+        }
+
+        function printTable(tableId) {
+            const table = document.getElementById(tableId);
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print EvalLOG</title>
+                    <style>
+                        body {
+                            font-family: 'Roboto Condensed', sans-serif;
+                            margin: 0;
+                            padding: 10px;
+                            background-color: #fff;
+                            color: #000;
+                        }
+                        .user-info {
+                            text-align: center;
+                            margin: 10px 0;
+                            color: #8b7314;
+                            font-size: 1em;
+                        }
+                        h1 {
+                            font-size: 1.8em;
+                            color: #8b7314;
+                            text-align: center;
+                            margin: 10px 0;
+                            text-transform: uppercase;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 8px;
+                            font-size: 0.8em;
+                        }
+                        table, th, td {
+                            border: 1px solid #8b7314;
+                        }
+                        th {
+                            background-color: #8b7314;
+                            color: #000;
+                            padding: 5px;
+                            text-align: center;
+                        }
+                        td {
+                            background-color: rgba(255, 255, 255, 0.1);
+                            color: #000;
+                            padding: 5px;
+                            text-align: center;
+                        }
+                        .grade-q {
+                            background-color: #00ff00 !important;
+                            color: #000 !important;
+                        }
+                        .grade-q-minus {
+                            background-color: #ffff00 !important;
+                            color: #000 !important;
+                        }
+                        .grade-u {
+                            background-color: #ff0000 !important;
+                            color: #000 !important;
+                        }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close();">
+                    <div class="user-info">Logged in as: ${displayedUser.login}</div>
+                    <h1>V. EvalLOG</h1>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Evaluation Type</th>
+                                <th>Grade</th>
+                                <th>Supervisor’s Name and Rank</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Array.from(table.querySelector('tbody').rows)
+                                .filter(row => row.cells[0].textContent !== 'No evaluation entries available.')
+                                .map(row => `
+                                    <tr>
+                                        <td>${row.cells[0].textContent}</td>
+                                        <td>${row.cells[1].textContent}</td>
+                                        <td class="${row.cells[2].className}">${row.cells[2].textContent}</td>
+                                        <td>${row.cells[3].textContent}</td>
+                                    </tr>
+                                `).join('')}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        window.onload = function() {
+            populateEvalLogTable();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IV. Test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 1.8em;
+            color: #8b7314;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        #userInfo {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #8b7314;
+            font-size: 1em;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            page-break-inside: avoid;
+        }
+        table, th, td {
+            border: 1px solid #2F4F2F;
+        }
+        th, td {
+            padding: 5px;
+            text-align: left;
+            color: #fff;
+            font-size: 0.8em;
+            white-space: normal;
+            min-width: 50px;
+        }
+        th {
+            background-color: #8b7314;
+            color: #000;
+            font-weight: 700;
+            text-align: center;
+        }
+        td {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        input[type="date"], input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .button {
+            display: inline-block;
+            margin: 10px 5px;
+            padding: 10px 20px;
+            background-color: #8b7314;
+            border: 2px solid #2F4F2F;
+            border-radius: 5px;
+            color: #000;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #a68a2e;
+        }
+        .tracker-buttons {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .edit-button {
+            background-color: #8b7314;
+            color: #000;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin: 2px;
+        }
+        .edit-button:hover {
+            background-color: #a68a2e;
+        }
+        .row-button {
+            background-color: #8b7314;
+            color: #000;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            padding: 2px 6px;
+            cursor: pointer;
+            font-size: 0.7em;
+            margin: 2px;
+        }
+        .row-button.remove {
+            background-color: #ff0000;
+            color: #fff;
+        }
+        .row-button.remove:hover {
+            background-color: #ff3333;
+        }
+        .grade-percent {
+            background-color: #ff0000;
+            transition: background-color 0.3s;
+        }
+        .grade-percent.green {
+            background-color: #00ff00;
+        }
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1a1a1a;
+            padding: 20px;
+            border: 2px solid #8b7314;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        .modal h3 {
+            color: #8b7314;
+        }
+        .modal label {
+            display: block;
+            margin: 10px 0;
+            color: #fff;
+        }
+        .modal input {
+            width: 100%;
+            padding: 5px;
+            background: #8b7314;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+        }
+        .modal button {
+            background: #8b7314;
+            color: #000;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .modal button.cancel {
+            background: #ff0000;
+            color: #fff;
+        }
+
+        /* Style dla wydruku */
+        @media print {
+            body {
+                background-color: #fff;
+                color: #000;
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                background: none;
+                border: none;
+                padding: 0;
+                width: 100%;
+                max-width: none;
+            }
+            #userInfo, h1, h2 {
+                color: #8b7314;
+                text-align: center;
+                margin: 10px 0;
+            }
+            .tracker-buttons, .button[href="Part_4.html"], .edit-button, .row-button {
+                display: none;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            table, th, td {
+                border: 1px solid #8b7314;
+            }
+            th {
+                background-color: #8b7314;
+                color: #000;
+                padding: 5px;
+                text-align: center;
+            }
+            td {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #000;
+                padding: 5px;
+            }
+            .grade-percent {
+                background-color: #ff0000;
+            }
+            .grade-percent.green {
+                background-color: #00ff00;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="userInfo"></div>
+        <h1>IV. Test</h1>
+        <div>
+            <button class="edit-button" onclick="openAddModal(-1)" id="addTestButton">Add Test Entry</button>
+            <div class="tracker-buttons">
+                <button class="button" onclick="downloadTable('testLog', 'Test_Log')">Download PDF</button>
+                <button class="button" onclick="printTable('testLog')">Print</button>
+            </div>
+            <table id="testLog">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Evaluation Type</th>
+                        <th>Grade (%)</th>
+                        <th>Supervisor’s Name and Rank</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <a href="Part_4.html" class="button">Back to Gradesheet</a>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const viewedUser = JSON.parse(localStorage.getItem('viewedUser') || '{}');
+        const displayedUser = viewedUser.login ? viewedUser : currentUser;
+
+        document.getElementById('userInfo').textContent = `Logged in as: ${displayedUser.login} (Role: ${displayedUser.role || 'N/A'})`;
+
+        function getUserDocumentsKey() {
+            return `documentsData_${displayedUser.login}`;
+        }
+
+        function getUserCasLogKey() {
+            return `casLogData_${displayedUser.login}`;
+        }
+
+        let documentsData = JSON.parse(localStorage.getItem(getUserDocumentsKey()) || '{}');
+
+        function saveDocumentsData() {
+            localStorage.setItem(getUserDocumentsKey(), JSON.stringify(documentsData));
+        }
+
+        function openAddModal(index) {
+            if (!['JTAC I', 'JTAC I/E', 'Program Manager'].includes(currentUser.role)) {
+                alert('Only JTAC I, JTAC I/E, or Program Manager can add entries!');
+                return;
+            }
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <h3>Add Test Entry</h3>
+                <label>Date:</label>
+                <input type="date" id="testDate">
+                <label>Evaluation Type:</label>
+                <input type="text" id="testType" value="Area 1 Test" readonly>
+                <label>Grade (%):</label>
+                <input type="number" id="testGrade" min="0" max="100" placeholder="0-100">
+                <label>Supervisor’s Name and Rank:</label>
+                <input type="text" id="testSupervisor">
+                <div style="margin-top: 20px; text-align: right;">
+                    <button onclick="saveTestEntry(${index})">Save</button>
+                    <button class="cancel" onclick="this.parentElement.parentElement.remove()">Cancel</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            if (index !== -1) {
+                const entry = documentsData['evaluationEntries'][index];
+                document.getElementById('testDate').value = entry.date;
+                document.getElementById('testGrade').value = entry.grade;
+                document.getElementById('testSupervisor').value = entry.supervisor;
+            }
+        }
+
+        function saveTestEntry(index) {
+            const date = document.getElementById('testDate').value;
+            const type = document.getElementById('testType').value;
+            const grade = document.getElementById('testGrade').value;
+            const supervisor = document.getElementById('testSupervisor').value;
+
+            if (date && type && grade && supervisor) {
+                if (isNaN(grade) || grade < 0 || grade > 100) {
+                    alert('Grade must be a number between 0 and 100!');
+                    return;
+                }
+
+                documentsData['evaluationEntries'] = documentsData['evaluationEntries'] || [];
+                const newEntry = { date, type, grade, supervisor };
+                if (index === -1) {
+                    documentsData['evaluationEntries'].push(newEntry);
+                } else {
+                    documentsData['evaluationEntries'][index] = newEntry;
+                }
+
+                saveDocumentsData();
+
+                // Dodanie aktualizacji casLogData dla wyników powyżej 80%
+                if (parseInt(grade) > 80 && type === 'Area 1 Test') {
+                    const casLogKey = getUserCasLogKey();
+                    let casLogData = JSON.parse(localStorage.getItem(casLogKey) || '[]');
+                    const metlEntries = [
+                        '01.1.', '01.2.', '01.3.', '01.4.', '01.5.', '01.6.', '01.7.', '01.8.', '01.9.',
+                        '01.10.', '01.11.', '01.12.', '01.13.', '01.14.', '01.15.', '01.16.', '01.17.', '01.18.', '01.19.', '01.20.'
+                    ];
+                    metlEntries.forEach(metlType => {
+                        // Sprawdzamy, czy wpis już istnieje, aby uniknąć duplikatów
+                        const existingEntry = casLogData.find(entry => entry.tac === metlType && entry.date === date);
+                        if (!existingEntry) {
+                            casLogData.push({
+                                date: date,
+                                location: 'N/A',
+                                noAndTypeOfAC: 'N/A',
+                                nbrOfControls: '0',
+                                tac: metlType,
+                                remarks: '',
+                                signature: supervisor
+                            });
+                        }
+                    });
+                    localStorage.setItem(casLogKey, JSON.stringify(casLogData));
+                }
+
+                renderTestTable();
+                document.querySelector('.modal').remove();
+            } else {
+                alert('All fields must be filled!');
+            }
+        }
+
+        function removeTestEntry(index) {
+            if (!['JTAC I', 'JTAC I/E', 'Program Manager'].includes(currentUser.role)) {
+                alert('Only JTAC I, JTAC I/E, or Program Manager can remove entries!');
+                return;
+            }
+            documentsData['evaluationEntries'] = documentsData['evaluationEntries'] || [];
+            if (documentsData['evaluationEntries'].length > 0) {
+                const removedEntry = documentsData['evaluationEntries'][index];
+                documentsData['evaluationEntries'].splice(index, 1);
+                saveDocumentsData();
+
+                // Usunięcie powiązanych wpisów z casLogData
+                if (removedEntry.type === 'Area 1 Test' && parseInt(removedEntry.grade) > 80) {
+                    const casLogKey = getUserCasLogKey();
+                    let casLogData = JSON.parse(localStorage.getItem(casLogKey) || '[]');
+                    const metlEntries = [
+                        '01.1.', '01.2.', '01.3.', '01.4.', '01.5.', '01.6.', '01.7.', '01.8.', '01.9.',
+                        '01.10.', '01.11.', '01.12.', '01.13.', '01.14.', '01.15.', '01.16.', '01.17.', '01.18.', '01.19.', '01.20.'
+                    ];
+                    casLogData = casLogData.filter(entry => 
+                        !(metlEntries.includes(entry.tac) && entry.date === removedEntry.date && entry.signature === removedEntry.supervisor)
+                    );
+                    localStorage.setItem(casLogKey, JSON.stringify(casLogData));
+                }
+
+                renderTestTable();
+            }
+        }
+
+        function renderTestTable() {
+            const tbody = document.querySelector('#testLog tbody');
+            tbody.innerHTML = '';
+            const entries = documentsData['evaluationEntries'] || [];
+
+            const area1Entries = entries.filter(entry => entry.type === 'Area 1 Test');
+
+            if (area1Entries.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="5" style="text-align: center;">No entries yet. Click "Add Test Entry" to create one.</td>`;
+                tbody.appendChild(row);
+            } else {
+                area1Entries.forEach((entry, index) => {
+                    const row = document.createElement('tr');
+                    const gradeClass = parseInt(entry.grade) >= 80 ? 'grade-percent green' : 'grade-percent';
+                    row.innerHTML = `
+                        <td>${entry.date}</td>
+                        <td>${entry.type}</td>
+                        <td class="${gradeClass}">${entry.grade}</td>
+                        <td>${entry.supervisor}</td>
+                        <td>
+                            <button class="row-button" onclick="openAddModal(${index})">Edit</button>
+                            <button class="row-button remove" onclick="removeTestEntry(${index})">Remove</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            const addButton = document.getElementById('addTestButton');
+            addButton.style.display = ['JTAC I', 'JTAC I/E', 'Program Manager'].includes(currentUser.role) ? 'inline-block' : 'none';
+        }
+
+        async function downloadTable(tableId, fileNamePrefix) {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const pageWidth = pdf.internal.pageSize.getWidth() - 20; // Marginesy 10 mm z każdej strony
+            const pageHeight = pdf.internal.pageSize.getHeight() - 40; // Marginesy i miejsce na nagłówek
+            const tableWidthPx = 800; // Oryginalna szerokość tabeli (max-width: 800px z kontenera)
+            const tableWidthMm = Math.min(tableWidthPx * 0.264583, pageWidth); // Ograniczamy szerokość do strony A4
+
+            // Pobieramy tabelę
+            const table = document.getElementById(tableId);
+            const rows = table.querySelectorAll('tbody tr');
+            let currentPageRows = [];
+            let pageNumber = 1;
+
+            // Funkcja do tworzenia kontenera dla PDF
+            const createContainer = () => {
+                const pdfContainer = document.createElement('div');
+                pdfContainer.style.padding = '10px';
+                pdfContainer.style.backgroundColor = '#ffffff';
+                pdfContainer.style.position = 'absolute';
+                pdfContainer.style.left = '-9999px';
+
+                // Dodajemy informacje o użytkowniku
+                const userInfo = document.createElement('div');
+                userInfo.textContent = `Logged in as: ${displayedUser.login} (Role: ${displayedUser.role || 'N/A'})`;
+                userInfo.style.fontFamily = "'Roboto Condensed', sans-serif";
+                userInfo.style.color = '#8b7314';
+                userInfo.style.textAlign = 'center';
+                userInfo.style.fontSize = '14px';
+                userInfo.style.marginBottom = '5px';
+                pdfContainer.appendChild(userInfo);
+
+                // Dodajemy nagłówek
+                const title = document.createElement('h1');
+                title.textContent = 'IV. Test';
+                title.style.fontFamily = "'Roboto Condensed', sans-serif";
+                title.style.color = '#8b7314';
+                title.style.textAlign = 'center';
+                title.style.fontSize = '18px';
+                title.style.textTransform = 'uppercase';
+                title.style.marginBottom = '10px';
+                pdfContainer.appendChild(title);
+
+                return pdfContainer;
+            };
+
+            // Funkcja do renderowania fragmentu tabeli
+            const renderTableFragment = async (rowsToRender) => {
+                const pdfContainer = createContainer();
+                const tableClone = document.createElement('table');
+                tableClone.style.width = `${tableWidthPx}px`;
+                tableClone.style.maxWidth = `${tableWidthPx}px`; // Ustawiamy maksymalną szerokość
+                tableClone.style.borderCollapse = 'collapse';
+                tableClone.style.fontFamily = "'Roboto Condensed', sans-serif";
+                tableClone.style.boxSizing = 'border-box';
+
+                // Dodajemy nagłówek tabeli na każdej stronie (bez kolumny "Actions")
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                const headers = ['Date', 'Evaluation Type', 'Grade (%)', 'Supervisor’s Name and Rank'];
+                headers.forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.textContent = headerText;
+                    th.style.border = '1px solid #8b7314';
+                    th.style.padding = '5px';
+                    th.style.textAlign = 'center';
+                    th.style.backgroundColor = '#8b7314';
+                    th.style.color = '#000';
+                    th.style.wordBreak = 'break-word';
+                    th.style.boxSizing = 'border-box';
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                tableClone.appendChild(thead);
+
+                // Dodajemy wiersze dla tej strony (bez kolumny "Actions")
+                const tbody = document.createElement('tbody');
+                rowsToRender.forEach(row => {
+                    const rowClone = document.createElement('tr');
+                    const cells = Array.from(row.cells).slice(0, -1); // Pomijamy ostatnią kolumnę ("Actions")
+                    cells.forEach(cell => {
+                        const td = document.createElement('td');
+                        td.textContent = cell.textContent;
+                        td.style.border = '1px solid #8b7314';
+                        td.style.padding = '5px';
+                        td.style.textAlign = 'left';
+                        td.style.color = '#000';
+                        td.style.wordBreak = 'break-word';
+                        td.style.boxSizing = 'border-box';
+                        if (cell.classList.contains('grade-percent')) {
+                            if (cell.classList.contains('green')) {
+                                td.style.backgroundColor = '#00ff00';
+                                td.style.color = '#000';
+                            } else {
+                                td.style.backgroundColor = '#ff0000';
+                                td.style.color = '#fff';
+                            }
+                        } else {
+                            td.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        }
+                        rowClone.appendChild(td);
+                    });
+                    tbody.appendChild(rowClone);
+                });
+                tableClone.appendChild(tbody);
+                pdfContainer.appendChild(tableClone);
+
+                return { pdfContainer, tableClone };
+            };
+
+            // Funkcja do obliczania wysokości fragmentu tabeli
+            const calculateHeight = async (rowsToRender) => {
+                const { pdfContainer, tableClone } = await renderTableFragment(rowsToRender);
+                document.body.appendChild(pdfContainer);
+                try {
+                    const canvas = await html2canvas(pdfContainer, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: true
+                    });
+                    const imgHeight = canvas.height;
+                    const imgWidth = canvas.width;
+                    const heightInMm = (imgHeight * tableWidthMm) / imgWidth;
+                    return heightInMm;
+                } finally {
+                    document.body.removeChild(pdfContainer);
+                }
+            };
+
+            // Przetwarzamy wiersze i dzielimy na strony
+            let currentHeight = 0;
+            const filteredRows = Array.from(rows).filter(row => row.cells[0].textContent !== 'No entries yet. Click "Add Test Entry" to create one.'); // Pomijamy wiersz "No entries yet"
+            for (let i = 0; i < filteredRows.length; i++) {
+                // Testujemy dodanie kolejnego wiersza
+                const testRows = [...currentPageRows, filteredRows[i]];
+                const fragmentHeight = await calculateHeight(testRows);
+
+                if (fragmentHeight <= pageHeight || currentPageRows.length === 0) {
+                    currentPageRows.push(filteredRows[i]);
+                    currentHeight = fragmentHeight;
+                } else {
+                    // Renderujemy bieżącą stronę
+                    const { pdfContainer } = await renderTableFragment(currentPageRows);
+                    document.body.appendChild(pdfContainer);
+                    try {
+                        const canvas = await html2canvas(pdfContainer, {
+                            scale: 2,
+                            backgroundColor: '#ffffff',
+                            logging: true
+                        });
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        const imgWidth = canvas.width;
+                        const imgHeight = canvas.height;
+                        const width = tableWidthMm;
+                        const height = (imgHeight * width) / imgWidth;
+
+                        const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                        const topMargin = 10;
+                        pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+
+                        // Dodajemy numer strony
+                        pdf.setFontSize(10);
+                        pdf.setTextColor(0, 0, 0);
+                        pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                    } finally {
+                        document.body.removeChild(pdfContainer);
+                    }
+
+                    // Rozpoczynamy nową stronę
+                    if (i < filteredRows.length) {
+                        pdf.addPage();
+                        pageNumber++;
+                        currentPageRows = [filteredRows[i]];
+                        currentHeight = await calculateHeight(currentPageRows);
+                    }
+                }
+            }
+
+            // Renderujemy ostatnią stronę, jeśli są jakieś wiersze
+            if (currentPageRows.length > 0) {
+                const { pdfContainer } = await renderTableFragment(currentPageRows);
+                document.body.appendChild(pdfContainer);
+                try {
+                    const canvas = await html2canvas(pdfContainer, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: true
+                    });
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
+                    const width = tableWidthMm;
+                    const height = (imgHeight * width) / imgWidth;
+
+                    const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                    const topMargin = 10;
+                    pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+
+                    // Dodajemy numer strony
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                } finally {
+                    document.body.removeChild(pdfContainer);
+                }
+            }
+
+            // Zapisujemy PDF
+            pdf.save(`${fileNamePrefix}_${displayedUser.login}.pdf`);
+        }
+
+        function printTable(tableId) {
+            const table = document.getElementById(tableId);
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print Test Log</title>
+                    <style>
+                        body {
+                            font-family: 'Roboto Condensed', sans-serif;
+                            margin: 0;
+                            padding: 0;
+                            background-color: #fff;
+                            color: #000;
+                        }
+                        h1 {
+                            font-size: 1.8em;
+                            color: #8b7314;
+                            text-align: center;
+                            margin: 10px 0;
+                            text-transform: uppercase;
+                        }
+                        .user-info {
+                            text-align: center;
+                            margin: 10px 0;
+                            color: #8b7314;
+                            font-size: 1em;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 8px;
+                            font-size: 0.8em;
+                        }
+                        table, th, td {
+                            border: 1px solid #8b7314;
+                        }
+                        th, td {
+                            padding: 5px;
+                            text-align: left;
+                            color: #000;
+                        }
+                        th {
+                            background-color: #8b7314;
+                            color: #000;
+                            text-align: center;
+                        }
+                        td {
+                            background-color: rgba(255, 255, 255, 0.1);
+                        }
+                        .grade-percent {
+                            background-color: #ff0000;
+                        }
+                        .grade-percent.green {
+                            background-color: #00ff00;
+                        }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close();">
+                    <div class="user-info">Logged in as: ${displayedUser.login} (Role: ${displayedUser.role || 'N/A'})</div>
+                    <h1>IV. Test</h1>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Evaluation Type</th>
+                                <th>Grade (%)</th>
+                                <th>Supervisor’s Name and Rank</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Array.from(table.querySelector('tbody').rows)
+                                .filter(row => row.cells[0].textContent !== 'No entries yet. Click "Add Test Entry" to create one.')
+                                .map(row => `
+                                    <tr>
+                                        <td>${row.cells[0].textContent}</td>
+                                        <td>${row.cells[1].textContent}</td>
+                                        <td class="${row.cells[2].className}">${row.cells[2].textContent}</td>
+                                        <td>${row.cells[3].textContent}</td>
+                                    </tr>
+                                `).join('')}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        window.onload = function() {
+            renderTestTable();
+        };
+    </script>
+</body>
+</html>

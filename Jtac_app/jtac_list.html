@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JTAC App - Lista JTAC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-image: url('images/jtac-4.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 1200px;
+            width: 100%;
+            position: relative;
+        }
+        .page-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.2em;
+            color: #8b7314;
+        }
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #8b7314;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .logout-button:hover {
+            background-color: #a68a2e;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #8b7314;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #fff;
+            margin: 0 auto;
+            table-layout: fixed;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #8b7314;
+            vertical-align: top;
+            text-align: center;
+            width: 20%;
+        }
+        th {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 0;
+        }
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #8b7314;
+            margin: 0 auto;
+            overflow: hidden;
+            position: relative;
+        }
+        .avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        td {
+            background-color: #333;
+        }
+        td a {
+            color: #8b7314;
+            text-decoration: none;
+            cursor: pointer;
+            display: block;
+            padding: 5px 0;
+            border-bottom: 1px solid #8b7314;
+        }
+        td a:last-child {
+            border-bottom: none;
+        }
+        td a:hover {
+            color: #a68a2e;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #8b7314;
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #a68a2e;
+        }
+        /* Dodane style dla stopki */
+        footer {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            color: #ccc;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-title">JTAC LIST</div>
+        <button class="logout-button" onclick="logout()">Logout</button>
+        <h1>DIVIDED INTO UNITS</h1>
+        <table id="jtacTable">
+            <thead>
+                <tr>
+                    <th><div class="avatar-circle"><img src="images/Agat.jpeg" alt="Pervert Logo"></div></th>
+                    <th><div class="avatar-circle"><img src="images/formoza2.jpg" alt="MadFrog Logo"></div></th>
+                    <th><div class="avatar-circle"><img src="images/Grom.jpeg" alt="Spider Logo"></div></th>
+                    <th><div class="avatar-circle"><img src="images/JWK.jpeg" alt="Revoke Logo"></div></th>
+                    <th><div class="avatar-circle"><img src="images/Magis.jpeg" alt="Dragon Logo"></div></th>
+                </tr>
+            </thead>
+            <tbody id="jtacTableBody"></tbody>
+        </table>
+        <a href="profile.html" class="back-button">Back</a>
+    </div>
+
+    <!-- Dodana stopka -->
+    <footer>
+        <p>© 2025 JTAC App. by MadFrog 69  --- stay froggy---.</p>
+    </footer>
+
+    <script>
+        // Pobierz dane bieżącego użytkownika
+        const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+        const allowedRoles = ['JTAC I', 'JTAC I/E', 'Program Manager'];
+
+        if (!currentUser.username) {
+            window.location.href = 'index.html'; // Przekieruj, jeśli nie zalogowany
+        }
+
+        // Pobierz listę wszystkich użytkowników
+        const allUsers = JSON.parse(localStorage.getItem('allUsers')) || [];
+        console.log('Zarejestrowani użytkownicy:', allUsers);
+
+        // Grupowanie użytkowników według bazowej nazwy
+        const userGroups = {
+            Pervert: [],
+            Madfrog: [],
+            Spider: [],
+            Revoke: [],
+            Dragon: []
+        };
+
+        allUsers.forEach(user => {
+            const baseName = user.username;
+            if (userGroups[baseName]) {
+                userGroups[baseName].push({
+                    fullName: `${baseName}${user.number || ''}`,
+                    role: user.role,
+                    username: user.username,
+                    number: user.number
+                });
+            }
+        });
+
+        console.log('Pogrupowani użytkownicy:', userGroups);
+
+        // Wypełnij tabelę – jeden wiersz, użytkownicy w swoich kolumnach
+        const tbody = document.getElementById('jtacTableBody');
+        const canViewProfiles = allowedRoles.includes(currentUser.role);
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${userGroups.Pervert.map(user => renderUser(user, canViewProfiles)).join('') || '-'}</td>
+            <td>${userGroups.Madfrog.map(user => renderUser(user, canViewProfiles)).join('') || '-'}</td>
+            <td>${userGroups.Spider.map(user => renderUser(user, canViewProfiles)).join('') || '-'}</td>
+            <td>${userGroups.Revoke.map(user => renderUser(user, canViewProfiles)).join('') || '-'}</td>
+            <td>${userGroups.Dragon.map(user => renderUser(user, canViewProfiles)).join('') || '-'}</td>
+        `;
+        tbody.appendChild(row);
+
+        function renderUser(user, canView) {
+            const displayText = `${user.fullName} (${user.role})`;
+            if (canView) {
+                return `<a href="#" onclick="viewUserProfile('${user.username}', '${user.number}'); return false;">${displayText}</a>`;
+            }
+            return displayText;
+        }
+
+        function viewUserProfile(username, number) {
+            const selectedUser = allUsers.find(u => u.username === username && u.number === number);
+            if (selectedUser) {
+                localStorage.setItem('viewedUser', JSON.stringify(selectedUser));
+                window.location.href = 'profile.html';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('viewedUser');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

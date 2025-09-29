@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part I - Table of Contents</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 1000px;
+            box-sizing: border-box;
+            border: 1px solid #2F4F2F;
+        }
+        h1 {
+            font-size: 1.8em;
+            color: #8b7314;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        h2 {
+            font-size: 1.4em;
+            color: #8b7314;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p, ul {
+            font-size: 1em;
+            color: #ccc;
+            margin: 10px 0;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        .button {
+            display: inline-block;
+            margin: 10px 5px;
+            padding: 10px 20px;
+            background-color: #8b7314;
+            border: 2px solid #2F4F2F;
+            border-radius: 5px;
+            color: #000;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #a68a2e;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        /* Style dla wydruku */
+        @media print {
+            body {
+                background-color: #fff;
+                color: #000;
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                background: none;
+                border: none;
+                padding: 10px;
+                width: 100%;
+                max-width: none;
+            }
+            h1, h2 {
+                color: #8b7314;
+                text-align: center;
+            }
+            p, ul, li {
+                color: #000;
+                font-size: 0.9em;
+            }
+            .button, .button-container {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JTAC EVALUATION FOLDER’S TABLE OF CONTENTS : <span id="user-id"></span></h1>
+        <div class="content">
+            <h2>Part I. Table of Contents</h2>
+            <p>This contains a list of the sections, their contents, and quarterly review log sheet.</p>
+            <ul>
+                <li>(a) Table of Contents</li>
+                <li>(b) 6-month Review Log</li>
+            </ul>
+
+            <h2>Part II. Commander’s Designation Letters</h2>
+            <p>This section contains a current JTAC’s Designation Letter. Additionally, it contains any previous designation letters as applicable. In this section the JTAC Certification Letter is also to be kept.</p>
+            <ul>
+                <li>(a) Current Designation Letter(s)</li>
+                <li>(b) Any previous Designation Letter(s) (Certification Letter), as applicable</li>
+            </ul>
+
+            <h2>Part III. JTAC CAS Log</h2>
+            <p>This sections contains a record of all controls performed since JTAC training was initiated.</p>
+            <p><strong>JOINT TERMINAL ATTACK CONTROLLER (JTAC) CLOSE AIR SUPPORT LOG</strong></p>
+
+            <h2>Part IV. Documentation of Training</h2>
+            <p>This section contains documentation of all JTAC related trainings: chronological log of CAS related trainings, certificates and documents confirming additional JTAC training, including the English and Polish Air Force Phraseology Course Certificates; current continuation training sheet IAW PJMTL order; chronological log of the theoretical tests and exams results, and current gradesheets (since last JTAC evaluation), valid confirmation of the Air Force net usage approval.</p>
+            <ul>
+                <li>(a) Chronological log of CAS related trainings.</li>
+                <li>(b) Certificates and documents confirming JTAC training.</li>
+                <li>(c) Valid confirmation of AIR FORCE net usage approval.</li>
+                <li>(d) Current continuation training sheet IAW PJMTL order.</li>
+                <li>(e) Chronological log of the theoretical tests and exams results, and gradesheets.</li>
+            </ul>
+
+            <h2>Part V. Documentation of Evaluations</h2>
+            <p>This section contains documentation of all evaluations since certification. JTAC-IS and JTAC-ES store in here JTAC-VE Upgrade Qualification Sheets. Additionally, this part contains English Course certificate. Level 3 is required in the following areas: Listening, Speaking, and Reading, Level 2 is required in Writing (LSRW of 3 3 3 2) IAW STANAG 6001.</p>
+            <ul>
+                <li>(a) Chronological Log of Evaluations.</li>
+                <li>(b) JTAC-I/E Upgrade Qualification Sheets, as applicable.</li>
+                <li>(c) JTAC TERMINAL ATTACK CONTROL EVALUATION forms.</li>
+                <li>(d) English Level 3 Course certificate.</li>
+            </ul>
+
+            <h2>Part VI. JTAC Formal School Diplomas</h2>
+            <p>This section contains copies of ANY certificates received from attending a JTAC courses /JTAC IOQ.</p>
+
+            <h2>Part VII. Other</h2>
+            <p>This section contains copies of any other certificates and documents fulfilling national requirements (orders, national certificates, security clearances etc.).</p>
+        </div>
+        <div class="button-container">
+            <a href="profile.html" class="button">Back to Profile</a>
+            <a href="6MnthReview.html" class="button">Go to 6MnthReview</a>
+            <button class="button" onclick="downloadContent('content', 'TableOfContents')">Download PDF</button>
+            <button class="button" onclick="printContent('content')">Print</button>
+        </div>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const viewedUser = JSON.parse(localStorage.getItem('viewedUser') || '{}');
+        const displayedUser = viewedUser.login ? viewedUser : currentUser;
+        document.getElementById('user-id').textContent = displayedUser.login || 'Nieznany użytkownik';
+
+        async function downloadContent(contentId, fileNamePrefix) {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const pageWidth = pdf.internal.pageSize.getWidth() - 20;
+            const pageHeight = pdf.internal.pageSize.getHeight() - 40;
+            const contentWidthPx = 1000; // max-width: 1000px z kontenera
+            const contentWidthMm = Math.min(contentWidthPx * 0.264583, pageWidth);
+
+            const content = document.querySelector(`.${contentId}`);
+            let pageNumber = 1;
+
+            const createContainer = () => {
+                const pdfContainer = document.createElement('div');
+                pdfContainer.style.padding = '10px';
+                pdfContainer.style.backgroundColor = '#ffffff';
+                pdfContainer.style.position = 'absolute';
+                pdfContainer.style.left = '-9999px';
+                pdfContainer.style.width = `${contentWidthPx}px`;
+                pdfContainer.style.maxWidth = `${contentWidthPx}px`;
+                pdfContainer.style.boxSizing = 'border-box';
+
+                const userInfo = document.createElement('h1');
+                userInfo.textContent = `JTAC EVALUATION FOLDER’S TABLE OF CONTENTS : ${displayedUser.login || 'Nieznany użytkownik'}`;
+                userInfo.style.fontFamily = "'Roboto Condensed', sans-serif";
+                userInfo.style.color = '#8b7314';
+                userInfo.style.textAlign = 'center';
+                userInfo.style.fontSize = '18px';
+                userInfo.style.textTransform = 'uppercase';
+                userInfo.style.marginBottom = '10px';
+                pdfContainer.appendChild(userInfo);
+
+                return pdfContainer;
+            };
+
+            const renderContentFragment = async (contentElement) => {
+                const pdfContainer = createContainer();
+                const contentClone = contentElement.cloneNode(true);
+                contentClone.style.fontFamily = "'Roboto Condensed', sans-serif";
+                contentClone.querySelectorAll('h2').forEach(h2 => {
+                    h2.style.color = '#8b7314';
+                    h2.style.fontSize = '14px';
+                    h2.style.margin = '10px 0';
+                });
+                contentClone.querySelectorAll('p, ul, li').forEach(el => {
+                    el.style.color = '#000';
+                    el.style.fontSize = '12px';
+                });
+                contentClone.querySelectorAll('strong').forEach(s => {
+                    s.style.color = '#000';
+                });
+                pdfContainer.appendChild(contentClone);
+                return { pdfContainer };
+            };
+
+            const calculateHeight = async (contentElement) => {
+                const { pdfContainer } = await renderContentFragment(contentElement);
+                document.body.appendChild(pdfContainer);
+                try {
+                    const canvas = await html2canvas(pdfContainer, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: true
+                    });
+                    const imgHeight = canvas.height;
+                    const imgWidth = canvas.width;
+                    const heightInMm = (imgHeight * contentWidthMm) / imgWidth;
+                    return heightInMm;
+                } finally {
+                    document.body.removeChild(pdfContainer);
+                }
+            };
+
+            const contentHeight = await calculateHeight(content);
+            const contentClone = content.cloneNode(true);
+
+            if (contentHeight <= pageHeight) {
+                const { pdfContainer } = await renderContentFragment(contentClone);
+                document.body.appendChild(pdfContainer);
+                try {
+                    const canvas = await html2canvas(pdfContainer, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: true
+                    });
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
+                    const width = contentWidthMm;
+                    const height = (imgHeight * width) / imgWidth;
+
+                    const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                    const topMargin = 10;
+                    pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                } finally {
+                    document.body.removeChild(pdfContainer);
+                }
+            } else {
+                // Simplified splitting: render full content and let jsPDF handle overflow
+                const { pdfContainer } = await renderContentFragment(contentClone);
+                document.body.appendChild(pdfContainer);
+                try {
+                    const canvas = await html2canvas(pdfContainer, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: true
+                    });
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
+                    const width = contentWidthMm;
+                    let height = (imgHeight * width) / imgWidth;
+                    let remainingHeight = height;
+                    let yOffset = 0;
+
+                    while (remainingHeight > 0) {
+                        const pageHeightPx = (pageHeight / contentWidthMm) * imgWidth;
+                        const canvasSlice = document.createElement('canvas');
+                        canvasSlice.width = canvas.width;
+                        canvasSlice.height = Math.min(pageHeightPx, canvas.height - yOffset);
+                        const ctx = canvasSlice.getContext('2d');
+                        ctx.drawImage(canvas, 0, -yOffset, canvas.width, canvas.height, 0, 0, canvas.width, canvasSlice.height);
+                        const sliceData = canvasSlice.toDataURL('image/jpeg', 1.0);
+                        const sliceHeight = (canvasSlice.height * width) / canvas.width;
+
+                        const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                        const topMargin = 10;
+                        pdf.addImage(sliceData, 'JPEG', leftMargin, topMargin, width, sliceHeight);
+
+                        pdf.setFontSize(10);
+                        pdf.setTextColor(0, 0, 0);
+                        pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+
+                        remainingHeight -= pageHeight;
+                        yOffset += pageHeightPx;
+                        pageNumber++;
+                        if (remainingHeight > 0) {
+                            pdf.addPage();
+                        }
+                    }
+                } finally {
+                    document.body.removeChild(pdfContainer);
+                }
+            }
+
+            pdf.save(`${fileNamePrefix}_${displayedUser.login || 'Unknown'}.pdf`);
+        }
+
+        function printContent(contentId) {
+            const content = document.querySelector(`.${contentId}`);
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print Table of Contents</title>
+                    <style>
+                        body {
+                            font-family: 'Roboto Condensed', sans-serif;
+                            margin: 0;
+                            padding: 10px;
+                            background-color: #fff;
+                            color: #000;
+                        }
+                        h1 {
+                            font-size: 1.8em;
+                            color: #8b7314;
+                            text-align: center;
+                            text-transform: uppercase;
+                            margin: 10px 0;
+                        }
+                        h2 {
+                            font-size: 1.4em;
+                            color: #8b7314;
+                            margin: 10px 0;
+                        }
+                        p, ul, li {
+                            font-size: 0.9em;
+                            color: #000;
+                            margin: 8px 0;
+                        }
+                        ul {
+                            padding-left: 20px;
+                        }
+                        li {
+                            margin-bottom: 5px;
+                        }
+                        strong {
+                            color: #000;
+                        }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close();">
+                    <h1>JTAC EVALUATION FOLDER’S TABLE OF CONTENTS : ${displayedUser.login || 'Nieznany użytkownik'}</h1>
+                    ${content.innerHTML}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+    </script>
+</body>
+</html>

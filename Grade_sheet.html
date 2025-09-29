@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JTAC Terminal Attack Control Gradesheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 1000px;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 1.8em;
+            color: #8b7314;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            page-break-inside: avoid;
+            table-layout: fixed;
+        }
+        table, th, td {
+            border: 1px solid #2F4F2F;
+        }
+        th, td {
+            padding: 5px;
+            text-align: left;
+            color: #fff;
+            font-size: 0.8em;
+            white-space: normal;
+            word-break: break-word;
+        }
+        th {
+            background-color: #8b7314;
+            color: #000;
+            font-weight: 700;
+            text-align: center;
+        }
+        td {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        input[type="text"], input[type="date"], textarea, input[type="number"] {
+            width: 100%;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input[type="text"]:disabled, input[type="date"]:disabled, input[type="number"]:disabled, textarea:disabled {
+            color: #000 !important;
+            background-color: #e0e0e0;
+            -webkit-text-fill-color: #000;
+            opacity: 1;
+        }
+        textarea {
+            height: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            resize: none;
+            overflow: hidden;
+        }
+        input[type="checkbox"], input[type="radio"] {
+            margin-right: 5px;
+            vertical-align: middle;
+            width: 16px;
+            height: 16px;
+            position: relative;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #2F4F2F;
+        }
+        input[type="checkbox"]:checked::before {
+            content: "☒";
+            font-size: 14pt;
+            color: #ff0000;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        input[type="checkbox"]::before {
+            content: "☐";
+            font-size: 14pt;
+            color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        input[type="radio"]:checked::before {
+            content: "●";
+            font-size: 14pt;
+            color: #ff0000;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        input[type="radio"]::before {
+            content: "○";
+            font-size: 14pt;
+            color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        input[type="radio"] {
+            border-radius: 50%;
+        }
+        .button {
+            display: inline-block;
+            margin: 10px 5px;
+            padding: 10px 20px;
+            background-color: #8b7314;
+            border: 2px solid #2F4F2F;
+            border-radius: 5px;
+            color: #000;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #a68a2e;
+        }
+        .button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section label {
+            display: block;
+            margin-bottom: 5px;
+            color: #8b7314;
+        }
+        .section textarea {
+            width: 100%;
+            min-height: 50px;
+        }
+        .notes {
+            font-size: 0.7em;
+            color: #ccc;
+            margin-top: 10px;
+        }
+        .signature-date {
+            margin-left: 10px;
+            color: #8b7314;
+        }
+        .locked {
+            background-color: #e0e0e0;
+            pointer-events: none;
+            color: #000 !important;
+            -webkit-text-fill-color: #000;
+            opacity: 1;
+        }
+        .hidden {
+            display: none;
+        }
+        .grading-table th, .grading-table td {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        @media print {
+            body {
+                background-color: #fff;
+                color: #000;
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                background: none;
+                border: none;
+                padding: 10px;
+                width: 100%;
+                max-width: 1000px;
+            }
+            h1 {
+                color: #8b7314;
+                text-align: center;
+                margin: 10px 0;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.8em;
+                table-layout: fixed;
+            }
+            table, th, td {
+                border: 1px solid #8b7314;
+            }
+            th {
+                background-color: #8b7314;
+                color: #000;
+                padding: 5px;
+                text-align: center;
+            }
+            td {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #000;
+                padding: 5px;
+                text-align: left;
+            }
+            .checkbox-symbol, .radio-symbol {
+                font-size: 1em;
+                margin-right: 5px;
+                vertical-align: middle;
+            }
+            input[type="text"], input[type="date"], input[type="number"], textarea {
+                border: none;
+                background: transparent;
+                resize: none;
+                width: 100%;
+                font-family: 'Roboto Condensed', sans-serif;
+                color: #000;
+                padding: 5px;
+                box-sizing: border-box;
+            }
+            .signature-date {
+                color: #000;
+            }
+            .button {
+                display: none;
+            }
+            .notes {
+                color: #000;
+                font-size: 0.7em;
+            }
+        }
+        .print-preview {
+            background-color: #fff;
+            color: #000;
+            padding: 0;
+            margin: 0;
+        }
+        .print-preview table {
+            width: 100% !important;
+            max-width: 100% !important;
+            border-collapse: collapse;
+            font-size: 0.8em;
+            table-layout: fixed;
+        }
+        .print-preview table, .print-preview th, .print-preview td {
+            border: 1px solid #8b7314;
+        }
+        .print-preview th {
+            background-color: #8b7314;
+            color: #000;
+            padding: 5px;
+            text-align: center;
+        }
+        .print-preview td {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #000;
+            padding: 5px;
+            text-align: left;
+        }
+        .print-preview .checkbox-symbol, .print-preview .radio-symbol {
+            font-size: 1em;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        .print-preview input[type="text"], .print-preview input[type="date"], .print-preview input[type="number"], .print-preview textarea {
+            border: none;
+            background: transparent;
+            resize: none;
+            width: 100%;
+            font-family: 'Roboto Condensed', sans-serif;
+            color: #000;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        .print-preview .signature-date {
+            color: #000;
+        }
+        .print-preview .notes {
+            color: #000;
+            font-size: 0.7em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="gradeSheetContainer">
+        <h1>JTAC Terminal Attack Control Gradesheet</h1>
+        <form id="gradeSheetForm">
+            <table class="grading-table">
+                <!-- Sekcja 1: Informacje podstawowe -->
+                <tr>
+                    <th colspan="4">Basic Information</th>
+                </tr>
+                <tr>
+                    <td>Student:</td>
+                    <td><input type="text" name="student" required></td>
+                    <td>Instructor:</td>
+                    <td><input type="text" name="instructor" required></td>
+                </tr>
+                <tr>
+                    <td>Date:</td>
+                    <td><input type="date" name="grade_date" required></td>
+                    <td>Routing/Safety:</td>
+                    <td><textarea name="routing_safety"></textarea></td>
+                </tr>
+
+                <!-- Sekcja 2: CAS Check-In -->
+                <tr>
+                    <th colspan="4">CAS Check-In</th>
+                </tr>
+                <tr>
+                    <td>Check-in Time:</td>
+                    <td><input type="text" name="checkin_time"></td>
+                    <td>A/C Callsign:</td>
+                    <td><input type="text" name="ac_callsign"></td>
+                </tr>
+                <tr>
+                    <td>MSN Nr.:</td>
+                    <td><input type="text" name="msn_number"></td>
+                    <td>#&Type:</td>
+                    <td><input type="text" name="number_type"></td>
+                </tr>
+                <tr>
+                    <td>Pos & Alt:</td>
+                    <td><input type="text" name="pos_alt"></td>
+                    <td>Ord Ld:</td>
+                    <td><input type="text" name="ord_ld"></td>
+                </tr>
+                <tr>
+                    <td>/2:</td>
+                    <td><input type="text" name="slash_two"></td>
+                    <td>Playtime:</td>
+                    <td><input type="text" name="playtime"></td>
+                </tr>
+                <tr>
+                    <td>Sensors & Capes:</td>
+                    <td><input type="text" name="sensors_capes"></td>
+                    <td>Abort Code:</td>
+                    <td><input type="text" name="abort_code"></td>
+                </tr>
+
+                <!-- Sekcja 3: Event Description -->
+                <tr>
+                    <th colspan="4">Event Description</th>
+                </tr>
+                <tr>
+                    <td colspan="4"><textarea name="event_description" style="min-height: 100px;"></textarea></td>
+                </tr>
+
+                <!-- Sekcja 4: Game Plan, CAS TGT Brief, Remarks/Restrictions -->
+                <tr>
+                    <th colspan="4">Game Plan; CAS TGT Brief; Remarks/Restrictions</th>
+                </tr>
+                <tr>
+                    <td colspan="4"><textarea name="game_plan_cas_rr" style="min-height: 100px;"></textarea></td>
+                </tr>
+
+                <!-- Sekcja 5: Grading -->
+                <tr>
+                    <th colspan="4">Grading</th>
+                </tr>
+                <tr>
+                    <th>ITEM</th>
+                    <th>Grade</th>
+                    <th>ITEM</th>
+                    <th>Grade</th>
+                </tr>
+                <tr>
+                    <td>1. MISSION PLANNING AND PREPARATION</td>
+                    <td colspan="3"></td>
+                </tr>
+                <tr>
+                    <td>02.2.1 Intel products</td>
+                    <td><input type="text" name="intel_products" placeholder="D, U, 2-5"></td>
+                    <td>3.5.2. Provide game plan and 9 line</td>
+                    <td><input type="text" name="game_plan_9line" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>02.2.2 Fire Support products</td>
+                    <td><input type="text" name="fire_support" placeholder="D, U, 2-5"></td>
+                    <td>Readbacks</td>
+                    <td><input type="text" name="readbacks" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>02.2.3 ACO products</td>
+                    <td><input type="text" name="aco_products" placeholder="D, U, 2-5"></td>
+                    <td>3.5.3. Provide WPNs recommendation</td>
+                    <td><input type="text" name="wpns_recommendation" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>02.2.4 Communications plan/products</td>
+                    <td><input type="text" name="comms_plan" placeholder="D, U, 2-5"></td>
+                    <td>5. TARGET MARKING</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>02.2.5 ATO products</td>
+                    <td><input type="text" name="ato_products" placeholder="D, U, 2-5"></td>
+                    <td>3.6.1. Visual TGT marking for CAS with IDF</td>
+                    <td><input type="text" name="visual_marking_idf" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>Provide TRA/CAS employment plan brief to GFC</td>
+                    <td><input type="text" name="tra_cas_brief" placeholder="D, U, 2-5"></td>
+                    <td>3.6.2. TGT marking for CAS with a ground LTD</td>
+                    <td><input type="text" name="ground_ltd" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>JTAR</td>
+                    <td><input type="text" name="jtar" placeholder="D, U, 2-5"></td>
+                    <td>3.6.3. TGT marking for CAS with a ground IR</td>
+                    <td><input type="text" name="ground_ir" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>2. TARGET IDENTIFICATION</td>
+                    <td colspan="3"></td>
+                </tr>
+                <tr>
+                    <td>3.1.1.1. TGT acq. aided and unaided- daytime</td>
+                    <td><input type="text" name="tgt_acq_day" placeholder="D, U, 2-5"></td>
+                    <td>3.6.4. TGT correlation through TO and ETD</td>
+                    <td><input type="text" name="tgt_correlation" placeholder="D, U, 2-5, ETD, TO (multiple possible)"></td>
+                </tr>
+                <tr>
+                    <td>3.1.1.2. TGT acq. via aided and unaided- nighttime</td>
+                    <td><input type="text" name="tgt_acq_night" placeholder="D, U, 2-5"></td>
+                    <td>6. MSN EXECUTION</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>3.1.1.3. Execute TGT acquisition via RO</td>
+                    <td><input type="text" name="tgt_acq_ro" placeholder="D, U, 2-5"></td>
+                    <td>3.7. Integrate SEAD in a M/H threat environment</td>
+                    <td><input type="text" name="sead_mh" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>3.1.1.4. TGT acq. via remote real-time VDL</td>
+                    <td><input type="text" name="tgt_acq_vdl" placeholder="D, U, 2-5"></td>
+                    <td>3.8.1. Execute Type 1 TAC procedures</td>
+                    <td><input type="text" name="type1_tac" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>3.1.2.1. Determine TGT location via map plot</td>
+                    <td><input type="text" name="tgt_location_map" placeholder="D, U, 2-5"></td>
+                    <td>3.8.2. Execute Type 2 TAC procedures</td>
+                    <td><input type="text" name="type2_tac" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>3.1.2.2. Determ.TGT location via coupled GPS/LRF</td>
+                    <td><input type="text" name="tgt_location_gps" placeholder="D, U, 2-5"></td>
+                    <td>3.8.3. Execute Type 3 TAC procedures</td>
+                    <td><input type="text" name="type3_tac" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>3.2. Match TGT location accuracy/format to WPN</td>
+                    <td><input type="text" name="match_tgt_location" placeholder="D, U, 2-5"></td>
+                    <td>3.8.4. Execute BOT MoA during TAC</td>
+                    <td><input type="text" name="bot_moa" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>3. CAS INTEGRATION</td>
+                    <td colspan="3"></td>
+                </tr>
+                <tr>
+                    <td>3.3.1. Integrate CAS with ground SoM</td>
+                    <td><input type="text" name="cas_ground_som" placeholder="D, U, 2-5"></td>
+                    <td>3.8.5. Execute BOC MoA during TAC</td>
+                    <td><input type="text" name="boc_moa" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>3.3.2. Integrate CAS with surface based fires</td>
+                    <td><input type="text" name="cas_surface_fires" placeholder="D, U, 2-5"></td>
+                    <td>3.9.1. Control day FW CAS mission</td>
+                    <td><input type="text" name="day_fw_cas" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>3.3.3. Integrate CAS with FSCM and ACM</td>
+                    <td><input type="text" name="cas_fscm_acm" placeholder="D, U, 2-5"></td>
+                    <td>3.9.2. Control night FW CAS mission</td>
+                    <td><input type="text" name="night_fw_cas" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>3.4.1. Proc. CTRL of AC to provide safe separation</td>
+                    <td><input type="text" name="proc_ctrl_safe" placeholder="D, U, 2-5"></td>
+                    <td>3.9.3. Control RW CAS mission</td>
+                    <td><input type="text" name="rw_cas" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>3.4.2. Proc. CTRL of AC- safe separation from fires</td>
+                    <td><input type="text" name="proc_ctrl_fires" placeholder="D, U, 2-5"></td>
+                    <td>3.9.4. Control CAS mission with the support of RO</td>
+                    <td><input type="text" name="cas_with_ro" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>4. MISSION BRIEFING</td>
+                    <td colspan="3"></td>
+                </tr>
+                <tr>
+                    <td>Authentication</td>
+                    <td><input type="text" name="authentication" placeholder="D, U, 2-5"></td>
+                    <td>3.9.6. Control Low level CAS mission</td>
+                    <td><input type="text" name="low_level_cas" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td>3.5.1. Receive CHIN and provide AO update to AC</td>
+                    <td><input type="text" name="receive_chin" placeholder="D, U, 2-5"></td>
+                    <td>3.10. Control CAS in an urban environment</td>
+                    <td><input type="text" name="cas_urban" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Communication</td>
+                    <td><input type="text" name="communication" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>7. POST MISSION ACTIONS</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>3.12. Conduct BDA</td>
+                    <td><input type="text" name="conduct_bda" placeholder="D, U, 2-5"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Post MSN routing and Safety of Flight</td>
+                    <td><input type="text" name="post_msn_routing" placeholder="D, U, 2-5"></td>
+                </tr>
+
+                <!-- Sekcja 6: Task Counts -->
+                <tr>
+                    <th colspan="4">Task Counts</th>
+                </tr>
+                <tr>
+                    <td>LIVE:</td>
+                    <td><input type="number" name="live_tasks" min="0"></td>
+                    <td>BOT:</td>
+                    <td><input type="number" name="bot_tasks" min="0"></td>
+                </tr>
+                <tr>
+                    <td>LASER:</td>
+                    <td><input type="number" name="laser_tasks" min="0"></td>
+                    <td>LL/9-line:</td>
+                    <td><input type="number" name="ll_9line_tasks" min="0"></td>
+                </tr>
+                <tr>
+                    <td>Total # of TACs:</td>
+                    <td><input type="number" name="total_tacs" min="0"></td>
+                    <td>DRY:</td>
+                    <td><input type="number" name="dry_tasks" min="0"></td>
+                </tr>
+                <tr>
+                    <td>BOC:</td>
+                    <td><input type="number" name="boc_tasks" min="0"></td>
+                    <td>IR Pointer:</td>
+                    <td><input type="number" name="ir_pointer_tasks" min="0"></td>
+                </tr>
+                <tr>
+                    <td>SEAD:</td>
+                    <td><input type="number" name="sead_tasks" min="0"></td>
+                    <td>SAT:</td>
+                    <td><input type="number" name="sat_tasks" min="0"></td>
+                </tr>
+                <tr>
+                    <td>Type 1:</td>
+                    <td><input type="number" name="type1_tasks" min="0"></td>
+                    <td>FW:</td>
+                    <td><input type="number" name="fw_tasks" min="0"></td>
+                </tr>
+                <tr>
+                    <td>RO:</td>
+                    <td><input type="number" name="ro_tasks" min="0"></td>
+                    <td>URBAN:</td>
+                    <td><input type="number" name="urban_tasks" min="0"></td>
+                </tr>
+                <tr>
+                    <td>UNSAT:</td>
+                    <td><input type="number" name="unsat_tasks" min="0"></td>
+                    <td>Type 2:</td>
+                    <td><input type="number" name="type2_tasks" min="0"></td>
+                </tr>
+                <tr>
+                    <td>RW:</td>
+                    <td><input type="number" name="rw_tasks" min="0"></td>
+                    <td>VDL:</td>
+                    <td><input type="number" name="vdl_tasks" min="0"></td>
+                </tr>
+                <tr>
+                    <td>DAY:</td>
+                    <td><input type="number" name="day_tasks" min="0"></td>
+                    <td>Type 3:</td>
+                    <td><input type="number" name="type3_tasks" min="0"></td>
+                </tr>
+                <tr>
+                    <td>NIGHT:</td>
+                    <td><input type="number" name="night_tasks" min="0"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+                <!-- Sekcja 7: Remarks -->
+                <tr>
+                    <th colspan="4">Remarks</th>
+                </tr>
+                <tr>
+                    <td colspan="4"><textarea name="remarks" style="min-height: 100px;"></textarea></td>
+                </tr>
+
+                <!-- Sekcja 8: Podpisy -->
+                <tr>
+                    <th colspan="4">Signatures</th>
+                </tr>
+                <tr>
+                    <td>Instructor Sign:</td>
+                    <td><input type="text" name="instructor_sign" id="instructorSign" readonly></td>
+                    <td colspan="2">
+                        <button type="button" class="button" onclick="signInstructor()">Sign as Instructor</button>
+                        <span class="signature-date" id="instructorSignDate"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Student’s Signature:</td>
+                    <td><input type="text" name="student_signature" id="studentSignature" readonly></td>
+                    <td colspan="2">
+                        <button type="button" class="button" onclick="signStudent()">Sign as Student</button>
+                        <span class="signature-date" id="studentSignDate"></span>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Notatki -->
+            <div class="section notes">
+                <p>D – DID NOT DO U* – Unsafe or complete lack of ability and/or knowledge. Requires substantial input from instructor for safe/competent execution.</p>
+                <p>2* – Can do simple parts of the task. Needs to be told or shown how to do most of the task (extremely limited proficiency).</p>
+                <p>3* – Can do most parts of the task. Needs help only on hardest parts. May not meet demands for speed or accuracy (partially proficient).</p>
+                <p>4 - Can do all parts of the task. Needs only a spot check of completed work (proficient).</p>
+                <p>5 - Can do the complete task quickly and accurately. Can tell or show others how to do the task (highly proficient).</p>
+                <p>* Mandatory comments in remarks section for items scored at this level.</p>
+                <p>**Applicable to entire CAS mission as a whole.</p>
+                <p>**If same tasks are executed with different grades, mark with associated 9line number/s in grading box. If two or more AC executes same 9line with different grades for a specific task, same 9line number will be marked under different grades for same task. If same tasks are at the same grade, mark box with “X”.**</p>
+                <p>**Excluding area 1 (Mission planning and preparation), one grade “U” or at least 3 grades “2” will render TAC (terminal attack control) UNSAT.**</p>
+            </div>
+        </form>
+        <button class="button" onclick="uploadForm()">Upload</button>
+        <button class="button hidden" onclick="saveForm()" id="saveButton">Save</button>
+        <button class="button" onclick="downloadPDF()">Download PDF</button>
+        <a href="profile.html" class="button">Back to Profile</a>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const viewedUser = JSON.parse(localStorage.getItem('viewedUser') || '{}');
+        const displayedUser = viewedUser.login ? viewedUser : currentUser;
+        let isFormUploaded = false;
+
+        function getUserDocumentsKey() {
+            return `documentsData_${displayedUser.login}`;
+        }
+
+        const allowedRolesToFill = ['JTAC I', 'JTAC I/E', 'Program Manager'];
+        if (!allowedRolesToFill.includes(currentUser.role)) {
+            alert('Only JTAC I, JTAC I/E, or Program Manager can fill out this form!');
+            document.getElementById('gradeSheetForm').querySelectorAll('input, textarea, select').forEach(element => {
+                element.disabled = true;
+            });
+            document.querySelectorAll('.button').forEach(button => {
+                if (button.textContent !== 'Back to Profile') {
+                    button.disabled = true;
+                }
+            });
+        }
+
+        function signInstructor() {
+            const allowedRolesToSign = ['JTAC I', 'JTAC I/E'];
+            if (!allowedRolesToSign.includes(currentUser.role)) {
+                alert('Only JTAC I or JTAC I/E can sign as Instructor!');
+                return;
+            }
+            const instructorSignInput = document.getElementById('instructorSign');
+            const instructorSignDate = document.getElementById('instructorSignDate');
+            const signatureText = `Signed by ${currentUser.login} on ${new Date().toLocaleString()}`;
+            instructorSignInput.value = signatureText;
+            instructorSignDate.textContent = signatureText;
+            instructorSignInput.classList.add('locked');
+        }
+
+        function signStudent() {
+            const studentSignInput = document.getElementById('studentSignature');
+            const studentSignDate = document.getElementById('studentSignDate');
+            const signatureText = `Signed by ${displayedUser.login} on ${new Date().toLocaleString()}`;
+            studentSignInput.value = signatureText;
+            studentSignDate.textContent = signatureText;
+            studentSignInput.classList.add('locked');
+        }
+
+        function uploadForm() {
+            if (!allowedRolesToFill.includes(currentUser.role)) {
+                alert('Only JTAC I, JTAC I/E, or Program Manager can upload this form!');
+                return;
+            }
+
+            if (isFormUploaded) {
+                alert("Form has already been uploaded and cannot be modified further.");
+                return;
+            }
+
+            const form = document.getElementById('gradeSheetForm');
+            const student = form.querySelector('input[name="student"]').value;
+            const instructor = form.querySelector('input[name="instructor"]').value;
+            const gradeDate = form.querySelector('input[name="grade_date"]').value;
+            const gradingInputs = form.querySelectorAll('input[name$="_products"], input[name$="_support"], input[name$="_9line"], input[name$="_recommendation"], input[name$="_marking_idf"], input[name$="_ltd"], input[name$="_ir"], input[name$="_correlation"], input[name$="_mh"], input[name$="_tac"], input[name$="_moa"], input[name$="_ground_som"], input[name$="_surface_fires"], input[name$="_fscm_acm"], input[name$="_ctrl_safe"], input[name$="_ctrl_fires"], input[name$="_fw_cas"], input[name$="_cas"], input[name$="_level_cas"], input[name$="_urban"], input[name$="_chin"], input[name$="_bda"], input[name$="_msn_routing"], input[name="readbacks"], input[name="communication"], input[name="authentication"], input[name="tra_cas_brief"], input[name="jtar"], input[name$="_acq_day"], input[name$="_acq_night"], input[name$="_acq_ro"], input[name$="_acq_vdl"], input[name$="_location_map"], input[name$="_location_gps"], input[name$="_tgt_location"]');
+
+            let hasEmptyGrading = false;
+            const standardGrades = ['D', 'U', '2', '3', '4', '5'];
+            const tgtCorrelationGrades = ['D', 'U', '2', '3', '4', '5', 'ETD', 'TO'];
+
+            gradingInputs.forEach(input => {
+                const value = input.value.trim();
+                if (input.name === 'tgt_correlation') {
+                    if (!value) {
+                        hasEmptyGrading = true;
+                        input.style.border = '2px solid red';
+                    } else {
+                        // Split on spaces or commas, remove empty entries
+                        const values = value.split(/[\s,]+/).filter(v => v);
+                        if (values.length === 0) {
+                            hasEmptyGrading = true;
+                            input.style.border = '2px solid red';
+                        } else {
+                            let allValid = true;
+                            values.forEach(val => {
+                                const upperVal = val.toUpperCase();
+                                if (!tgtCorrelationGrades.includes(upperVal)) {
+                                    allValid = false;
+                                    alert(`Invalid grade for ${input.name}: ${val}. Allowed values are ${tgtCorrelationGrades.join(', ')}.`);
+                                }
+                            });
+                            if (allValid) {
+                                input.style.border = '';
+                            } else {
+                                hasEmptyGrading = true;
+                                input.style.border = '2px solid red';
+                            }
+                        }
+                    }
+                } else {
+                    const upperValue = value.toUpperCase();
+                    if (!value) {
+                        hasEmptyGrading = true;
+                        input.style.border = '2px solid red';
+                    } else if (!standardGrades.includes(upperValue)) {
+                        hasEmptyGrading = true;
+                        input.style.border = '2px solid red';
+                        alert(`Invalid grade for ${input.name}: ${value}. Allowed values are ${standardGrades.join(', ')}.`);
+                    } else {
+                        input.style.border = '';
+                    }
+                }
+            });
+
+            if (!student || !instructor || !gradeDate) {
+                alert('All required fields (Student, Instructor, Date) must be filled!');
+                return;
+            }
+
+            if (hasEmptyGrading) {
+                alert('All grading fields must have a valid value!');
+                return;
+            }
+
+            document.getElementById('saveButton').classList.remove('hidden');
+            alert("Form ready to save. Click 'Save' to save and proceed to preview.");
+            lockFormExceptSignatures();
+            isFormUploaded = true;
+        }
+
+        function lockFormExceptSignatures() {
+            document.querySelectorAll('input[type="text"], input[type="date"], input[type="number"], textarea').forEach(field => {
+                if (!field.id.includes('Sign') && !field.id.includes('Signature')) {
+                    field.classList.add('locked');
+                    field.disabled = true;
+                }
+            });
+        }
+
+        async function saveForm() {
+            if (!allowedRolesToFill.includes(currentUser.role)) {
+                alert('Only JTAC I, JTAC I/E, or Program Manager can save this form!');
+                return;
+            }
+
+            if (!isFormUploaded) {
+                alert("Form must be uploaded before saving.");
+                return;
+            }
+
+            const instructorSign = document.getElementById('instructorSign').value;
+            const studentSignature = document.getElementById('studentSignature').value;
+
+            if (!instructorSign || !studentSignature) {
+                alert('Both Instructor Sign and Student’s Signature are required before saving!');
+                return;
+            }
+
+            try {
+                const element = document.getElementById("gradeSheetContainer");
+                autoResizeTextarea();
+
+                // Clone the element to modify it for saving
+                const elementClone = element.cloneNode(true);
+
+                // Set values for inputs
+                elementClone.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]').forEach(input => {
+                    input.setAttribute('value', input.value);
+                });
+
+                // Convert text and number inputs to static spans
+                elementClone.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]').forEach(input => {
+                    const span = document.createElement('span');
+                    span.textContent = input.value || '';
+                    span.style.color = '#000';
+                    input.parentNode.replaceChild(span, input);
+                });
+
+                // Convert textareas to static divs
+                elementClone.querySelectorAll('textarea').forEach(textarea => {
+                    const div = document.createElement('div');
+                    div.textContent = textarea.value || textarea.getAttribute('data-value') || '';
+                    div.style.color = '#000';
+                    div.style.whiteSpace = 'pre-wrap';
+                    div.style.border = 'none';
+                    div.style.background = 'transparent';
+                    div.style.width = '100%';
+                    div.style.fontFamily = "'Roboto Condensed', sans-serif";
+                    div.style.padding = '5px';
+                    div.style.boxSizing = 'border-box';
+                    textarea.parentNode.replaceChild(div, textarea);
+                });
+
+                // Handle signatures
+                elementClone.querySelectorAll('.signature-date').forEach(dateSpan => {
+                    const signatureInput = dateSpan.previousElementSibling.previousElementSibling;
+                    const signatureText = signatureInput && signatureInput.tagName === 'INPUT' ? signatureInput.value : '';
+                    const dateText = dateSpan.textContent || dateSpan.getAttribute('data-signature') || '';
+                    const combinedSpan = document.createElement('span');
+                    combinedSpan.textContent = signatureText ? `${signatureText} ${dateText}` : dateText;
+                    combinedSpan.style.color = '#000';
+                    dateSpan.parentNode.replaceChild(combinedSpan, dateSpan);
+                    if (signatureInput && signatureInput.tagName === 'INPUT') {
+                        signatureInput.remove();
+                    }
+                });
+
+                // Remove buttons
+                elementClone.querySelectorAll('.button').forEach(button => button.remove());
+
+                // Generate PDF
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                const pageWidth = pdf.internal.pageSize.getWidth() - 20;
+                const pageHeight = pdf.internal.pageSize.getHeight() - 20;
+                const contentWidthPx = 1000;
+                const contentWidthMm = Math.min(contentWidthPx * 0.264583, pageWidth);
+
+                const createContainer = (content) => {
+                    const pdfContainer = document.createElement('div');
+                    pdfContainer.className = 'print-preview';
+                    pdfContainer.style.padding = '0px';
+                    pdfContainer.style.backgroundColor = '#ffffff';
+                    pdfContainer.style.position = 'absolute';
+                    pdfContainer.style.left = '-9999px';
+                    pdfContainer.style.width = `${contentWidthPx}px`;
+                    pdfContainer.style.maxWidth = `${contentWidthPx}px`;
+                    pdfContainer.style.boxSizing = 'border-box';
+                    pdfContainer.style.fontFamily = "'Roboto Condensed', sans-serif";
+
+                    const clone = content.cloneNode(true);
+                    const h1 = clone.querySelector('h1');
+                    if (h1) h1.remove();
+
+                    clone.style.width = `${contentWidthPx}px`;
+                    clone.style.margin = '0';
+                    clone.querySelectorAll('table').forEach(table => {
+                        table.style.width = '100%';
+                        table.style.maxWidth = '100%';
+                        table.style.tableLayout = 'fixed';
+                        table.style.margin = '0';
+                        table.style.borderCollapse = 'collapse';
+                        const cols = table.querySelectorAll('tr:first-child td, tr:first-child th');
+                        if (cols.length === 4) {
+                            cols.forEach(col => {
+                                col.style.width = '25%';
+                            });
+                        }
+                        table.querySelectorAll('th, td').forEach(cell => {
+                            cell.style.wordBreak = 'break-word';
+                            cell.style.boxSizing = 'border-box';
+                            cell.style.border = '1px solid #8b7314';
+                            cell.style.padding = '5px';
+                            cell.style.fontSize = '0.8em';
+                            if (cell.tagName === 'TH') {
+                                cell.style.backgroundColor = '#8b7314';
+                                cell.style.color = '#000';
+                                cell.style.textAlign = 'center';
+                            } else {
+                                cell.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                                cell.style.color = '#000';
+                            }
+                        });
+                    });
+                    clone.querySelectorAll('.notes').forEach(notes => {
+                        notes.style.color = '#000';
+                        notes.style.fontSize = '0.7em';
+                        notes.style.marginTop = '10px';
+                    });
+                    pdfContainer.appendChild(clone);
+                    return pdfContainer;
+                };
+
+                const calculateHeight = async (content) => {
+                    const pdfContainer = createContainer(content);
+                    pdfContainer.querySelectorAll('div').forEach(div => {
+                        if (div.textContent && div.style.whiteSpace === 'pre-wrap') {
+                            div.style.height = 'auto';
+                            const tempDiv = document.createElement('div');
+                            tempDiv.style.position = 'absolute';
+                            tempDiv.style.visibility = 'hidden';
+                            tempDiv.style.width = div.style.width;
+                            tempDiv.style.padding = div.style.padding;
+                            tempDiv.style.fontFamily = div.style.fontFamily;
+                            tempDiv.style.fontSize = window.getComputedStyle(div).fontSize;
+                            tempDiv.style.lineHeight = window.getComputedStyle(div).lineHeight;
+                            tempDiv.style.whiteSpace = 'pre-wrap';
+                            tempDiv.style.wordBreak = 'break-word';
+                            tempDiv.textContent = div.textContent;
+                            document.body.appendChild(tempDiv);
+                            div.style.height = `${tempDiv.scrollHeight}px`;
+                            document.body.removeChild(tempDiv);
+                        }
+                    });
+                    document.body.appendChild(pdfContainer);
+                    try {
+                        const canvas = await html2canvas(pdfContainer, {
+                            scale: 2,
+                            backgroundColor: '#ffffff',
+                            useCORS: true,
+                            windowWidth: contentWidthPx
+                        });
+                        const imgHeight = canvas.height;
+                        const imgWidth = canvas.width;
+                        const heightInMm = (imgHeight * contentWidthMm) / imgWidth;
+                        return { heightInMm, canvas, pdfContainer };
+                    } finally {
+                        document.body.removeChild(pdfContainer);
+                    }
+                };
+
+                const renderPage = async (content, pageNumber) => {
+                    const { canvas, pdfContainer } = await calculateHeight(content);
+                    document.body.appendChild(pdfContainer);
+                    try {
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        const imgWidth = canvas.width;
+                        const imgHeight = canvas.height;
+                        const width = contentWidthMm;
+                        const height = (imgHeight * width) / imgWidth;
+                        const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                        const topMargin = 10;
+                        pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+                        pdf.setFontSize(10);
+                        pdf.setTextColor(0, 0, 0);
+                        pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                    } finally {
+                        document.body.removeChild(pdfContainer);
+                    }
+                };
+
+                const formContent = elementClone.querySelector('form');
+                const mainTable = formContent.querySelector('table');
+                const notesDiv = formContent.querySelector('.notes');
+                const sectionHeaders = Array.from(mainTable.querySelectorAll('tr')).filter(tr => tr.querySelector('th[colspan="4"]'));
+                const sections = [];
+                let lastIndex = 0;
+
+                sectionHeaders.forEach((header, index) => {
+                    const nextHeader = sectionHeaders[index + 1];
+                    const sectionRows = Array.from(mainTable.querySelectorAll('tr')).slice(
+                        lastIndex,
+                        nextHeader ? Array.from(mainTable.querySelectorAll('tr')).indexOf(nextHeader) : undefined
+                    );
+                    const sectionTable = document.createElement('table');
+                    sectionTable.style.width = '100%';
+                    sectionTable.style.tableLayout = 'fixed';
+                    sectionTable.style.borderCollapse = 'collapse';
+                    sectionRows.forEach(row => sectionTable.appendChild(row.cloneNode(true)));
+                    sections.push(sectionTable);
+                    lastIndex = Array.from(mainTable.querySelectorAll('tr')).indexOf(nextHeader) || mainTable.querySelectorAll('tr').length;
+                });
+
+                if (notesDiv) {
+                    const notesContainer = document.createElement('div');
+                    notesContainer.className = 'notes';
+                    notesContainer.appendChild(notesDiv.cloneNode(true));
+                    sections.push(notesContainer);
+                }
+
+                let currentPageContent = [];
+                let pageNumber = 1;
+                let currentHeight = 0;
+
+                for (let i = 0; i < sections.length; i++) {
+                    const section = sections[i];
+                    const testContent = document.createElement('div');
+                    testContent.appendChild(section.cloneNode(true));
+
+                    const { heightInMm } = await calculateHeight(testContent);
+
+                    if (currentHeight + heightInMm <= pageHeight || currentPageContent.length === 0) {
+                        currentPageContent.push(section.cloneNode(true));
+                        currentHeight += heightInMm;
+                    } else {
+                        const pageDiv = document.createElement('div');
+                        currentPageContent.forEach(item => pageDiv.appendChild(item));
+                        await renderPage(pageDiv, pageNumber);
+                        pdf.addPage();
+                        pageNumber++;
+                        currentPageContent = [section.cloneNode(true)];
+                        currentHeight = heightInMm;
+                    }
+                }
+
+                if (currentPageContent.length > 0) {
+                    const pageDiv = document.createElement('div');
+                    currentPageContent.forEach(item => pageDiv.appendChild(item));
+                    await renderPage(pageDiv, pageNumber);
+                }
+
+                // Save to localStorage
+                const pdfData = pdf.output('datauristring');
+                let gradeSheetPDFs = JSON.parse(localStorage.getItem('gradeSheetPDFs') || '[]');
+                gradeSheetPDFs.push({
+                    pdf: pdfData,
+                    html: elementClone.outerHTML,
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('gradeSheetPDFs', JSON.stringify(gradeSheetPDFs));
+
+                // Redirect
+                document.getElementById('saveButton').disabled = true;
+                alert('Form saved successfully and locked!');
+                window.location.href = 'part_4.html';
+            } catch (error) {
+                console.error("Error in saveForm:", error);
+                alert("Failed to save form. Check console for details.");
+            }
+        }
+
+        async function downloadPDF() {
+            const login = displayedUser.login || 'user';
+
+            try {
+                const { jsPDF } = window.jspdf;
+                if (!jsPDF || !window.html2canvas) {
+                    alert('Error: Required libraries (jsPDF or html2canvas) failed to load.');
+                    return;
+                }
+
+                const element = document.getElementById("gradeSheetContainer");
+                if (!element) {
+                    alert("Error: Form container not found.");
+                    return;
+                }
+
+                autoResizeTextarea();
+
+                const elementClone = element.cloneNode(true);
+
+                // Convert inputs to spans
+                elementClone.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]').forEach(input => {
+                    const span = document.createElement('span');
+                    span.textContent = input.value || '';
+                    span.style.color = '#000';
+                    input.parentNode.replaceChild(span, input);
+                });
+
+                // Convert textareas to divs
+                elementClone.querySelectorAll('textarea').forEach(textarea => {
+                    const div = document.createElement('div');
+                    div.textContent = textarea.value || textarea.getAttribute('data-value') || '';
+                    div.style.color = '#000';
+                    div.style.whiteSpace = 'pre-wrap';
+                    div.style.border = 'none';
+                    div.style.background = 'transparent';
+                    div.style.width = '100%';
+                    div.style.fontFamily = "'Roboto Condensed', sans-serif";
+                    div.style.padding = '5px';
+                    div.style.boxSizing = 'border-box';
+                    textarea.parentNode.replaceChild(div, textarea);
+                });
+
+                // Handle signatures
+                elementClone.querySelectorAll('.signature-date').forEach(dateSpan => {
+                    const signatureInput = dateSpan.previousElementSibling.previousElementSibling;
+                    const signatureText = signatureInput && signatureInput.tagName === 'INPUT' ? signatureInput.value : '';
+                    const dateText = dateSpan.textContent || dateSpan.getAttribute('data-signature') || '';
+                    const combinedSpan = document.createElement('span');
+                    combinedSpan.textContent = signatureText ? `${signatureText} ${dateText}` : dateText;
+                    combinedSpan.style.color = '#000';
+                    dateSpan.parentNode.replaceChild(combinedSpan, dateSpan);
+                    if (signatureInput && signatureInput.tagName === 'INPUT') {
+                        signatureInput.remove();
+                    }
+                });
+
+                // Remove buttons
+                elementClone.querySelectorAll('.button').forEach(button => button.remove());
+
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                const pageWidth = pdf.internal.pageSize.getWidth() - 20;
+                const pageHeight = pdf.internal.pageSize.getHeight() - 20;
+                const contentWidthPx = 1000;
+                const contentWidthMm = Math.min(contentWidthPx * 0.264583, pageWidth);
+
+                const createContainer = (content) => {
+                    const pdfContainer = document.createElement('div');
+                    pdfContainer.className = 'print-preview';
+                    pdfContainer.style.padding = '0px';
+                    pdfContainer.style.backgroundColor = '#ffffff';
+                    pdfContainer.style.position = 'absolute';
+                    pdfContainer.style.left = '-9999px';
+                    pdfContainer.style.width = `${contentWidthPx}px`;
+                    pdfContainer.style.maxWidth = `${contentWidthPx}px`;
+                    pdfContainer.style.boxSizing = 'border-box';
+                    pdfContainer.style.fontFamily = "'Roboto Condensed', sans-serif";
+
+                    const clone = content.cloneNode(true);
+                    const h1 = clone.querySelector('h1');
+                    if (h1) h1.remove();
+
+                    clone.style.width = `${contentWidthPx}px`;
+                    clone.style.margin = '0';
+                    clone.querySelectorAll('table').forEach(table => {
+                        table.style.width = '100%';
+                        table.style.maxWidth = '100%';
+                        table.style.tableLayout = 'fixed';
+                        table.style.margin = '0';
+                        table.style.borderCollapse = 'collapse';
+                        const cols = table.querySelectorAll('tr:first-child td, tr:first-child th');
+                        if (cols.length === 4) {
+                            cols.forEach(col => {
+                                col.style.width = '25%';
+                            });
+                        }
+                        table.querySelectorAll('th, td').forEach(cell => {
+                            cell.style.wordBreak = 'break-word';
+                            cell.style.boxSizing = 'border-box';
+                            cell.style.border = '1px solid #8b7314';
+                            cell.style.padding = '5px';
+                            cell.style.fontSize = '0.8em';
+                            if (cell.tagName === 'TH') {
+                                cell.style.backgroundColor = '#8b7314';
+                                cell.style.color = '#000';
+                                cell.style.textAlign = 'center';
+                            } else {
+                                cell.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                                cell.style.color = '#000';
+                            }
+                        });
+                    });
+                    clone.querySelectorAll('.notes').forEach(notes => {
+                        notes.style.color = '#000';
+                        notes.style.fontSize = '0.7em';
+                        notes.style.marginTop = '10px';
+                    });
+                    pdfContainer.appendChild(clone);
+                    return pdfContainer;
+                };
+
+                const calculateHeight = async (content) => {
+                    const pdfContainer = createContainer(content);
+                    pdfContainer.querySelectorAll('div').forEach(div => {
+                        if (div.textContent && div.style.whiteSpace === 'pre-wrap') {
+                            div.style.height = 'auto';
+                            const tempDiv = document.createElement('div');
+                            tempDiv.style.position = 'absolute';
+                            tempDiv.style.visibility = 'hidden';
+                            tempDiv.style.width = div.style.width;
+                            tempDiv.style.padding = div.style.padding;
+                            tempDiv.style.fontFamily = div.style.fontFamily;
+                            tempDiv.style.fontSize = window.getComputedStyle(div).fontSize;
+                            tempDiv.style.lineHeight = window.getComputedStyle(div).lineHeight;
+                            tempDiv.style.whiteSpace = 'pre-wrap';
+                            tempDiv.style.wordBreak = 'break-word';
+                            tempDiv.textContent = div.textContent;
+                            document.body.appendChild(tempDiv);
+                            div.style.height = `${tempDiv.scrollHeight}px`;
+                            document.body.removeChild(tempDiv);
+                        }
+                    });
+                    document.body.appendChild(pdfContainer);
+                    try {
+                        const canvas = await html2canvas(pdfContainer, {
+                            scale: 2,
+                            backgroundColor: '#ffffff',
+                            useCORS: true,
+                            windowWidth: contentWidthPx
+                        });
+                        const imgHeight = canvas.height;
+                        const imgWidth = canvas.width;
+                        const heightInMm = (imgHeight * contentWidthMm) / imgWidth;
+                        return { heightInMm, canvas, pdfContainer };
+                    } finally {
+                        document.body.removeChild(pdfContainer);
+                    }
+                };
+
+                const renderPage = async (content, pageNumber) => {
+                    const { canvas, pdfContainer } = await calculateHeight(content);
+                    document.body.appendChild(pdfContainer);
+                    try {
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        const imgWidth = canvas.width;
+                        const imgHeight = canvas.height;
+                        const width = contentWidthMm;
+                        const height = (imgHeight * width) / imgWidth;
+                        const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                        const topMargin = 10;
+                        pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+                        pdf.setFontSize(10);
+                        pdf.setTextColor(0, 0, 0);
+                        pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                    } finally {
+                        document.body.removeChild(pdfContainer);
+                    }
+                };
+
+                const formContent = elementClone.querySelector('form');
+                const mainTable = formContent.querySelector('table');
+                const notesDiv = formContent.querySelector('.notes');
+                const sectionHeaders = Array.from(mainTable.querySelectorAll('tr')).filter(tr => tr.querySelector('th[colspan="4"]'));
+                const sections = [];
+                let lastIndex = 0;
+
+                sectionHeaders.forEach((header, index) => {
+                    const nextHeader = sectionHeaders[index + 1];
+                    const sectionRows = Array.from(mainTable.querySelectorAll('tr')).slice(
+                        lastIndex,
+                        nextHeader ? Array.from(mainTable.querySelectorAll('tr')).indexOf(nextHeader) : undefined
+                    );
+                    const sectionTable = document.createElement('table');
+                    sectionTable.style.width = '100%';
+                    sectionTable.style.tableLayout = 'fixed';
+                    sectionTable.style.borderCollapse = 'collapse';
+                    sectionRows.forEach(row => sectionTable.appendChild(row.cloneNode(true)));
+                    sections.push(sectionTable);
+                    lastIndex = Array.from(mainTable.querySelectorAll('tr')).indexOf(nextHeader) || mainTable.querySelectorAll('tr').length;
+                });
+
+                if (notesDiv) {
+                    const notesContainer = document.createElement('div');
+                    notesContainer.className = 'notes';
+                    notesContainer.appendChild(notesDiv.cloneNode(true));
+                    sections.push(notesContainer);
+                }
+
+                let currentPageContent = [];
+                let pageNumber = 1;
+                let currentHeight = 0;
+
+                for (let i = 0; i < sections.length; i++) {
+                    const section = sections[i];
+                    const testContent = document.createElement('div');
+                    testContent.appendChild(section.cloneNode(true));
+
+                    const { heightInMm } = await calculateHeight(testContent);
+
+                    if (currentHeight + heightInMm <= pageHeight || currentPageContent.length === 0) {
+                        currentPageContent.push(section.cloneNode(true));
+                        currentHeight += heightInMm;
+                    } else {
+                        const pageDiv = document.createElement('div');
+                        currentPageContent.forEach(item => pageDiv.appendChild(item));
+                        await renderPage(pageDiv, pageNumber);
+                        pdf.addPage();
+                        pageNumber++;
+                        currentPageContent = [section.cloneNode(true)];
+                        currentHeight = heightInMm;
+                    }
+                }
+
+                if (currentPageContent.length > 0) {
+                    const pageDiv = document.createElement('div');
+                    currentPageContent.forEach(item => pageDiv.appendChild(item));
+                    await renderPage(pageDiv, pageNumber);
+                }
+
+                pdf.save(`GradeSheet_${login}_${new Date().toISOString().split('T')[0]}.pdf`);
+            } catch (error) {
+                console.error("Error in downloadPDF:", error);
+                alert("Failed to generate PDF. Check console for details.");
+            }
+        }
+
+        function autoResizeTextarea() {
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.style.height = 'auto';
+                textarea.style.height = `${textarea.scrollHeight}px`;
+            });
+        }
+
+        window.onload = function() {
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.addEventListener('input', autoResizeTextarea);
+            });
+            autoResizeTextarea();
+        };
+    </script>
+</body>
+</html>

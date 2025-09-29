@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JTAC App - CAS Log</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 10px;
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 60px;
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #8b7314;
+            font-size: 1.5em;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .input-section {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            width: 100%;
+        }
+        .input-section label {
+            display: block;
+            margin: 8px 0 4px;
+            color: #8b7314;
+            font-size: 0.9em;
+        }
+        .input-section .row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .input-section .row input {
+            padding: 6px;
+            width: 100%;
+            background-color: #1a1a1a;
+            color: #fff;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            font-size: 0.9em;
+            box-sizing: border-box;
+        }
+        .input-section .row input:invalid {
+            border-color: #ff0000;
+        }
+        .input-section .row button {
+            padding: 8px 15px;
+            background-color: #8b7314;
+            color: #000;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background-color 0.3s;
+            position: relative;
+        }
+        .input-section .row button.active {
+            background-color: #ffd700;
+            color: #000;
+            font-weight: bold;
+        }
+        .input-section .row button:disabled {
+            background-color: #555;
+            color: #888;
+            cursor: not-allowed;
+        }
+        .input-section .row button:hover:not(:disabled) {
+            background-color: #a68a2e;
+        }
+        .input-section .row button:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1a1a1a;
+            color: #fff;
+            padding: 5px 10px;
+            border: 1px solid #8b7314;
+            border-radius: 5px;
+            font-size: 0.8em;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .button-grid button {
+            padding: 8px;
+            background-color: #1a1a1a; /* Ciemne tło jak w Battle Chat */
+            color: #ff4500; /* Orangered tekst */
+            border: 2px solid #ff4500; /* Orangered obwódka */
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+            text-align: center;
+            white-space: nowrap;
+            position: relative;
+            font-family: 'Roboto Condensed', sans-serif;
+        }
+        .button-grid button.active {
+            background-color: #2a2a2a; /* Jaśniejsze tło */
+            color: #fff; /* Biały tekst */
+            border-color: #00ff00; /* Zielona obwódka */
+            font-weight: bold;
+        }
+        .button-grid button:disabled {
+            background-color: #555;
+            color: #888;
+            border-color: #555;
+            cursor: not-allowed;
+        }
+        .button-grid button:hover:not(:disabled) {
+            background-color: #333333; /* Rozjaśnienie tła na hover */
+            color: #fff;
+        }
+        .button-grid button:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1a1a1a;
+            color: #fff;
+            padding: 5px 10px;
+            border: 1px solid #8b7314;
+            border-radius: 5px;
+            font-size: 0.8em;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        .separator {
+            width: 100%;
+            height: 1px;
+            background-color: #8b7314;
+            margin: 8px 0;
+        }
+        .record-button {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .record-button button {
+            padding: 10px 20px;
+            background-color: #8b7314;
+            color: #000;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            margin: 5px 0;
+            width: 100%;
+            max-width: 350px;
+            box-sizing: border-box;
+        }
+        .record-button #recordButton {
+            background-color: #00ff00;
+        }
+        .record-button #recordButton:hover:not(:disabled) {
+            background-color: #00cc00;
+        }
+        .record-button button.delete-button {
+            background-color: #b22222;
+            color: #fff;
+        }
+        .record-button button:disabled {
+            background-color: #555;
+            color: #888;
+            cursor: not-allowed;
+        }
+        .record-button button:hover:not(:disabled) {
+            background-color: #a68a2e;
+        }
+        .record-button button.delete-button:hover:not(:disabled) {
+            background-color: #dc143c;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.8em;
+        }
+        table, th, td {
+            border: 1px solid #2F4F2F;
+        }
+        th, td {
+            padding: 6px;
+            text-align: left;
+            color: #fff;
+        }
+        th {
+            background-color: #8b7314;
+            color: #000;
+        }
+        td {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .cas-log-container, .metl-log-container {
+            max-height: 300px;
+            overflow-y: auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .cas-log-container thead, .metl-log-container thead {
+            position: sticky;
+            top: 0;
+            background-color: #8b7314;
+            z-index: 1;
+        }
+        .edit-button {
+            background-color: #8b7314;
+            color: #000;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        .edit-button:hover {
+            background-color: #a68a2e;
+        }
+        .back-button {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            padding: 8px 15px;
+            background-color: #8b7314;
+            color: #000;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s;
+            z-index: 10;
+        }
+        .back-button:hover {
+            background-color: #a68a2e;
+        }
+        .yellow-row {
+            background-color: #ffff00 !important;
+            color: #000 !important;
+        }
+        .red-row {
+            background-color: #ff0000 !important;
+            color: #000 !important;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            border-bottom: 2px solid #8b7314;
+            margin-bottom: 10px;
+        }
+        .tab {
+            position: relative;
+            margin-right: -1px;
+            cursor: pointer;
+        }
+        .tab a {
+            display: block;
+            padding: 8px 20px;
+            background-color: #1a1a1a; /* Ciemne tło jak w Battle Chat */
+            color: #ff4500; /* Orangered tekst */
+            text-decoration: none;
+            font-size: 0.9em;
+            border: 2px solid #ff4500; /* Orangered obwódka */
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            bottom: -2px;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+            font-family: 'Roboto Condensed', sans-serif;
+        }
+        .tab.active a {
+            background-color: #2a2a2a; /* Jaśniejsze tło */
+            color: #fff; /* Biały tekst */
+            border-color: #00ff00; /* Zielona obwódka */
+            font-weight: bold;
+            border-bottom: 2px solid #2a2a2a;
+        }
+        .tab a:hover:not(.active a) {
+            background-color: #333333; /* Rozjaśnienie tła na hover */
+            color: #fff;
+        }
+        .tracker-buttons {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .tracker-buttons button {
+            padding: 6px 12px;
+            background-color: #8b7314;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            color: #000;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 5px;
+        }
+        .tracker-buttons button:hover {
+            background-color: #a68a2e;
+        }
+        footer {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            color: #ccc;
+            text-align: center;
+            font-size: 0.8em;
+            box-sizing: border-box;
+        }
+        @media (max-width: 480px) {
+            body { margin: 5px; }
+            h1, h2 { font-size: 1.2em; }
+            .input-section { padding: 8px; }
+            .input-section label { font-size: 0.8em; }
+            .input-section .row input { padding: 5px; font-size: 0.8em; }
+            .input-section .row button { padding: 6px 12px; font-size: 0.7em; }
+            .button-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+                gap: 6px;
+            }
+            .button-grid button {
+                padding: 6px;
+                font-size: 0.7em;
+                border-width: 1px; /* Cieńsza obwódka */
+            }
+            .record-button button { padding: 8px 15px; font-size: 0.9em; }
+            table { font-size: 0.7em; }
+            th, td { padding: 4px; }
+            .cas-log-container, .metl-log-container { max-height: 250px; }
+            .edit-button { padding: 3px 6px; font-size: 0.7em; }
+            .back-button { padding: 6px 12px; font-size: 0.8em; }
+            .tab a {
+                padding: 6px 15px;
+                font-size: 0.8em;
+                border-width: 1px; /* Cieńsza obwódka */
+            }
+            .tracker-buttons button { padding: 5px 10px; font-size: 0.7em; }
+            footer { font-size: 0.7em; }
+        }
+        @media (min-width: 481px) {
+            body { margin: 20px; }
+            h1, h2 { font-size: 2em; }
+            .form-container { flex-direction: row; }
+            .input-section { padding: 20px; flex: 1; }
+            .input-section .row { flex-direction: row; flex-wrap: wrap; }
+            .input-section .row input { padding: 8px; min-width: 150px; font-size: 1em; }
+            .input-section .row button { padding: 10px 20px; font-size: 1em; }
+            .button-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+            }
+            .button-grid button {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+            .record-button { margin-top: 20px; }
+            .record-button button { padding: 15px 30px; font-size: 1.2em; margin: 0 5px; width: auto; }
+            table { font-size: 1em; }
+            th, td { padding: 10px; }
+            .cas-log-container, .metl-log-container { max-height: 400px; }
+            .edit-button { padding: 5px 10px; font-size: 1em; }
+            .back-button { padding: 10px 20px; font-size: 1em; position: absolute; }
+            .tab a {
+                padding: 10px 25px;
+                font-size: 1em;
+            }
+            .tracker-buttons button { padding: 8px 16px; font-size: 1em; }
+        }
+        @media print {
+            .form-container, .back-button, .tabs, .tracker-buttons, footer {
+                display: none;
+            }
+            h1, h2 {
+                color: #8b7314;
+                text-align: center;
+                margin: 10px;
+            }
+            .cas-log-container, .metl-log-container {
+                max-height: none;
+                overflow: visible;
+                background: none;
+            }
+            table {
+                width: 100%;
+                font-size: 0.8em;
+            }
+            table, th, td {
+                border: 1px solid #8b7314;
+            }
+            th {
+                background-color: #8b7314;
+                color: #000;
+                padding: 6px;
+            }
+            td {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #000;
+                padding: 6px;
+            }
+            .yellow-row td {
+                background-color: #ffbb00 !important;
+                color: #000 !important;
+            }
+            .red-row td {
+                background-color: #ff0000 !important;
+                color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='profile.html'">Back</button>
+    <h1>Access Log Form</h1>
+    <div class="form-container">
+        <div class="input-section">
+            <form>
+                <div class="row">
+                    <div><label for="date">Date:</label><input type="date" id="date" required></div>
+                    <div><label for="location">Location:</label><input type="text" id="location" placeholder="Location..."></div>
+                    <div><label for="noAndTypeOfAC">No and Type of AC:</label><input type="text" id="noAndTypeOfAC" placeholder="Number and type..."></div>
+                    <div><label for="nrOfControls">Nr Of Controls:</label><input type="number" id="nrOfControls" placeholder="Number..." min="0"></div>
+                </div>
+                <div class="separator"></div>
+                <div class="button-grid">
+                    <button onclick="toggleOption('FW 1')" data-tooltip="Fixed Wing 1 METL 03.9.1.">FW 1</button>
+                    <button onclick="toggleOption('FW 2')" data-tooltip="Fixed Wing 2 when with night METL 03.9.2.">FW 2</button>
+                    <button onclick="toggleOption('RW')" data-tooltip="Rotary Wing METL 03.9.3.">RW</button>
+                    <button onclick="toggleOption('TYPE 1')" data-tooltip="Type 1 Control METL 01.8.1.">TYPE 1</button>
+                    <button onclick="toggleOption('TYPE 2')" data-tooltip="Type 2 Control METL 01.8.2.">TYPE 2</button>
+                    <button onclick="toggleOption('TYPE 3')" data-tooltip="Type 3 Control METL 01.8.3.">TYPE 3</button>
+                    <button onclick="toggleOption('BOT')" data-tooltip="Bomb on Target METL 01.8.4.">BOT</button>
+                    <button onclick="toggleOption('BOC')" data-tooltip="Bomb on Coordinate METL 01.8.5.">BOC</button>
+                    <button onclick="toggleOption('ORDNANCE')" data-tooltip="Ordnance Delivered">ORDNANCE</button>
+                    <button onclick="toggleOption('TO')" data-tooltip="Target talkon METL 01.6.4.">TO</button>
+                    <button onclick="toggleOption('VDL')" data-tooltip="Video Downlink METL 01.1.1.4.">VDL</button>
+                    <button onclick="toggleOption('ETD')" data-tooltip="Enhanced Target Description METL 01.6.4.">ETD</button>
+                    <button onclick="toggleOption('9L LL')" data-tooltip="9-Line Low Lvl Line METL 01.9.6.">9L LL</button>
+                    <button onclick="toggleOption('MH')" data-tooltip="Medium High">MH</button>
+                    <button onclick="toggleOption('LASER')" data-tooltip="Laser Designation METL 01.6.2.">LASER</button>
+                    <button onclick="toggleOption('DAY')" data-tooltip="Day Operation">DAY</button>
+                    <button onclick="toggleOption('NIGHT')" data-tooltip="Night Operation">NIGHT</button>
+                    <button onclick="toggleOption('IR')" data-tooltip="Infrared METL 02.1.2., 01.6.3.">IR</button>
+                    <button onclick="toggleOption('RO')" data-tooltip="Remote Observation METL 01.9.4.">RO</button>
+                    <button onclick="toggleOption('SEAD')" data-tooltip="Suppression of Enemy Air Defenses METL 01.7.">SEAD</button>
+                    <button onclick="toggleOption('URBAN')" data-tooltip="Urban Environment METL 01.10.">URBAN</button>
+                </div>
+                <div class="separator"></div>
+                <div class="button-grid">
+                    <button onclick="toggleOption('Comms P.')" data-tooltip="Communications Plan METL 02.2.4.">Comms P.</button>
+                    <button onclick="toggleOption('Decon.')" data-tooltip="Deconfliction METL 01.4.1.">Decon.</button>
+                    <button onclick="toggleOption('Fires decon.')" data-tooltip="Fires Deconfliction METL 01.4.2.">Fires decon.</button>
+                    <button onclick="toggleOption('Fire Sup')" data-tooltip="Fire Support METL 02.2.2.">Fire Sup</button>
+                    <button onclick="toggleOption('GTP')" data-tooltip="Ground Tactical Plan METL 01.3.1.">GTP</button>
+                    <button onclick="toggleOption('INTEL')" data-tooltip="Intelligence METL 02.2.1.">INTEL</button>
+                    <button onclick="toggleOption('Map Plot')" data-tooltip="Map Plotting METL 01.1.2.1.">Map Plot</button>
+                    <button onclick="toggleOption('Match TGT Loc.')" data-tooltip="Match Target Location METL 01.2.">Match TGT Loc.</button>
+                    <button onclick="toggleOption('Surface Fire')" data-tooltip="Surface Fire Coordination METL 01.3.2., 01.3.3.">Surface Fire</button>
+                    <button onclick="toggleOption('TACT. TAG Syst.')" data-tooltip="Tactical Targeting System METL 01.1.2.3.">TACT. TAG Syst.</button>
+                    <button onclick="toggleOption('TGT Acq Day')" data-tooltip="Target Acquisition Day METL 01.1.1.1.">TGT Acq Day</button>
+                    <button onclick="toggleOption('TGT Acq Night')" data-tooltip="Target Acquisition Night METL 01.1.1.2.">TGT Acq Night</button>
+                    <button onclick="toggleOption('TGT Acq RO')" data-tooltip="Target Acquisition Remote Observation METL 01.1.1.3.">TGT Acq RO</button>
+                    <button onclick="toggleOption('GPS LRF')" data-tooltip="GPS Laser Range Finder METL 01.1.2.2.">GPS LRF</button>
+                    <button onclick="toggleOption('UAV')" data-tooltip="Unmanned Aerial Vehicle">UAV</button>
+                    <button onclick="toggleOption('FAC-A')" data-tooltip="Forward Air Controller - Airborne METL 01.9.5.">FAC-A</button>
+                    <button onclick="toggleOption('DA')" data-tooltip="Digital Aided METL 01.11., 01.12.">DA</button>
+                    <button onclick="toggleOption('ACO')" data-tooltip="Airspace Coordination Order METL 02.2.3.">ACO</button>
+                    <button onclick="toggleOption('WP')" data-tooltip="White Phosphorus METL 01.6.1.">WP</button>
+                    <button onclick="toggleOption('SMK')" data-tooltip="Smoke METL 01.6.1.">SMK</button>
+                    <button onclick="toggleOption('IDF')" data-tooltip="Indirect Fire METL 01.6.1., 01.3.3.">IDF</button>
+                    <button onclick="toggleOption('DF')" data-tooltip="Direct Fire METL 01.3.3.">DF</button>
+                    <button onclick="toggleOption('ATO')" data-tooltip="Air Tasking Order METL 02.2.5.">ATO</button>
+                </div>
+                <div class="record-button">
+                    <button id="recordButton" onclick="submitForm()">RECORD</button>
+                    <button class="delete-button" onclick="deleteLastEntry()">DELETE</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <h2 id="tableTitle">CAS Log</h2>
+    <div class="tabs">
+        <div class="tab active" id="casLogTab"><a href="javascript:void(0)" onclick="switchTab('casLog')">CAS Log</a></div>
+        <div class="tab" id="metlLogTab"><a href="javascript:void(0)" onclick="switchTab('metlLog')">METL Log</a></div>
+    </div>
+    <div class="tracker-buttons">
+        <button onclick="downloadTable(currentTab === 'casLog' ? 'casLogTable' : 'metlLogTable', currentTab === 'casLog' ? 'CAS_Log' : 'METL_Log')">Download PDF</button>
+        <button onclick="printTable(currentTab === 'casLog' ? 'casLogTable' : 'metlLogTable')">Print</button>
+    </div>
+    <div class="cas-log-container" id="casLogContainer">
+        <table id="casLogTable">
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>Location</th>
+                    <th>No and Type of AC</th>
+                    <th>NBR of Controls</th>
+                    <th>TASK</th>
+                    <th>Remarks</th>
+                    <th>Signature</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div class="metl-log-container" id="metlLogContainer" style="display: none;">
+        <table id="metlLogTable">
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>Location</th>
+                    <th>No and Type of AC</th>
+                    <th>NBR of Controls</th>
+                    <th>TASK</th>
+                    <th>Remarks</th>
+                    <th>Signature</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <footer>
+        <p>© 2025 JTAC App. by MadFrog 69  --- stay froggy---.</p>
+    </footer>
+
+    <script>
+        let selectedOptions = {};
+        let currentTab = 'casLog'; // Default tab
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const viewedUser = JSON.parse(localStorage.getItem('viewedUser') || '{}');
+        const displayedUser = viewedUser.login ? viewedUser : currentUser;
+
+        if (!currentUser.login) {
+            window.location.href = 'index.html';
+        }
+
+        function getUserCasLogKey() {
+            return `casLogData_${displayedUser.login}`;
+        }
+
+        let casLogData = JSON.parse(localStorage.getItem(getUserCasLogKey()) || '[]');
+
+        const tacValidity = {
+            'FW 1': 6, 'FW 2': 6, 'RW': 6, 'TYPE 1': 6, 'TYPE 2': 6, 'TYPE 3': 6,
+            'BOT': 6, 'BOC': 6, 'ORDNANCE': 6, 'TO': 6, 'VDL': 6, 'ETD': 6,
+            '9L LL': 6, 'MH': 6, 'LASER': 6, 'DAY': 6, 'NIGHT': 6, 'IR': 6,
+            'RO': 6, 'SEAD': 6, 'URBAN': 6, 'GPS LRF': 6,
+            'Comms P.': 18, 'Decon.': 18, 'Fires decon.': 18, 'Fire Sup': 18,
+            'GTP': 18, 'INTEL': 18, 'Map Plot': 18, 'Match TGT Loc.': 18,
+            'Surface Fire': 18, 'TACT. TAG Syst.': 18, 'TGT Acq Day': 18,
+            'TGT Acq Night': 18, 'TGT Acq RO': 18, 'UAV': 18,
+            'FAC-A': 18, 'DA': 18, 'ACO': 18, 'WP': 18, 'SMK': 18, 'IDF': 18,
+            'DF': 18, 'ATO': 18
+        };
+
+        const fixedTacOrder = [
+            'FW 1', 'FW 2', 'RW', 'TYPE 1', 'TYPE 2', 'TYPE 3', 'BOT', 'BOC', 'ORDNANCE',
+            'TO', 'VDL', 'ETD', '9L LL', 'MH', 'LASER', 'DAY', 'NIGHT', 'IR', 'RO', 'SEAD',
+            'URBAN', 'Comms P.', 'Decon.', 'Fires decon.', 'Fire Sup', 'GTP', 'INTEL',
+            'Map Plot', 'Match TGT Loc.', 'Surface Fire', 'TACT. TAG Syst.', 'TGT Acq Day',
+            'TGT Acq Night', 'TGT Acq RO', 'GPS LRF', 'UAV', 'FAC-A', 'DA', 'ACO', 'WP',
+            'SMK', 'IDF', 'DF', 'ATO'
+        ];
+
+        const casLogTacs = [
+            'FW 1', 'FW 2', 'RW', 'TYPE 1', 'TYPE 2', 'TYPE 3', 'BOT', 'BOC', 'ORDNANCE',
+            'TO', 'VDL', 'ETD', '9L LL', 'MH', 'LASER', 'DAY', 'NIGHT', 'IR', 'RO', 'SEAD',
+            'URBAN'
+        ];
+
+        const metlLogTacs = [
+            'Comms P.', 'Decon.', 'Fires decon.', 'Fire Sup', 'GTP', 'INTEL', 'Map Plot',
+            'Match TGT Loc.', 'Surface Fire', 'TACT. TAG Syst.', 'TGT Acq Day', 'TGT Acq Night',
+            'TGT Acq RO', 'GPS LRF', 'UAV', 'FAC-A', 'DA', 'ACO', 'WP', 'SMK', 'IDF', 'DF', 'ATO'
+        ];
+
+        function toggleOption(option) {
+            const dependencies = {
+                'RW': ['FW 1', 'FW 2'],
+                'TYPE 1': ['TYPE 2', 'TYPE 3'],
+                'TYPE 2': ['TYPE 1', 'TYPE 3'],
+                'TYPE 3': ['TYPE 1', 'TYPE 2'],
+                'BOT': ['BOC'],
+                'BOC': ['BOT', 'IR', 'SMK', 'WP'],
+                'DAY': ['NIGHT', 'IR'],
+                'NIGHT': ['DAY'],
+                'IR': ['DAY'],
+                'TO': ['VDL', 'ETD'],
+                'VDL': ['TO', 'ETD'],
+                'ETD': ['TO', 'VDL'],
+                '9L LL': ['MH'],
+                'MH': ['9L LL']
+            };
+
+            if (dependencies[option]) {
+                dependencies[option].forEach(dep => {
+                    if (selectedOptions[dep]) {
+                        selectedOptions[dep] = false;
+                        const button = document.querySelector(`button[onclick="toggleOption('${dep}')"]`);
+                        if (button) button.classList.remove('active');
+                    }
+                });
+            }
+
+            selectedOptions[option] = !selectedOptions[option];
+            const button = document.querySelector(`button[onclick="toggleOption('${option}')"]`);
+            if (button) button.classList.toggle('active', selectedOptions[option]);
+            updateButtonStates();
+        }
+
+        function updateButtonStates() {
+            const dependencies = {
+                'RW': ['FW 1', 'FW 2'],
+                'TYPE 1': ['TYPE 2', 'TYPE 3'],
+                'TYPE 2': ['TYPE 1', 'TYPE 3'],
+                'TYPE 3': ['TYPE 1', 'TYPE 2'],
+                'BOT': ['BOC'],
+                'BOC': ['BOT', 'IR', 'SMK', 'WP'],
+                'DAY': ['NIGHT', 'IR'],
+                'NIGHT': ['DAY'],
+                'IR': ['DAY'],
+                'TO': ['VDL', 'ETD'],
+                'VDL': ['TO', 'ETD'],
+                'ETD': ['TO', 'VDL'],
+                '9L LL': ['MH'],
+                'MH': ['9L LL']
+            };
+
+            const isBlocked = isAddingBlocked();
+            document.querySelectorAll('.button-grid button').forEach(button => {
+                button.disabled = isBlocked;
+            });
+
+            document.getElementById('recordButton').disabled = isBlocked;
+
+            Object.keys(dependencies).forEach(option => {
+                const button = document.querySelector(`button[onclick="toggleOption('${option}')"]`);
+                if (button && selectedOptions[option] && !isBlocked) {
+                    dependencies[option].forEach(dep => {
+                        const depButton = document.querySelector(`button[onclick="toggleOption('${dep}')"]`);
+                        if (depButton) depButton.disabled = true;
+                    });
+                }
+            });
+        }
+
+        function isAddingBlocked() {
+            const currentDate = new Date();
+            for (const entry of casLogData) {
+                const tacElements = entry.tac ? entry.tac.split('/') : [];
+                let has6MonthExpired = false;
+                let has18MonthExpired = false;
+
+                for (const tac of tacElements) {
+                    const validityMonths = tacValidity[tac] || 18;
+                    const entryDate = new Date(entry.date);
+                    const timeDiff = (currentDate - entryDate) / (1000 * 60 * 60 * 24 * 30);
+
+                    if (validityMonths === 6 && timeDiff > 6 && timeDiff <= 12 && !entry.remarks) {
+                        has6MonthExpired = true;
+                    }
+                    if ((validityMonths === 6 && timeDiff > 12 && !entry.signature) || 
+                        (validityMonths === 18 && timeDiff > 18 && !entry.signature)) {
+                        has18MonthExpired = true;
+                    }
+                }
+
+                if (has6MonthExpired || has18MonthExpired) return true;
+            }
+            return false;
+        }
+
+        function submitForm() {
+            if (isAddingBlocked()) {
+                alert('Dodawanie nowych wpisów jest zablokowane! Żółte wpisy (6-12 miesięcy dla TAC 6-miesięcznych) wymagają podpisu w Remarks od JTAC, JTAC I lub JTAC I/E (innego niż użytkownik). Czerwone wpisy (>18 miesięcy dla TAC 18-miesięcznych lub >12 miesięcy dla TAC 6-miesięcznych) wymagają podpisu w Signature od JTAC I lub JTAC I/E.');
+                return;
+            }
+
+            const dateInput = document.getElementById('date');
+            const locationInput = document.getElementById('location');
+            const noAndTypeOfACInput = document.getElementById('noAndTypeOfAC');
+            const nrOfControlsInput = document.getElementById('nrOfControls');
+
+            if (!dateInput.value || !locationInput.value || !noAndTypeOfACInput.value || !nrOfControlsInput.value || parseInt(nrOfControlsInput.value) < 1) {
+                alert('Wszystkie pola muszą być wypełnione, a NBR of Controls musi być większe od 0!');
+                return;
+            }
+
+            const date = dateInput.value;
+            const location = locationInput.value;
+            const noAndTypeOfAC = noAndTypeOfACInput.value;
+            const nrOfControls = parseInt(nrOfControlsInput.value);
+            const tacElements = Object.keys(selectedOptions).filter(option => selectedOptions[option]);
+            const sortedTacElements = fixedTacOrder.filter(tac => tacElements.includes(tac));
+            const tac = sortedTacElements.length > 0 ? sortedTacElements.join('/') : 'N/A';
+
+            const casLogEntry = {
+                date,
+                location,
+                noAndTypeOfAC,
+                nrOfControls,
+                tac,
+                remarks: '',
+                signature: ''
+            };
+            casLogData.push(casLogEntry);
+            localStorage.setItem(getUserCasLogKey(), JSON.stringify(casLogData));
+            renderTable();
+
+            dateInput.value = '';
+            locationInput.value = '';
+            noAndTypeOfACInput.value = '';
+            nrOfControlsInput.value = '';
+            selectedOptions = {};
+            document.querySelectorAll('.button-grid button').forEach(button => button.classList.remove('active'));
+            updateButtonStates();
+        }
+
+        function deleteLastEntry() {
+            if (casLogData.length > 0) {
+                casLogData.pop();
+                localStorage.setItem(getUserCasLogKey(), JSON.stringify(casLogData));
+                renderTable();
+            }
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('casLogTab').classList.toggle('active', tab === 'casLog');
+            document.getElementById('metlLogTab').classList.toggle('active', tab === 'metlLog');
+            document.getElementById('casLogContainer').style.display = tab === 'casLog' ? 'block' : 'none';
+            document.getElementById('metlLogContainer').style.display = tab === 'metlLog' ? 'block' : 'none';
+            document.getElementById('tableTitle').textContent = tab === 'casLog' ? 'CAS Log' : 'METL Log';
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbodyCas = document.querySelector('#casLogTable tbody');
+            const tbodyMetl = document.querySelector('#metlLogTable tbody');
+            tbodyCas.innerHTML = '';
+            tbodyMetl.innerHTML = '';
+
+            // Lista METL od 01.1. do 01.20., które mają być pominięte
+            const metlToExclude = [
+                '01.1.', '01.2.', '01.3.', '01.4.', '01.5.', '01.6.', '01.7.', '01.8.', '01.9.',
+                '01.10.', '01.11.', '01.12.', '01.13.', '01.14.', '01.15.', '01.16.', '01.17.', '01.18.', '01.19.', '01.20.'
+            ];
+
+            const filteredCasLogData = casLogData.filter(entry => {
+                const tacElements = entry.tac ? entry.tac.split('/') : [];
+                return !tacElements.some(tac => metlToExclude.includes(tac));
+            });
+
+            filteredCasLogData.forEach((entry, index) => {
+                const tacElements = entry.tac && entry.tac !== 'N/A' ? entry.tac.split('/') : [];
+                const casLogTacElements = tacElements.filter(tac => casLogTacs.includes(tac));
+                const metlLogTacElements = tacElements.filter(tac => metlLogTacs.includes(tac));
+                const hasCasLogTacs = casLogTacElements.length > 0 || tacElements.length === 0;
+                const hasMetlLogTacs = metlLogTacElements.length > 0 || tacElements.length === 0;
+
+                if (!hasCasLogTacs && currentTab === 'casLog') return;
+                if (!hasMetlLogTacs && currentTab === 'metlLog') return;
+
+                const row = document.createElement('tr');
+                let isYellow = false;
+                let isRed = false;
+
+                tacElements.forEach(tac => {
+                    const validityMonths = tacValidity[tac] || 18;
+                    const entryDate = new Date(entry.date);
+                    const currentDate = new Date();
+                    const timeDiff = (currentDate - entryDate) / (1000 * 60 * 60 * 24 * 30);
+
+                    if (validityMonths === 6 && timeDiff > 6 && timeDiff <= 12 && !entry.remarks) isYellow = true;
+                    if ((validityMonths === 6 && timeDiff > 12 && !entry.signature) || 
+                        (validityMonths === 18 && timeDiff > 18 && !entry.signature)) isRed = true;
+                });
+
+                if (isRed) row.classList.add('red-row');
+                else if (isYellow && !isRed) row.classList.add('yellow-row');
+
+                const canEditSignature = ['JTAC I', 'JTAC I/E'].includes(currentUser.role);
+                const canEditRemarks = ['JTAC', 'JTAC I', 'JTAC I/E'].includes(currentUser.role);
+                const displayTac = currentTab === 'casLog' 
+                    ? (casLogTacElements.length > 0 ? casLogTacElements.join('/') : 'N/A')
+                    : (metlLogTacElements.length > 0 ? metlLogTacElements.join('/') : 'N/A');
+
+                row.innerHTML = `
+                    <td>${entry.date}</td>
+                    <td>${entry.location}</td>
+                    <td>${entry.noAndTypeOfAC}</td>
+                    <td>${entry.nrOfControls}</td>
+                    <td>${displayTac}</td>
+                    <td><input type="text" value="${entry.remarks || ''}" ${canEditRemarks ? '' : 'disabled'} onchange="updateRemarks(${index}, this.value)"></td>
+                    <td><input type="text" value="${entry.signature || ''}" ${canEditSignature ? '' : 'disabled'} onchange="updateSignature(${index}, this.value)"></td>
+                    <td><button class="edit-button" onclick="editEntry(${index})" style="display: ${canEdit() ? 'inline-block' : 'none'}">Edit</button></td>
+                `;
+
+                if (hasCasLogTacs && currentTab === 'casLog') {
+                    tbodyCas.appendChild(row);
+                }
+                if (hasMetlLogTacs && currentTab === 'metlLog') {
+                    tbodyMetl.appendChild(row);
+                }
+            });
+
+            updateButtonStates();
+        }
+
+        function canEdit() {
+            return ['JTAC I', 'JTAC I/E'].includes(currentUser.role);
+        }
+
+        function editEntry(index) {
+            const entry = casLogData[index];
+            document.getElementById('date').value = entry.date;
+            document.getElementById('location').value = entry.location;
+            document.getElementById('noAndTypeOfAC').value = entry.noAndTypeOfAC;
+            document.getElementById('nrOfControls').value = entry.nrOfControls;
+
+            selectedOptions = {};
+            document.querySelectorAll('.button-grid button').forEach(button => button.classList.remove('active'));
+            if (entry.tac && entry.tac !== 'N/A') {
+                entry.tac.split('/').forEach(tac => {
+                    selectedOptions[tac] = true;
+                    const button = document.querySelector(`button[onclick="toggleOption('${tac}')"]`);
+                    if (button) button.classList.add('active');
+                });
+            }
+
+            casLogData.splice(index, 1);
+            localStorage.setItem(getUserCasLogKey(), JSON.stringify(casLogData));
+            renderTable();
+            updateButtonStates();
+        }
+
+        function updateRemarks(index, value) {
+            if (!['JTAC', 'JTAC I', 'JTAC I/E'].includes(currentUser.role)) {
+                alert('Tylko JTAC, JTAC I lub JTAC I/E mogą edytować pole Remarks!');
+                renderTable();
+                return;
+            }
+
+            const entry = casLogData[index];
+            const tacElements = entry.tac ? entry.tac.split('/') : [];
+            let isYellow = false;
+
+            tacElements.forEach(tac => {
+                const validityMonths = tacValidity[tac] || 18;
+                const entryDate = new Date(entry.date);
+                const currentDate = new Date();
+                const timeDiff = (currentDate - entryDate) / (1000 * 60 * 60 * 24 * 30);
+
+                if (validityMonths === 6 && timeDiff > 6 && timeDiff <= 12 && !entry.remarks) isYellow = true;
+            });
+
+            if (isYellow && !value) {
+                alert('Żółty wpis (6-12 miesięcy dla TAC 6-miesięcznych) wymaga podpisu w Remarks od JTAC, JTAC I lub JTAC I/E!');
+                return;
+            }
+
+            casLogData[index].remarks = value;
+            localStorage.setItem(getUserCasLogKey(), JSON.stringify(casLogData));
+            renderTable();
+        }
+
+        function updateSignature(index, value) {
+            if (!['JTAC I', 'JTAC I/E'].includes(currentUser.role)) {
+                alert('Tylko JTAC I lub JTAC I/E mogą edytować pole Signature!');
+                renderTable();
+                return;
+            }
+
+            casLogData[index].signature = value;
+            localStorage.setItem(getUserCasLogKey(), JSON.stringify(casLogData));
+            renderTable();
+        }
+
+        async function downloadTable(tableId, fileNamePrefix) {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const pageWidth = pdf.internal.pageSize.getWidth() - 20;
+            const pageHeight = pdf.internal.pageSize.getHeight() - 40;
+            const tableWidthPx = 1200;
+            const tableWidthMm = Math.min(tableWidthPx * 0.264583, pageWidth);
+
+            const table = document.getElementById(tableId);
+            const rows = table.querySelectorAll('tbody tr');
+            let currentPageRows = [];
+            let pageNumber = 1;
+
+            const createContainer = (rowsToRender) => {
+                const pdfContainer = document.createElement('div');
+                pdfContainer.style.padding = '10px';
+                pdfContainer.style.backgroundColor = '#ffffff';
+                pdfContainer.style.position = 'absolute';
+                pdfContainer.style.left = '-9999px';
+
+                const userInfo = document.createElement('div');
+                userInfo.textContent = `Logged in as: ${displayedUser.login}`;
+                userInfo.style.fontFamily = "'Roboto Condensed', sans-serif";
+                userInfo.style.color = '#8b7314';
+                userInfo.style.textAlign = 'center';
+                userInfo.style.fontSize = '14px';
+                userInfo.style.marginBottom = '5px';
+                pdfContainer.appendChild(userInfo);
+
+                const title = document.createElement('h1');
+                title.textContent = tableId === 'casLogTable' ? 'CAS Log' : 'METL Log';
+                title.style.fontFamily = "'Roboto Condensed', sans-serif";
+                title.style.color = '#8b7314';
+                title.style.textAlign = 'center';
+                title.style.fontSize = '18px';
+                title.style.textTransform = 'uppercase';
+                title.style.marginBottom = '10px';
+                pdfContainer.appendChild(title);
+
+                const tableClone = document.createElement('table');
+                tableClone.style.width = `${tableWidthPx}px`;
+                tableClone.style.maxWidth = `${tableWidthPx}px`;
+                tableClone.style.borderCollapse = 'collapse';
+                tableClone.style.fontFamily = "'Roboto Condensed', sans-serif";
+                tableClone.style.boxSizing = 'border-box';
+
+                const thead = table.querySelector('thead').cloneNode(true);
+                const headerRow = thead.querySelector('tr');
+                const editTh = Array.from(headerRow.cells).find(cell => cell.textContent.trim() === 'Edit');
+                if (editTh) {
+                    const editIndex = Array.from(headerRow.cells).indexOf(editTh);
+                    headerRow.deleteCell(editIndex);
+                }
+                thead.querySelectorAll('th').forEach(th => {
+                    th.style.border = '1px solid #8b7314';
+                    th.style.padding = '6px';
+                    th.style.textAlign = 'left';
+                    th.style.backgroundColor = '#8b7314';
+                    th.style.color = '#000';
+                    th.style.wordBreak = 'break-word';
+                    th.style.boxSizing = 'border-box';
+                });
+                tableClone.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                rowsToRender.forEach(row => {
+                    const rowClone = row.cloneNode(true);
+                    const editTd = Array.from(rowClone.cells).find(cell => cell.querySelector('.edit-button'));
+                    if (editTd) {
+                        const editIndex = Array.from(rowClone.cells).indexOf(editTd);
+                        rowClone.deleteCell(editIndex);
+                    }
+                    rowClone.querySelectorAll('td').forEach(td => {
+                        td.style.border = '1px solid #8b7314';
+                        td.style.padding = '6px';
+                        td.style.textAlign = 'left';
+                        td.style.color = '#000';
+                        td.style.wordBreak = 'break-word';
+                        td.style.boxSizing = 'border-box';
+                        td.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        if (rowClone.classList.contains('yellow-row')) {
+                            td.style.backgroundColor = '#ffbb00';
+                            td.style.color = '#000';
+                        } else if (rowClone.classList.contains('red-row')) {
+                            td.style.backgroundColor = '#ff0000';
+                            td.style.color = '#000';
+                        }
+                    });
+                    tbody.appendChild(rowClone);
+                });
+                tableClone.appendChild(tbody);
+                pdfContainer.appendChild(tableClone);
+
+                return pdfContainer;
+            };
+
+            const calculateHeight = async (rowsToRender) => {
+                const pdfContainer = createContainer(rowsToRender);
+                document.body.appendChild(pdfContainer);
+                try {
+                    const canvas = await html2canvas(pdfContainer, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: false
+                    });
+                    const imgHeight = canvas.height;
+                    const imgWidth = canvas.width;
+                    const heightInMm = (imgHeight * tableWidthMm) / imgWidth;
+                    return heightInMm;
+                } finally {
+                    document.body.removeChild(pdfContainer);
+                }
+            };
+
+            let currentHeight = 0;
+            for (let i = 0; i < rows.length; i++) {
+                const testRows = [...currentPageRows, rows[i]];
+                const fragmentHeight = await calculateHeight(testRows);
+
+                if (fragmentHeight <= pageHeight || currentPageRows.length === 0) {
+                    currentPageRows.push(rows[i]);
+                    currentHeight = fragmentHeight;
+                } else {
+                    const pdfContainer = createContainer(currentPageRows);
+                    document.body.appendChild(pdfContainer);
+                    try {
+                        const canvas = await html2canvas(pdfContainer, {
+                            scale: 2,
+                            backgroundColor: '#ffffff',
+                            logging: false
+                        });
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        const imgWidth = canvas.width;
+                        const imgHeight = canvas.height;
+                        const width = tableWidthMm;
+                        const height = (imgHeight * width) / imgWidth;
+
+                        const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                        const topMargin = 10;
+                        pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+
+                        pdf.setFontSize(10);
+                        pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                    } finally {
+                        document.body.removeChild(pdfContainer);
+                    }
+
+                    if (i < rows.length) {
+                        pdf.addPage();
+                        pageNumber++;
+                        currentPageRows = [rows[i]];
+                        currentHeight = await calculateHeight([rows[i]]);
+                    }
+                }
+            }
+
+            if (currentPageRows.length > 0) {
+                const pdfContainer = createContainer(currentPageRows);
+                document.body.appendChild(pdfContainer);
+                try {
+                    const canvas = await html2canvas(pdfContainer, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: false
+                    });
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
+                    const width = tableWidthMm;
+                    const height = (imgHeight * width) / imgWidth;
+
+                    const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                    const topMargin = 10;
+                    pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+
+                    pdf.setFontSize(10);
+                    pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                } finally {
+                    document.body.removeChild(pdfContainer);
+                }
+            }
+
+            pdf.save(`${fileNamePrefix}_${displayedUser.login}.pdf`);
+        }
+
+        function printTable(tableId) {
+            const table = document.getElementById(tableId);
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print ${tableId === 'casLogTable' ? 'CAS Log' : 'METL Log'}</title>
+                    <style>
+                        body {
+                            font-family: 'Roboto Condensed', sans-serif;
+                            margin: 0;
+                            padding: 0;
+                            background-color: #fff;
+                            color: #000;
+                        }
+                        h1 {
+                            font-size: 1.8em;
+                            color: #8b7314;
+                            text-align: center;
+                            margin: 10px 0;
+                            text-transform: uppercase;
+                        }
+                        .user-info {
+                            text-align: center;
+                            margin: 8px 0;
+                            color: #8b7314;
+                            font-size: 1em;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 8px;
+                            font-size: 0.8em;
+                        }
+                        table, th, td {
+                            border: 1px solid #8b7314;
+                        }
+                        th, td {
+                            padding: 6px;
+                            text-align: left;
+                            color: #000;
+                        }
+                        th {
+                            background-color: #8b7314;
+                            color: #000;
+                        }
+                        td {
+                            background-color: rgba(255, 255, 255, 0.1);
+                        }
+                        .yellow-row td {
+                            background-color: #ffbb00 !important;
+                            color: #000 !important;
+                        }
+                        .red-row td {
+                            background-color: #ff0000 !important;
+                            color: #000 !important;
+                        }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close()">
+                    <div class="user-info">Logged in as: ${displayedUser.login}</div>
+                    <h1>${tableId === 'casLogTable' ? 'CAS Log' : 'METL Log'}</h1>
+                    <table>
+                        <thead>
+                            ${(() => {
+                                const thead = table.querySelector('thead').cloneNode(true);
+                                const headerRow = thead.querySelector('tr');
+                                const editTh = Array.from(headerRow.cells).find(cell => cell.textContent.trim() === 'Edit');
+                                if (editTh) {
+                                    const editIndex = Array.from(headerRow.cells).indexOf(editTh);
+                                    headerRow.deleteCell(editIndex);
+                                }
+                                return thead.outerHTML;
+                            })()}
+                        </thead>
+                        <tbody>
+                            ${(() => {
+                                let tbodyHTML = '';
+                                table.querySelectorAll('tbody tr').forEach(row => {
+                                    const rowClone = row.cloneNode(true);
+                                    const editTd = Array.from(rowClone.cells).find(cell => cell.querySelector('.edit-button'));
+                                    if (editTd) {
+                                        const editIndex = Array.from(rowClone.cells).indexOf(editTd);
+                                        rowClone.deleteCell(editIndex);
+                                    }
+                                    tbodyHTML += rowClone.outerHTML;
+                                });
+                                return tbodyHTML;
+                            })()}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        renderTable();
+    </script>
+</body>
+</html>

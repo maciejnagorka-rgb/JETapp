@@ -1,0 +1,171 @@
+body {
+    font-family: "Roboto Condensed", sans-serif;
+    background-color: #fff;
+    color: #000;
+    padding: 20px;
+}
+
+.user-info {
+    text-align: center;
+    margin: 10px 0;
+    color: #8b7314;
+    font-size: 1em;
+}
+
+h1 {
+    font-size: 1.8em;
+    color: #8b7314;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.8em;
+}
+
+table, th, td {
+    border: 1px solid #8b7314;
+}
+
+th {
+    background-color: #8b7314;
+    color: #000;
+    padding: 5px;
+    text-align: center;
+}
+
+td {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #000;
+    padding: 5px;
+    text-align: left;
+}
+
+.part-iii-table {
+    table-layout: auto;
+}
+
+.part-iii-table th, .part-iii-table td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 120px;
+}
+
+.checkbox-symbol, .radio-symbol {
+    font-size: 1em;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+textarea {
+    border: none;
+    background: transparent;
+    resize: none;
+    width: 100%;
+    font-family: "Roboto Condensed", sans-serif;
+    color: #000;
+}
+
+.signature-date {
+    color: #000;
+    margin-left: 10px;
+}
+
+.locked-select {
+    color: #000;
+}
+
+.checkbox-group, .eval-grade {
+    display: inline;
+    margin-right: 10px;
+}
+
+.button-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.form-button {
+    display: inline-block;
+    margin: 10px 5px;
+    padding: 10px 20px;
+    background-color: #8b7314;
+    border: 2px solid #2F4F2F;
+    border-radius: 5px;
+    color: #000;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+}
+
+.form-button:hover {
+    background-color: #a68a2e;
+}
+
+@media print {
+    body {
+        background-color: #fff;
+        color: #000;
+        padding: 0;
+        margin: 0;
+    }
+    .user-info, h1 {
+        color: #8b7314;
+        text-align: center;
+        margin: 10px 0;
+    }
+    .button-container, .form-button {
+        display: none;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    table, th, td {
+        border: 1px solid #8b7314;
+    }
+    th {
+        background-color: #8b7314;
+        color: #000;
+        padding: 5px;
+        text-align: center;
+    }
+    td {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #000;
+        padding: 5px;
+        text-align: left;
+    }
+    .part-iii-table {
+        table-layout: auto;
+    }
+    .part-iii-table th, .part-iii-table td {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 120px;
+    }
+    .checkbox-symbol, .radio-symbol {
+        font-size: 1em;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+    textarea {
+        border: none;
+        background: transparent;
+        resize: none;
+        width: 100%;
+        font-family: "Roboto Condensed", sans-serif;
+        color: #000;
+    }
+    .signature-date {
+        color: #000;
+        margin-left: 10px;
+    }
+    .locked-select {
+        color: #000;
+    }
+}

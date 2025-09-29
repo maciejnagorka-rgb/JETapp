@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JTAC App - Battle Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+        }
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            min-height: 100vh;
+        }
+        .top-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .user-info {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .user-info h2 {
+            margin: 0;
+            font-size: 1.2em;
+            color: #8b7314;
+        }
+        .user-info p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+        .buttons-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 90%;
+            max-width: 350px;
+        }
+        .buttons-section button {
+            padding: 8px 15px;
+            background-color: #8b7314;
+            border: 2px solid #2F4F2F;
+            border-radius: 5px;
+            color: #000;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+        }
+        .buttons-section button:hover {
+            background-color: #a68a2e;
+        }
+        .separator {
+            width: 100%;
+            height: 1px;
+            background-color: #8b7314;
+            margin: 10px 0;
+        }
+        .main-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+        .users-section, .chat-section, .rooms-section {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .users-section, .rooms-section {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .chat-section {
+            max-height: 600px; /* Increased for larger chat window */
+            display: flex;
+            flex-direction: column;
+        }
+        .users-section::-webkit-scrollbar, .rooms-section::-webkit-scrollbar, .messages-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .users-section::-webkit-scrollbar-track, .rooms-section::-webkit-scrollbar-track, .messages-list::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 5px;
+        }
+        .users-section::-webkit-scrollbar-thumb, .rooms-section::-webkit-scrollbar-thumb, .messages-list::-webkit-scrollbar-thumb {
+            background: #8b7314;
+            border-radius: 5px;
+        }
+        .users-section::-webkit-scrollbar-thumb:hover, .rooms-section::-webkit-scrollbar-thumb:hover, .messages-list::-webkit-scrollbar-thumb:hover {
+            background: #a68a2e;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 8px;
+            color: #8b7314;
+            font-size: 1.2em;
+        }
+        .chat-notification {
+            background-color: rgba(139, 115, 20, 0.2);
+            color: #ff4500;
+            font-size: 0.9em;
+            padding: 8px;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .message-input-container {
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+            gap: 8px;
+            margin-top: 10px;
+            align-items: stretch; /* Ensure buttons stretch to full width */
+        }
+        .message-input {
+            flex: 1;
+            padding: 6px;
+            background-color: #1a1a1a;
+            color: #fff;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            font-size: 0.9em;
+            max-height: 60px;
+            resize: vertical;
+        }
+        .attach-button {
+            padding: 6px 12px;
+            background-color: #1a3c34;
+            border: 2px solid #ff4500;
+            color: #ff4500;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .attach-button::before {
+            content: '📎';
+            margin-right: 4px;
+        }
+        .attach-button:hover {
+            background-color: #2e5c52;
+            transform: scale(1.05);
+            animation: pulse 1s infinite;
+        }
+        .attach-input {
+            display: none;
+        }
+        .send-button {
+            padding: 6px 12px;
+            background-color: #1a3c34;
+            border: 2px solid #ff4500;
+            color: #ff4500;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        .send-button:hover {
+            background-color: #2e5c52;
+            transform: scale(1.05);
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 69, 0, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 69, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 69, 0, 0); }
+        }
+        .messages-list {
+            max-height: 500px; /* Adjusted to fit larger chat section */
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        .message-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+        .message-content {
+            font-size: 0.9em;
+            color: #fff;
+        }
+        .message-attachments {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .message-attachment img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 5px;
+            border: 1px solid #2F4F2F;
+            cursor: pointer;
+        }
+        .message-attachment a {
+            color: #ff4500;
+            text-decoration: none;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+        }
+        .message-attachment a::before {
+            content: '📄';
+            margin-right: 4px;
+        }
+        .message-attachment a:hover {
+            text-decoration: underline;
+        }
+        .message-meta {
+            font-size: 0.8em;
+            color: #ccc;
+            margin-top: 4px;
+        }
+        .user-item, .room-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .user-item:hover, .room-item:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .user-info-text, .room-info-text {
+            font-size: 0.9em;
+            color: #fff;
+        }
+        .room-join-button {
+            padding: 4px 8px;
+            background-color: #8b7314;
+            border: 1px solid #2F4F2F;
+            color: #000;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background-color 0.3s;
+        }
+        .room-join-button:hover {
+            background-color: #a68a2e;
+        }
+        .create-room-container {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .room-input {
+            flex: 1;
+            padding: 6px;
+            background-color: #1a1a1a;
+            color: #fff;
+            border: 1px solid #2F4F2F;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        .create-room-button {
+            padding: 6px 12px;
+            background-color: #8b7314;
+            border: 1px solid #2F4F2F;
+            color: #000;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s;
+        }
+        .create-room-button:hover {
+            background-color: #a68a2e;
+        }
+        .back-button {
+            padding: 6px 12px;
+            background-color: #8b7314;
+            border: 2px solid #2F4F2F;
+            color: #000;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .back-button:hover {
+            background-color: #a68a2e;
+        }
+        footer {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px;
+            width: 100%;
+            color: #ccc;
+            font-size: 0.8em;
+            text-align: center;
+            box-sizing: border-box;
+            margin-top: 20px;
+            position: relative;
+            clear: both;
+        }
+        @media (max-width: 480px) {
+            .user-info h2 { font-size: 1em; }
+            .user-info p { font-size: 0.8em; }
+            .buttons-section button { padding: 6px 12px; font-size: 0.8em; }
+            h2 { font-size: 1em; }
+            .users-section, .rooms-section { max-height: 250px; }
+            .chat-section { max-height: 450px; }
+            .chat-notification { font-size: 0.8em; padding: 6px; }
+            .message-input, .room-input { font-size: 0.8em; padding: 5px; }
+            .attach-button, .send-button, .create-room-button, .back-button { font-size: 0.8em; padding: 5px 10px; }
+            .message-content, .user-info-text, .room-info-text { font-size: 0.8em; }
+            .message-meta { font-size: 0.7em; }
+            .room-join-button { font-size: 0.7em; padding: 3px 6px; }
+            .message-attachment img { max-width: 80px; max-height: 80px; }
+            .message-attachment a { font-size: 0.7em; }
+        }
+        @media (min-width: 481px) {
+            .chat-container { padding: 20px; }
+            .top-section { flex-direction: row; justify-content: space-between; align-items: center; }
+            .user-info h2 { font-size: 1.5em; }
+            .user-info p { font-size: 1em; }
+            .buttons-section { flex-direction: row; width: auto; max-width: none; }
+            .buttons-section button { padding: 10px 20px; font-size: 1em; }
+            .main-section { flex-direction: row; justify-content: space-between; }
+            .users-section { width: 20%; } /* Reduced width */
+            .chat-section { width: 50%; } /* Increased width */
+            .rooms-section { width: 20%; } /* Reduced width */
+            .users-section, .rooms-section { max-height: 300px; }
+            .chat-section { max-height: 600px; }
+            h2 { font-size: 1.5em; }
+            .chat-notification { font-size: 1em; padding: 10px; }
+            .message-input, .room-input { font-size: 1em; padding: 8px; }
+            .attach-button, .send-button, .create-room-button, .back-button { font-size: 1em; padding: 8px 15px; }
+            .message-content, .user-info-text, .room-info-text { font-size: 1em; }
+            .message-meta { font-size: 0.9em; }
+            .room-join-button { font-size: 0.9em; padding: 5px 10px; }
+            .message-attachment img { max-width: 120px; max-height: 120px; }
+            .message-attachment a { font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="top-section">
+            <div class="user-info">
+                <h2>Call sign: <span id="call-sign"></span></h2>
+                <p>Role: <span id="role"></span></p>
+            </div>
+            <div class="buttons-section">
+                <button onclick="goToProfile()">Back to Profile</button>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </div>
+        <div class="separator"></div>
+        <div class="main-section">
+            <div class="users-section">
+                <h2>Online Users</h2>
+                <div id="usersList"></div>
+            </div>
+            <div class="chat-section">
+                <h2 id="chat-title">General Chat</h2>
+                <div class="chat-notification" id="chat-notification">General chat is cleared every 72 hours.</div>
+                <button class="back-button" id="back-button" style="display: none;" onclick="switchToGeneralChat()">Back to General Chat</button>
+                <div id="messagesList" class="messages-list"></div>
+                <div class="message-input-container">
+                    <textarea id="messageInput" class="message-input" placeholder="Type your message..."></textarea>
+                    <div style="display: flex; gap: 8px;">
+                        <label class="attach-button" for="attachInput">Attach</label>
+                        <input type="file" id="attachInput" class="attach-input" accept="*/*">
+                        <button class="send-button" onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+            <div class="rooms-section">
+                <h2>Chat Rooms</h2>
+                <div id="roomsList"></div>
+                <div class="create-room-container">
+                    <input id="roomInput" class="room-input" placeholder="Enter room name...">
+                    <button class="create-room-button" onclick="createRoom()">Create Room</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>© 2025 JTAC App. by MadFrog 69 --- stay froggy---.</p>
+    </footer>
+<script>
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const displayedUser = currentUser;
+    let currentChat = 'general';
+
+    document.getElementById('call-sign').textContent = displayedUser.login || 'Not logged in';
+    document.getElementById('role').textContent = displayedUser.role || 'Unknown role';
+
+    function goToProfile() {
+        window.location.href = 'profile.html';
+    }
+
+    function logout() {
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('viewedUser');
+        updateOnlineUsers(false); // Mark user as offline
+        window.location.href = 'index.html';
+    }
+
+    function getChatKey() {
+        return `chatData_${currentChat}`;
+    }
+
+    function getChatTimestampKey() {
+        return `chatTimestamp_${currentChat}`;
+    }
+
+    function getRoomsKey() {
+        return `roomsData`;
+    }
+
+    function getUsersKey() {
+        return `usersData`;
+    }
+
+    function updateOnlineUsers(isOnline = true) {
+        let users = JSON.parse(localStorage.getItem(getUsersKey()) || '[]');
+        const now = Date.now();
+        const fiveMinutesMs = 5 * 60 * 1000; // 5 minutes
+
+        // Remove expired users
+        users = users.filter(user => now - user.lastActive < fiveMinutesMs);
+
+        if (isOnline && currentUser.login) {
+            // Update or add current user
+            const existingUserIndex = users.findIndex(u => u.login === currentUser.login);
+            if (existingUserIndex !== -1) {
+                users[existingUserIndex].lastActive = now;
+                users[existingUserIndex].role = currentUser.role;
+            } else {
+                users.push({
+                    login: currentUser.login,
+                    role: currentUser.role,
+                    lastActive: now
+                });
+            }
+        } else if (!isOnline && currentUser.login) {
+            // Remove current user on logout
+            users = users.filter(u => u.login !== currentUser.login);
+        }
+
+        localStorage.setItem(getUsersKey(), JSON.stringify(users));
+        renderUsers();
+    }
+
+    function clearChatIfExpired() {
+        const timestamp = localStorage.getItem(getChatTimestampKey());
+        const currentTime = Date.now();
+        const seventyTwoHoursInMs = 72 * 60 * 60 * 1000;
+
+        if (!timestamp || currentTime - parseInt(timestamp) > seventyTwoHoursInMs) {
+            localStorage.removeItem(getChatKey());
+            localStorage.setItem(getChatTimestampKey(), currentTime.toString());
+        }
+    }
+
+    function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const attachInput = document.getElementById('attachInput');
+        const content = messageInput.value.trim();
+        const files = attachInput.files;
+
+        if (!content && files.length === 0) {
+            alert('Message or attachment required!');
+            return;
+        }
+        if (!currentUser.login) {
+            alert('You must be logged in to send a message!');
+            return;
+        }
+
+        const messages = JSON.parse(localStorage.getItem(getChatKey()) || '[]');
+        const newMessage = {
+            id: Date.now(),
+            content: content,
+            date: new Date().toISOString(),
+            author: currentUser.login,
+            attachments: []
+        };
+
+        if (files.length > 0) {
+            Array.from(files).forEach(file => {
+                if (file.size > 1024 * 1024) {
+                    alert(`File ${file.name} exceeds 1MB limit!`);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    newMessage.attachments.push({
+                        name: file.name,
+                        type: file.type,
+                        data: e.target.result
+                    });
+                    if (newMessage.attachments.length === files.length) {
+                        messages.push(newMessage);
+                        localStorage.setItem(getChatKey(), JSON.stringify(messages));
+                        messageInput.value = '';
+                        attachInput.value = '';
+                        updateOnlineUsers(); // Refresh user activity
+                        renderMessages();
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        } else {
+            messages.push(newMessage);
+            localStorage.setItem(getChatKey(), JSON.stringify(messages));
+            messageInput.value = '';
+            attachInput.value = '';
+            updateOnlineUsers(); // Refresh user activity
+            renderMessages();
+        }
+    }
+
+    function renderMessages() {
+        const messagesList = document.getElementById('messagesList');
+        messagesList.innerHTML = '';
+
+        const messages = JSON.parse(localStorage.getItem(getChatKey()) || '[]');
+        messages.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        messages.forEach(message => {
+            const messageItem = document.createElement('div');
+            messageItem.classList.add('message-item');
+            let attachmentsHtml = '';
+            if (message.attachments && message.attachments.length > 0) {
+                attachmentsHtml = '<div class="message-attachments">';
+                message.attachments.forEach(attachment => {
+                    if (attachment.type.startsWith('image/')) {
+                        attachmentsHtml += `<img src="${attachment.data}" alt="${attachment.name}" title="${attachment.name}" onclick="window.open('${attachment.data}')">`;
+                    } else {
+                        attachmentsHtml += `<a href="${attachment.data}" download="${attachment.name}">${attachment.name}</a>`;
+                    }
+                });
+                attachmentsHtml += '</div>';
+            }
+            messageItem.innerHTML = `
+                <div class="message-content">${message.content || ''}</div>
+                ${attachmentsHtml}
+                <div class="message-meta">Sent by: ${message.author} - ${new Date(message.date).toLocaleString()}</div>
+            `;
+            messagesList.appendChild(messageItem);
+            messagesList.scrollTop = messagesList.scrollHeight;
+        });
+    }
+
+    function renderUsers() {
+        const usersList = document.getElementById('usersList');
+        usersList.innerHTML = '';
+
+        const users = JSON.parse(localStorage.getItem(getUsersKey()) || '[]');
+        const now = Date.now();
+        const fiveMinutesMs = 5 * 60 * 1000;
+
+        // Filter out expired users
+        const activeUsers = users.filter(user => now - user.lastActive < fiveMinutesMs);
+        localStorage.setItem(getUsersKey(), JSON.stringify(activeUsers));
+
+        if (activeUsers.length === 0) {
+            const emptyItem = document.createElement('div');
+            emptyItem.classList.add('user-item');
+            emptyItem.innerHTML = `<div class="user-info-text">No users online</div>`;
+            usersList.appendChild(emptyItem);
+            return;
+        }
+
+        activeUsers.forEach(user => {
+            const userItem = document.createElement('div');
+            userItem.classList.add('user-item');
+            userItem.innerHTML = `
+                <div class="user-info-text">${user.login} (${user.role})</div>
+            `;
+            usersList.appendChild(userItem);
+        });
+    }
+
+    function createRoom() {
+        const roomInput = document.getElementById('roomInput');
+        const roomName = roomInput.value.trim();
+        if (!roomName) {
+            alert('Room name cannot be empty!');
+            return;
+        }
+        if (!currentUser.login) {
+            alert('You must be logged in to create a room!');
+            return;
+        }
+
+        const rooms = JSON.parse(localStorage.getItem(getRoomsKey()) || '[]');
+        const newRoom = {
+            id: Date.now(),
+            name: roomName,
+            creator: currentUser.login,
+            createdAt: new Date().toISOString()
+        };
+        rooms.push(newRoom);
+        localStorage.setItem(getRoomsKey(), JSON.stringify(rooms));
+        roomInput.value = '';
+        updateOnlineUsers(); // Refresh user activity
+        renderRooms();
+    }
+
+    function joinRoom(roomId) {
+        const rooms = JSON.parse(localStorage.getItem(getRoomsKey()) || '[]');
+        const room = rooms.find(r => r.id === roomId);
+        if (!room) {
+            alert('Room not found!');
+            return;
+        }
+        currentChat = `room_${roomId}`;
+        document.getElementById('chat-title').textContent = `${room.name}`;
+        document.getElementById('chat-notification').textContent = `${room.name} is cleared every 72 hours.`;
+        document.getElementById('back-button').style.display = 'block';
+        clearChatIfExpired();
+        updateOnlineUsers(); // Refresh user activity
+        renderMessages();
+    }
+
+    function switchToGeneralChat() {
+        currentChat = 'general';
+        document.getElementById('chat-title').textContent = 'General Chat';
+        document.getElementById('chat-notification').textContent = 'General chat is cleared every 72 hours.';
+        document.getElementById('back-button').style.display = 'none';
+        clearChatIfExpired();
+        updateOnlineUsers(); // Refresh user activity
+        renderMessages();
+    }
+
+    function renderRooms() {
+        const roomsList = document.getElementById('roomsList');
+        roomsList.innerHTML = '';
+
+        const rooms = JSON.parse(localStorage.getItem(getRoomsKey()) || '[]');
+        rooms.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        rooms.forEach(room => {
+            const roomItem = document.createElement('div');
+            roomItem.classList.add('room-item');
+            roomItem.innerHTML = `
+                <div class="room-info-text">${room.name} (by ${room.creator})</div>
+                <button class="room-join-button" onclick="joinRoom(${room.id})">Join</button>
+            `;
+            roomsList.appendChild(roomItem);
+        });
+    }
+
+    // Initialize
+    if (!currentUser.login) {
+        window.location.href = 'index.html';
+    } else {
+        updateOnlineUsers(); // Mark current user as online
+        clearChatIfExpired();
+        renderMessages();
+        renderUsers();
+        renderRooms();
+
+        // Periodically update user activity and clean up expired users
+        setInterval(() => {
+            updateOnlineUsers();
+        }, 30 * 1000); // Every 30 seconds
+    }
+
+    document.getElementById('attachInput').addEventListener('change', function(e) {
+        const files = e.target.files;
+        if (files.length > 0) {
+            Array.from(files).forEach(file => {
+                if (file.size > 1024 * 1024) {
+                    alert(`File ${file.name} exceeds 1MB limit!`);
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

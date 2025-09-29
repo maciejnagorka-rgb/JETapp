@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IV. MTL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 1000px;
+            box-sizing: border-box;
+            border: 1px solid #2F4F2F;
+        }
+        h1 {
+            font-size: 1.8em;
+            color: #8b7314;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        #userInfo {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #8b7314;
+            font-size: 1em;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #8b7314;
+            border: 2px solid #2F4F2F;
+            border-radius: 5px;
+            color: #000;
+            font-size: 1em;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #a68a2e;
+        }
+        .edit-button {
+            padding: 4px 8px;
+            background-color: #8b7314;
+            border: 1px solid #2F4F2F;
+            border-radius: 3px;
+            color: #000;
+            font-size: 0.7em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .edit-button:hover {
+            background-color: #a68a2e;
+        }
+        .metl-tracker-section {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            width: 100%;
+            max-height: 400px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .metl-tracker-section::-webkit-scrollbar {
+            width: 8px;
+        }
+        .metl-tracker-section::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 5px;
+        }
+        .metl-tracker-section::-webkit-scrollbar-thumb {
+            background: #8b7314;
+            border-radius: 5px;
+        }
+        .metl-tracker-section::-webkit-scrollbar-thumb:hover {
+            background: #a68a2e;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 8px;
+            color: #8b7314;
+            font-size: 1.2em;
+        }
+        .tracker-buttons {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.8em;
+        }
+        table, th, td {
+            border: 1px solid #2F4F2F;
+        }
+        th, td {
+            padding: 6px;
+            text-align: left;
+            color: #fff;
+        }
+        th {
+            background-color: #8b7314;
+            color: #000;
+        }
+        td {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        tr.metl-header td {
+            background-color: #555;
+            font-weight: bold;
+        }
+        .metl-cell.green { background-color: #00ff00; color: #000; }
+        .metl-cell.yellow { background-color: #ffff00; color: #000; }
+        .metl-cell.red { background-color: #ff0000; color: #000; }
+
+        /* Style dla wydruku */
+        @media print {
+            body {
+                background-color: #fff;
+                color: #000;
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                background: none;
+                border: none;
+                padding: 0;
+                width: 100%;
+                max-width: none;
+            }
+            #userInfo, h1, h2 {
+                color: #8b7314;
+                text-align: center;
+                margin: 10px 0;
+            }
+            .metl-tracker-section {
+                max-height: none;
+                overflow: visible;
+                background: none;
+                padding: 0;
+            }
+            .tracker-buttons, .button[href="Part_4.html"], .edit-button {
+                display: none;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            table, th, td {
+                border: 1px solid #8b7314;
+            }
+            th {
+                background-color: #8b7314;
+                color: #000;
+                padding: 6px;
+            }
+            td {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #000;
+                padding: 6px;
+            }
+            tr.metl-header td {
+                background-color: #555;
+                color: #fff;
+            }
+            .metl-cell.green { background-color: #00ff00 !important; color: #000 !important; }
+            .metl-cell.yellow { background-color: #ffff00 !important; color: #000 !important; }
+            .metl-cell.red { background-color: #ff0000 !important; color: #000 !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="userInfo"></div>
+        <h1>IV. MTL</h1>
+        <div class="metl-tracker-section">
+            <h2>METL Tracker</h2>
+            <div class="tracker-buttons">
+                <button class="button" onclick="downloadTable('metlTrackerTable', 'METL_Tracker')">Download PDF</button>
+                <button class="button" onclick="printTable('metlTrackerTable')">Print</button>
+            </div>
+            <table id="metlTrackerTable">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Execution Date</th>
+                        <th>Expire Date</th>
+                        <th>Edit</th>
+                    </tr>
+                </thead>
+                <tbody id="metlTrackerTbody"></tbody>
+            </table>
+        </div>
+        <a href="Part_4.html" class="button">Back</a>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const viewedUser = JSON.parse(localStorage.getItem('viewedUser') || '{}');
+        const displayedUser = viewedUser.login ? viewedUser : currentUser;
+
+        document.getElementById('userInfo').textContent = `Logged in as: ${displayedUser.login}`;
+
+        const metlTrackerTypes = [
+            '01.-CAS Planning', '01.1.', '01.2.', '01.3.', '01.4.', '01.5.', '01.6.', '01.7.', '01.8.', '01.9.',
+            '01.10.', '01.11.', '01.12.', '01.13.', '01.14.', '01.15.', '01.16.', '01.17.', '01.18.', '01.19.', '01.20.',
+            '02.-CAS Preparation', 
+            '02.1. Operate organic JTAC equipment.', 
+            '02.1.1.', '02.1.2.', '02.1.3.', '02.1.5.',
+            '02.2. Apply the products of operational planning in support of CAS execution.', 
+            '02.2.1.', '02.2.2.', '02.2.3.', '02.2.4.', '02.2.5.',
+            '03.-CAS Execution', 
+            '03.1. Targeting.', 
+            '03.1.1. Target Acquisition.', 
+            '03.1.1.1.', '03.1.1.2.', '03.1.1.3.', '03.1.1.4.',
+            '03.1.2. Target Location.', 
+            '03.1.2.1.', '03.1.2.2.', '03.1.2.3.', 
+            '03.2.', 
+            '03.3. Coordinate CAS missions.', 
+            '03.3.1.', '03.3.2.', '03.3.3.',
+            '03.4. Execute deconfliction of aviation assets.', 
+            '03.4.1.', '03.4.2.', 
+            '03.5. Coordinate CAS Target engagement.', 
+            '03.5.1.', '03.5.2.', '03.5.3.', 
+            '03.6. Execute target marking for CAS assets.', 
+            '03.6.1.', '03.6.2.', '03.6.3.', '03.6.4.', 
+            '03.7.', 
+            '03.8. Execute appropriate terminal attack control procedures and method of attack.', 
+            '03.8.1.', '03.8.2.', '03.8.3.', '03.8.4.', '03.8.5.', 
+            '03.9. Control day and night CAS missions, in support of the ground scheme of maneuver.', 
+            '03.9.1.', '03.9.2.', '03.9.3.', '03.9.4.', '03.9.5.', '03.9.6.', 
+            '03.10.', '03.11.', '03.12.'
+        ];
+
+        function getUserCasLogKey() {
+            return `casLogData_${displayedUser.login}`;
+        }
+
+        function getUserDocumentsKey() {
+            return `documentsData_${displayedUser.login}`;
+        }
+
+        function initializeMetlTracker(tableId, trackerTypes) {
+            const casLogData = JSON.parse(localStorage.getItem(getUserCasLogKey()) || '[]');
+            const documentsData = JSON.parse(localStorage.getItem(getUserDocumentsKey()) || '{}');
+            const evaluations = documentsData.evaluationEntries || [];
+            const tbody = document.getElementById(tableId.replace('Table', 'Tbody'));
+            tbody.innerHTML = '';
+
+            const allowedRoles = ['JTAC I', 'JTAC I/E', 'Program Manager'];
+            const canEdit = allowedRoles.includes(currentUser.role);
+
+            // Wiersze z opisami (tylko te z literami po numerach)
+            const descriptions = {
+                '01.-': 'CAS Planning',
+                '02.-': 'CAS Preparation',
+                '02.1.': 'Operate organic JTAC equipment.',
+                '02.2.': 'Apply the products of operational planning in support of CAS execution.',
+                '03.-': 'CAS Execution',
+                '03.1.': 'Targeting.',
+                '03.1.1.': 'Target Acquisition.',
+                '03.1.2.': 'Target Location.',
+                '03.3.': 'Coordinate CAS missions.',
+                '03.4.': 'Execute deconfliction of aviation assets.',
+                '03.5.': 'Coordinate CAS Target engagement.',
+                '03.6.': 'Execute target marking for CAS assets.',
+                '03.8.': 'Execute appropriate terminal attack control procedures and method of attack.',
+                '03.9.': 'Control day and night CAS missions, in support of the ground scheme of maneuver.'
+            };
+
+            trackerTypes.forEach(type => {
+                const isHeader = type.match(/^\d+\.-/);
+                const hasDescription = descriptions.hasOwnProperty(type.split(' ')[0]);
+                const displayText = hasDescription ? `${type}` : type;
+                const row = document.createElement('tr');
+                if (isHeader || hasDescription) {
+                    row.classList.add('metl-header');
+                }
+                row.innerHTML = `
+                    <td>${displayText}</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>${canEdit && !isHeader && !hasDescription ? '<button class="edit-button" onclick="editExecutionDate(this)" disabled>Edit</button>' : ''}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            const sortedCasLogData = [...casLogData].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const latestEntries = {};
+
+            // Obsługa casLogData dla wszystkich typów (oprócz 01.1. do 01.20., które obsłużymy osobno)
+            sortedCasLogData.forEach(entry => {
+                const tacElements = entry.tac ? entry.tac.split('/') : [entry.tac];
+                trackerTypes.forEach(metlType => {
+                    if (!metlType.match(/^\d+\.-/) && !metlType.match(/^01\.\d+\./)) { // Pomijamy 01.1. do 01.20.
+                        const dependencies = getMetlDependencies(metlType);
+                        if (dependencies.includes('date') || dependencies.some(dep => 
+                            tacElements.includes(dep) || (Array.isArray(dep) && dep.every(d => tacElements.includes(d))))) {
+                            if (!latestEntries[metlType] || new Date(entry.date) > new Date(latestEntries[metlType].date)) {
+                                latestEntries[metlType] = { date: entry.date, signature: entry.signature, casLogIndex: casLogData.indexOf(entry) };
+                            }
+                        }
+                    }
+                    // Specjalna obsługa dla 01.1. do 01.20. z casLogData
+                    if (tacElements.includes(metlType) && metlType.match(/^01\.\d+\./)) {
+                        if (!latestEntries[metlType] || new Date(entry.date) > new Date(latestEntries[metlType].date)) {
+                            latestEntries[metlType] = { date: entry.date, signature: entry.signature, casLogIndex: casLogData.indexOf(entry) };
+                        }
+                    }
+                });
+            });
+
+            // Obsługa evaluationEntries dla 01.1. do 01.20. (uzupełnienie, jeśli brak w casLogData)
+            evaluations.forEach((entry, index) => {
+                if (entry.type === 'Area 1 Test' && parseInt(entry.grade) > 80) {
+                    const metlEntries = [
+                        '01.1.', '01.2.', '01.3.', '01.4.', '01.5.', '01.6.', '01.7.', '01.8.', '01.9.',
+                        '01.10.', '01.11.', '01.12.', '01.13.', '01.14.', '01.15.', '01.16.', '01.17.', '01.18.', '01.19.', '01.20.'
+                    ];
+                    metlEntries.forEach(metlType => {
+                        if (!latestEntries[metlType] || new Date(entry.date) > new Date(latestEntries[metlType].date)) {
+                            latestEntries[metlType] = { date: entry.date, signature: entry.supervisor, evalIndex: index };
+                        }
+                    });
+                }
+            });
+
+            const rows = tbody.getElementsByTagName('tr');
+            for (let i = 0; i < trackerTypes.length; i++) {
+                const type = trackerTypes[i];
+                const row = rows[i];
+                if (row && !type.match(/^\d+\.-/)) {
+                    const entry = latestEntries[type];
+                    if (entry) {
+                        const executionDate = new Date(entry.date);
+                        const expireDate = new Date(executionDate);
+                        expireDate.setMonth(expireDate.getMonth() + 12);
+                        row.cells[1].textContent = executionDate.toLocaleDateString();
+                        row.cells[2].textContent = expireDate.toLocaleDateString();
+                        row.cells[2].className = getMetlExpireDateClass(expireDate, entry.signature);
+                        if (canEdit && row.cells[3].querySelector('.edit-button')) {
+                            row.cells[3].querySelector('.edit-button').disabled = false;
+                            row.cells[3].querySelector('.edit-button').dataset.metlType = type;
+                            row.cells[3].querySelector('.edit-button').dataset.casLogIndex = entry.casLogIndex !== undefined ? entry.casLogIndex : '';
+                            row.cells[3].querySelector('.edit-button').dataset.evalIndex = entry.evalIndex !== undefined ? entry.evalIndex : '';
+                        }
+                    }
+                }
+            }
+        }
+
+        function editExecutionDate(button) {
+            const allowedRoles = ['JTAC I', 'JTAC I/E', 'Program Manager'];
+            if (!allowedRoles.includes(currentUser.role)) {
+                alert('Only JTAC I, JTAC I/E, or Program Manager can edit execution dates.');
+                return;
+            }
+
+            const metlType = button.dataset.metlType;
+            const casLogIndex = button.dataset.casLogIndex;
+            const evalIndex = button.dataset.evalIndex;
+            const currentDate = button.parentElement.parentElement.cells[1].textContent;
+
+            const newDate = prompt(`Enter new execution date for ${metlType} (YYYY-MM-DD):`, currentDate);
+            if (newDate && !isNaN(new Date(newDate))) {
+                if (casLogIndex !== '') {
+                    const casLogData = JSON.parse(localStorage.getItem(getUserCasLogKey()) || '[]');
+                    casLogData[parseInt(casLogIndex)].date = newDate;
+                    localStorage.setItem(getUserCasLogKey(), JSON.stringify(casLogData));
+                } else if (evalIndex !== '') {
+                    const documentsData = JSON.parse(localStorage.getItem(getUserDocumentsKey()) || '{}');
+                    documentsData.evaluationEntries[parseInt(evalIndex)].date = newDate;
+                    localStorage.setItem(getUserDocumentsKey(), JSON.stringify(documentsData));
+                }
+
+                // Odśwież tabelę
+                initializeMetlTracker('metlTrackerTable', metlTrackerTypes);
+            } else if (newDate) {
+                alert('Invalid date format. Please use YYYY-MM-DD.');
+            }
+        }
+
+        function getMetlDependencies(metlType) {
+            const dependencies = {
+                '02.1.2.': ['IR', 'LASER'],
+                '02.1.': ['date'], '02.1.1.': ['LASER', 'IR'], '02.1.3.': ['VDL'], '02.1.5.': ['DA'],
+                '02.2.1.': ['INTEL'], '02.2.2.': ['Fire Sup'], '02.2.3.': ['ACO'], '02.2.4.': ['Comms P.'], '02.2.5.': ['ATO'],
+                '03.1.1.1.': ['TGT Acq Day'], '03.1.1.2.': ['TGT Acq Night'], '03.1.1.3.': ['TGT Acq RO'], '03.1.1.4.': ['VDL'],
+                '03.1.2.1.': ['Map Plot'],
+                '03.1.2.2.': ['GPS LRF'],
+                '03.1.2.3.': ['TACT. TAG Syst.'], '03.2.': ['Match TGT Loc.'],
+                '03.3.1.': ['GTP'], '03.3.2.': ['Surface Fire'], '03.3.3.': ['Surface Fire', 'IDF', 'DF'],
+                '03.4.1.': ['Decon.'], '03.4.2.': ['Fires decon.'],
+                '03.5.1.': ['date'], '03.5.2.': ['date'], '03.5.3.': ['date'],
+                '03.6.1.': ['WP', 'SMK', 'IDF'], '03.6.2.': ['LASER'], '03.6.3.': ['IR'], '03.6.4.': ['TO', 'ETD'],
+                '03.7.': ['SEAD'],
+                '03.8.1.': ['TYPE 1'], '03.8.2.': ['TYPE 2'], '03.8.3.': ['TYPE 3'], '03.8.4.': ['BOT'], '03.8.5.': ['BOC'],
+                '03.9.': [],
+                '03.9.1.': ['FW 1'], '03.9.2.': ['FW 2'], '03.9.3.': ['RW'], '03.9.4.': ['RO'],
+                '03.9.5.': ['FAC-A'],
+                '03.9.6.': ['9L LL'],
+                '03.10.': ['URBAN'], '03.11.': ['DA'], '03.12.': ['date']
+            };
+            return dependencies[metlType] || [];
+        }
+
+        function getMetlExpireDateClass(expireDate, signature) {
+            const currentDate = new Date();
+            const timeDiff = expireDate - currentDate;
+            const monthsDiff = timeDiff / (1000 * 60 * 60 * 24 * 30);
+
+            if (monthsDiff > 11) return 'metl-cell green';
+            if (monthsDiff <= 1 && monthsDiff > (7 / 30)) return 'metl-cell yellow';
+            if (monthsDiff <= (7 / 30)) return 'metl-cell red';
+            return 'metl-cell green';
+        }
+
+        async function downloadTable(tableId, fileNamePrefix) {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const pageWidth = pdf.internal.pageSize.getWidth() - 20;
+            const pageHeight = pdf.internal.pageSize.getHeight() - 40;
+            const tableWidthPx = 1000;
+            const tableWidthMm = Math.min(tableWidthPx * 0.264583, pageWidth);
+
+            const table = document.getElementById(tableId);
+            const rows = table.querySelectorAll('tbody tr');
+            let currentPageRows = [];
+            let pageNumber = 1;
+
+            const createContainer = () => {
+                const pdfContainer = document.createElement('div');
+                pdfContainer.style.padding = '10px';
+                pdfContainer.style.backgroundColor = '#ffffff';
+                pdfContainer.style.position = 'absolute';
+                pdfContainer.style.left = '-9999px';
+
+                const userInfo = document.createElement('div');
+                userInfo.textContent = `Logged in as: ${displayedUser.login}`;
+                userInfo.style.fontFamily = "'Roboto Condensed', sans-serif";
+                userInfo.style.color = '#8b7314';
+                userInfo.style.textAlign = 'center';
+                userInfo.style.fontSize = '14px';
+                userInfo.style.marginBottom = '5px';
+                pdfContainer.appendChild(userInfo);
+
+                const title = document.createElement('h1');
+                title.textContent = 'IV. MTL';
+                title.style.fontFamily = "'Roboto Condensed', sans-serif";
+                title.style.color = '#8b7314';
+                title.style.textAlign = 'center';
+                title.style.fontSize = '18px';
+                title.style.textTransform = 'uppercase';
+                title.style.marginBottom = '10px';
+                pdfContainer.appendChild(title);
+
+                const subtitle = document.createElement('h2');
+                subtitle.textContent = 'METL Tracker';
+                subtitle.style.fontFamily = "'Roboto Condensed', sans-serif";
+                subtitle.style.color = '#8b7314';
+                subtitle.style.textAlign = 'center';
+                subtitle.style.fontSize = '14px';
+                subtitle.style.marginBottom = '10px';
+                pdfContainer.appendChild(subtitle);
+
+                return pdfContainer;
+            };
+
+            const renderTableFragment = async (rowsToRender) => {
+                const pdfContainer = createContainer();
+                const tableClone = document.createElement('table');
+                tableClone.style.width = `${tableWidthPx}px`;
+                tableClone.style.maxWidth = `${tableWidthPx}px`;
+                tableClone.style.borderCollapse = 'collapse';
+                tableClone.style.fontFamily = "'Roboto Condensed', sans-serif";
+                tableClone.style.boxSizing = 'border-box';
+
+                const thead = table.querySelector('thead').cloneNode(true);
+                thead.querySelectorAll('th').forEach((th, index) => {
+                    if (index === 3) th.style.display = 'none'; // Ukryj kolumnę Edit
+                    th.style.border = '1px solid #8b7314';
+                    th.style.padding = '6px';
+                    th.style.textAlign = 'left';
+                    th.style.backgroundColor = '#8b7314';
+                    th.style.color = '#000';
+                    th.style.wordBreak = 'break-word';
+                    th.style.boxSizing = 'border-box';
+                });
+                tableClone.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                rowsToRender.forEach(row => {
+                    const rowClone = row.cloneNode(true);
+                    rowClone.querySelectorAll('td').forEach((td, index) => {
+                        if (index === 3) td.style.display = 'none'; // Ukryj kolumnę Edit
+                        td.style.border = '1px solid #8b7314';
+                        td.style.padding = '6px';
+                        td.style.textAlign = 'left';
+                        td.style.color = '#000';
+                        td.style.wordBreak = 'break-word';
+                        td.style.boxSizing = 'border-box';
+                        if (td.classList.contains('metl-header')) {
+                            td.style.backgroundColor = '#555';
+                            td.style.color = '#fff';
+                        } else {
+                            td.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        }
+                        if (td.classList.contains('metl-cell')) {
+                            if (td.classList.contains('green')) {
+                                td.style.backgroundColor = '#00ff00';
+                                td.style.color = '#000';
+                            } else if (td.classList.contains('yellow')) {
+                                td.style.backgroundColor = '#ffff00';
+                                td.style.color = '#000';
+                            } else if (td.classList.contains('red')) {
+                                td.style.backgroundColor = '#ff0000';
+                                td.style.color = '#000';
+                            }
+                        }
+                    });
+                    tbody.appendChild(rowClone);
+                });
+                tableClone.appendChild(tbody);
+                pdfContainer.appendChild(tableClone);
+
+                return { pdfContainer, tableClone };
+            };
+
+            const calculateHeight = async (rowsToRender) => {
+                const { pdfContainer, tableClone } = await renderTableFragment(rowsToRender);
+                document.body.appendChild(pdfContainer);
+                try {
+                    const canvas = await html2canvas(pdfContainer, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: true
+                    });
+                    const imgHeight = canvas.height;
+                    const imgWidth = canvas.width;
+                    const heightInMm = (imgHeight * tableWidthMm) / imgWidth;
+                    return heightInMm;
+                } finally {
+                    document.body.removeChild(pdfContainer);
+                }
+            };
+
+            let currentHeight = 0;
+            for (let i = 0; i < rows.length; i++) {
+                const testRows = [...currentPageRows, rows[i]];
+                const fragmentHeight = await calculateHeight(testRows);
+
+                if (fragmentHeight <= pageHeight || currentPageRows.length === 0) {
+                    currentPageRows.push(rows[i]);
+                    currentHeight = fragmentHeight;
+                } else {
+                    const { pdfContainer } = await renderTableFragment(currentPageRows);
+                    document.body.appendChild(pdfContainer);
+                    try {
+                        const canvas = await html2canvas(pdfContainer, {
+                            scale: 2,
+                            backgroundColor: '#ffffff',
+                            logging: true
+                        });
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        const imgWidth = canvas.width;
+                        const imgHeight = canvas.height;
+                        const width = tableWidthMm;
+                        const height = (imgHeight * width) / imgWidth;
+
+                        const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                        const topMargin = 10;
+                        pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+
+                        pdf.setFontSize(10);
+                        pdf.setTextColor(0, 0, 0);
+                        pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                    } finally {
+                        document.body.removeChild(pdfContainer);
+                    }
+
+                    if (i < rows.length) {
+                        pdf.addPage();
+                        pageNumber++;
+                        currentPageRows = [rows[i]];
+                        currentHeight = await calculateHeight(currentPageRows);
+                    }
+                }
+            }
+
+            if (currentPageRows.length > 0) {
+                const { pdfContainer } = await renderTableFragment(currentPageRows);
+                document.body.appendChild(pdfContainer);
+                try {
+                    const canvas = await html2canvas(pdfContainer, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: true
+                    });
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
+                    const width = tableWidthMm;
+                    const height = (imgHeight * width) / imgWidth;
+
+                    const leftMargin = (pdf.internal.pageSize.getWidth() - width) / 2;
+                    const topMargin = 10;
+                    pdf.addImage(imgData, 'JPEG', leftMargin, topMargin, width, height);
+
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.text(`Page ${pageNumber}`, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
+                } finally {
+                    document.body.removeChild(pdfContainer);
+                }
+            }
+
+            pdf.save(`${fileNamePrefix}_${displayedUser.login}.pdf`);
+        }
+
+        function printTable(tableId) {
+            const table = document.getElementById(tableId);
+            const printWindow = window.open('', '_blank');
+            const tableClone = table.cloneNode(true);
+            tableClone.querySelectorAll('th')[3].style.display = 'none'; // Ukryj kolumnę Edit
+            tableClone.querySelectorAll('td:nth-child(4)').forEach(td => td.style.display = 'none'); // Ukryj komórki Edit
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print METL Tracker</title>
+                    <style>
+                        body {
+                            font-family: 'Roboto Condensed', sans-serif;
+                            margin: 0;
+                            padding: 0;
+                            background-color: #fff;
+                            color: #000;
+                        }
+                        h1 {
+                            font-size: 1.8em;
+                            color: #8b7314;
+                            text-align: center;
+                            margin: 10px 0;
+                            text-transform: uppercase;
+                        }
+                        h2 {
+                            text-align: center;
+                            margin: 10px 0;
+                            color: #8b7314;
+                            font-size: 1.2em;
+                        }
+                        .user-info {
+                            text-align: center;
+                            margin: 10px 0;
+                            color: #8b7314;
+                            font-size: 1em;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 8px;
+                            font-size: 0.8em;
+                        }
+                        table, th, td {
+                            border: 1px solid #8b7314;
+                        }
+                        th, td {
+                            padding: 6px;
+                            text-align: left;
+                            color: #000;
+                        }
+                        th {
+                            background-color: #8b7314;
+                            color: #000;
+                        }
+                        td {
+                            background-color: rgba(255, 255, 255, 0.1);
+                        }
+                        tr.metl-header td {
+                            background-color: #555;
+                            color: #fff;
+                            font-weight: bold;
+                        }
+                        .metl-cell.green { background-color: #00ff00 !important; color: #000 !important; }
+                        .metl-cell.yellow { background-color: #ffff00 !important; color: #000 !important; }
+                        .metl-cell.red { background-color: #ff0000 !important; color: #000 !important; }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close();">
+                    <div class="user-info">Logged in as: ${displayedUser.login}</div>
+                    <h1>IV. MTL</h1>
+                    <h2>METL Tracker</h2>
+                    ${tableClone.outerHTML}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        window.onload = function() {
+            initializeMetlTracker('metlTrackerTable', metlTrackerTypes);
+        };
+    </script>
+</body>
+</html>

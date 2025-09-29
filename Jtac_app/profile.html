@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JTAC App - Profil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+        }
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            height: 100vh;
+        }
+        .top-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .avatar-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #8b7314;
+            margin-right: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .avatar-upload {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: #8b7314;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .avatar-upload input {
+            display: none;
+        }
+        .user-info {
+            flex: 2;
+        }
+        .user-info h2 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #8b7314;
+        }
+        .user-info p {
+            margin: 5px 0;
+            font-size: 1em;
+            color: #ccc;
+        }
+        .buttons-section {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .buttons-section a, .buttons-section button {
+            padding: 10px 20px;
+            background-color: #8b7314;
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-size: 1em;
+            font-family: 'Orbitron', sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .buttons-section a:hover, .buttons-section button:hover {
+            background-color: #a68a2e;
+        }
+        .separator {
+            width: 100%;
+            height: 1px;
+            background-color: #8b7314;
+            margin: 20px 0;
+        }
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            flex-grow: 1;
+        }
+        .tracker-section, .metl-tracker-section {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            width: 48%;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .tracker-section::-webkit-scrollbar, .metl-tracker-section::-webkit-scrollbar {
+            width: 10px;
+        }
+        .tracker-section::-webkit-scrollbar-track, .metl-tracker-section::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 5px;
+        }
+        .tracker-section::-webkit-scrollbar-thumb, .metl-tracker-section::-webkit-scrollbar-thumb {
+            background: #8b7314;
+            border-radius: 5px;
+        }
+        .tracker-section::-webkit-scrollbar-thumb:hover, .metl-tracker-section::-webkit-scrollbar-thumb:hover {
+            background: #a68a2e;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #8b7314;
+        }
+        .tracker-buttons {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .tracker-buttons button {
+            padding: 8px 16px;
+            background-color: #8b7314;
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 5px;
+        }
+        .tracker-buttons button:hover {
+            background-color: #a68a2e;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid #8b7314;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            color: #fff;
+        }
+        th {
+            background-color: #8b7314;
+            color: #000;
+        }
+        td {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .metl-header {
+            background-color: #555;
+            font-weight: bold;
+        }
+        .expire-date {
+            font-weight: bold;
+        }
+        .expire-date.green { color: #00ff00; }
+        .expire-date.yellow { color: #ffff00; }
+        .expire-date.orange { color: #ff8c00; }
+        .expire-date.red { color: #ff0000; }
+        footer {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            color: #ccc;
+            text-align: center;
+        }
+        @media print {
+            body { background-color: #fff; color: #000; }
+            .profile-container, .top-section, .buttons-section, .tracker-buttons { display: none; }
+            .bottom-section { display: block; height: auto; }
+            .tracker-section, .metl-tracker-section { width: 100%; margin: 0; page-break-inside: avoid; }
+            table, th, td { border: 1px solid #000; }
+            th { background-color: #8b7314; color: #000; }
+            td { background-color: rgba(255, 255, 255, 0.1); }
+            .metl-header { background-color: #555; }
+            .expire-date.green { color: #00ff00; }
+            .expire-date.yellow { color: #ffff00; }
+            .expire-date.orange { color: #ff8c00; }
+            .expire-date.red { color: #ff0000; }
+            footer { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="top-section">
+            <div class="avatar-section">
+                <div class="avatar">
+                    <img src="images/avatar.jpg" alt="Awatar" class="avatar-img">
+                    <div class="avatar-upload">
+                        <input type="file" id="avatar-upload" accept="image/*">
+                        <label for="avatar-upload">+</label>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <h2>Call sign: <span id="call-sign"></span></h2>
+                    <p>Role: <span id="role"></span></p>
+                </div>
+            </div>
+            <div class="buttons-section" id="buttons-section">
+                <a href="cas-log.html">ADD CONTROL</a>
+                <a href="documents.html">DOCUMENTS</a>
+                <a href="jtac_list.html" id="jtac-list-button" style="display: none;">JTAC LIST</a>
+                <button onclick="logout()">LOGOUT</button>
+            </div>
+        </div>
+        <div class="separator"></div>
+        <div class="bottom-section">
+            <div class="tracker-section">
+                <h2>Tracker</h2>
+                <div class="tracker-buttons">
+                    <button onclick="downloadTable('trackerTable', 'Tracker')">Download PDF</button>
+                    <button onclick="printTable('trackerTable')">Print</button>
+                </div>
+                <table id="trackerTable">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Execution Date</th>
+                            <th>Expire Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="trackerTbody"></tbody>
+                </table>
+            </div>
+            <div class="metl-tracker-section">
+                <h2>METL Tracker</h2>
+                <div class="tracker-buttons">
+                    <button onclick="downloadTable('metlTrackerTable', 'METL_Tracker')">Download PDF</button>
+                    <button onclick="printTable('metlTrackerTable')">Print</button>
+                </div>
+                <table id="metlTrackerTable">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Execution Date</th>
+                            <th>Expire Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="metlTrackerTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 JTAC App. by MadFrog 69  --- stay froggy---.</p>
+    </footer>
+
+    <script>
+        // Skrypt do obsługi przesyłania awatara
+        document.getElementById('avatar-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatarImg = document.querySelector('.avatar-img');
+                    avatarImg.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        console.log('Rozpoczęcie ładowania skryptu...');
+        const currentUserRaw = localStorage.getItem('currentUser');
+        console.log('Surowe dane currentUser z localStorage:', currentUserRaw);
+        const currentUser = JSON.parse(currentUserRaw || '{}');
+        console.log('Parsowane currentUser:', currentUser);
+
+        const viewedUserRaw = localStorage.getItem('viewedUser');
+        const viewedUser = JSON.parse(viewedUserRaw || '{}');
+        console.log('Parsowane viewedUser:', viewedUser);
+
+        const displayedUser = viewedUser.login ? viewedUser : currentUser;
+
+        const trackerTypes = [
+            'FW 1', 'FW 2', 'RW', 'TYPE 1', 'TYPE 2', 'TYPE 3', 'BOT', 'BOC', 'ORDNANCE',
+            'TO', 'VDL', 'ETD', '9L_LL', 'MH', 'LASER', 'DAY', 'NIGHT', 'IR', 'RO',
+            'SEAD', 'URBAN'
+        ];
+
+        const metlTrackerTypes = [
+            '01.-CAS Planning', '01.1.', '01.2.', '01.3.', '01.4.', '01.5.', '01.6.', '01.7.', '01.8.', '01.9.',
+            '01.10.', '01.11.', '01.12.', '01.13.', '01.14.', '01.15.', '01.16.', '01.17.', '01.18.', '01.19.', '01.20.',
+            '02.-CAS Preparation', '02.1.', '02.1.1.', '02.1.2.', '02.1.3.', '02.1.5.',
+            '02.2.', '02.2.1.', '02.2.2.', '02.2.3.,', '02.2.4.', '02.2.5.',
+            '03.- CAS Execution', '03.1.', '03.1.1.', '03.1.1.1.', '03.1.1.2.', '03.1.1.3.', '03.1.1.4.',
+            '03.1.2.', '03.1.2.1.', '03.1.2.2.,', '03.1.2.3.,', '03.2.', '03.3.,', '03.3.1.,', '03.3.2.,', '03.3.3.',
+            '03.4.,', '03.4.1.,', '03.4.2.,', '03.5.,', '03.5.1.,', '03.5.2.,', '03.5.3.,', '03.6.,', '03.6.1.,', '03.6.2.',
+            '03.6.3.,', '03.6.4.,', '03.7.,', '03.8.,', '03.8.1.,', '03.8.2.,', '03.8.3.,', '03.8.4.,', '03.8.5.,', '03.9.',
+            '03.9.1.,', '03.9.2.,', '03.9.3.,', '03.9.4.,', '03.9.5.,', '03.9.6.,', '03.10.,', '03.11.,', '03.12.'
+        ];
+
+        const allTrackerTypes = [...trackerTypes, ...metlTrackerTypes];
+
+        function getUserCasLogKey() {
+            const login = displayedUser.login || '';
+            console.log('Klucz użytkownika:', `casLogData_${login}`);
+            return `casLogData_${login}`;
+        }
+
+        function getUserDocumentsKey() {
+            const login = displayedUser.login || '';
+            return `documentsData_${login}`;
+        }
+
+        function initializeTracker(tableId, trackerTypes) {
+            console.log(`Uruchomienie initializeTracker dla ${tableId}...`);
+            const casLogData = JSON.parse(localStorage.getItem(getUserCasLogKey()) || '[]');
+            console.log('Parsowane dane z localStorage:', casLogData);
+
+            const tbody = document.getElementById(tableId.replace('Table', 'Tbody'));
+            if (!tbody) {
+                console.error(`Błąd: Nie znaleziono elementu #${tableId.replace('Table', 'Tbody')}!`);
+                return;
+            }
+
+            tbody.innerHTML = '';
+
+            trackerTypes.forEach(type => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${type}</td><td>-</td><td>-</td>`;
+                tbody.appendChild(row);
+            });
+
+            const sortedCasLogData = [...casLogData].sort((a, b) => new Date(b.date) - new Date(a.date));
+            console.log('Posortowane dane:', sortedCasLogData);
+            const latestEntries = {};
+
+            sortedCasLogData.forEach(entry => {
+                const tacElements = entry.tac.split('/');
+                tacElements.forEach(tac => {
+                    if (trackerTypes.includes(tac) && !latestEntries[tac]) {
+                        latestEntries[tac] = { date: entry.date, signature: entry.signature };
+                        console.log(`Znaleziono datę dla ${tac}: ${entry.date}, podpis: ${entry.signature}`);
+                    }
+                });
+            });
+
+            const rows = tbody.getElementsByTagName('tr');
+            for (let i = 0; i < trackerTypes.length; i++) {
+                const type = trackerTypes[i];
+                const row = rows[i];
+                if (row) {
+                    const entry = latestEntries[type];
+                    if (entry) {
+                        const executionDate = new Date(entry.date);
+                        const expireDate = new Date(executionDate);
+                        expireDate.setMonth(expireDate.getMonth() + 6);
+                        row.cells[1].textContent = entry.date;
+                        row.cells[2].textContent = expireDate.toLocaleDateString();
+                        row.cells[2].className = getTrackerExpireDateClass(expireDate, entry.signature);
+                        console.log(`Zaktualizowano ${type}: Execution Date: ${entry.date}, Expire Date: ${expireDate.toLocaleDateString()}, Podpis: ${entry.signature}`);
+                    }
+                }
+            }
+            console.log(`Inicjalizacja ${tableId} zakończona.`);
+        }
+
+        function initializeMetlTracker(tableId, trackerTypes) {
+            console.log(`Uruchomienie initializeMetlTracker dla ${tableId}...`);
+            const casLogData = JSON.parse(localStorage.getItem(getUserCasLogKey()) || '[]');
+            console.log('Parsowane dane z localStorage:', casLogData);
+
+            const tbody = document.getElementById(tableId.replace('Table', 'Tbody'));
+            if (!tbody) {
+                console.error(`Błąd: Nie znaleziono elementu #${tableId.replace('Table', 'Tbody')}!`);
+                return;
+            }
+
+            tbody.innerHTML = '';
+
+            trackerTypes.forEach(type => {
+                const row = document.createElement('tr');
+                const isHeader = type.match(/^\d+\.-/);
+                row.innerHTML = `
+                    <td class="${isHeader ? 'metl-header' : ''}">${type}</td>
+                    <td>-</td>
+                    <td>-</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            const sortedCasLogData = [...casLogData].sort((a, b) => new Date(b.date) - new Date(a.date));
+            console.log('Posortowane dane:', sortedCasLogData);
+            const latestEntries = {};
+
+            sortedCasLogData.forEach(entry => {
+                const tacElements = entry.tac.split('/');
+                tacElements.forEach(tac => {
+                    if (!tac.match(/^\d+\.-/)) {
+                        trackerTypes.forEach((metlType, index) => {
+                            if (!metlType.match(/^\d+\.-/)) {
+                                const dependencies = getMetlDependencies(metlType);
+                                if (dependencies.includes('date') || dependencies.some(dep => tac === dep || (Array.isArray(dep) && dep.every(d => tacElements.includes(d))))) {
+                                    if (!latestEntries[metlType]) {
+                                        latestEntries[metlType] = { date: entry.date, signature: entry.signature };
+                                        console.log(`Przypisano datę ${entry.date} dla ${metlType} na podstawie ${tac}`);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            const rows = tbody.getElementsByTagName('tr');
+            for (let i = 0; i < trackerTypes.length; i++) {
+                const type = trackerTypes[i];
+                const row = rows[i];
+                if (row && !type.match(/^\d+\.-/)) {
+                    const entry = latestEntries[type];
+                    if (entry) {
+                        const executionDate = new Date(entry.date);
+                        const expireDate = new Date(executionDate);
+                        expireDate.setMonth(expireDate.getMonth() + 12);
+                        row.cells[1].textContent = entry.date;
+                        row.cells[2].textContent = expireDate.toLocaleDateString();
+                        row.cells[2].className = getMetlExpireDateClass(expireDate, entry.signature);
+                        console.log(`Zaktualizowano ${type}: Execution Date: ${entry.date}, Expire Date: ${expireDate.toLocaleDateString()}, Podpis: ${entry.signature}`);
+                    }
+                }
+            }
+            console.log(`Inicjalizacja ${tableId} zakończona.`);
+        }
+
+        function getMetlDependencies(metlType) {
+            const dependencies = {
+                '02.1.': ['date'], '02.1.1.': ['LASER', 'IR'], '02.1.2.': ['GPS/LRF'], '02.1.3.': ['VDL'], '02.1.5.': ['DA'],
+                '02.2.1.': ['INTEL'], '02.2.2.': ['Fire Sup'], '02.2.3.': ['ACO'], '02.2.4.': ['Comms P.'], '02.2.5.': ['ATO'],
+                '03.1.1.1.': ['TGT Acq Day'], '03.1.1.2.': ['TGT Acq Night'], '03.1.1.3.': ['TGT Acq RO'], '03.1.1.4.': ['VDL'],
+                '03.1.2.1.': ['Map Plot'], '03.1.2.2.': ['GPS/LRF'], '03.1.2.3.': ['TACT. TAG Syst.'], '03.2.': ['Match TGT Loc.'],
+                '03.3.1.': ['GTP'], '03.3.2.': ['Surface Fire'], '03.3.3.': ['Surface Fire', 'IDF', 'DF'], '03.4.1.': ['Decon.'],
+                '03.4.2.': ['Fires decon.'], '03.5.1.': ['date'], '03.5.2.': ['date'], '03.5.3.': ['date'], '03.6.1.': ['WP', 'SMK', 'IDF'],
+                '03.6.2.': ['LASER'], '03.6.3.': ['IR'], '03.6.4.': ['TO', 'ETD'], '03.7.': ['SEAD'], '03.8.1.': ['TYPE 1'],
+                '03.8.2.': ['TYPE 2'], '03.8.3.': ['TYPE 3'], '03.8.4.': ['BOT'], '03.8.5.': ['BOC'], '03.9.': ['FW 1'],
+                '03.9.1.': ['FW 2'], '03.9.2.': ['FW 1', 'FW 2', 'NIGHT'], '03.9.3.': ['RW'], '03.9.4.': ['RO'],
+                '03.9.5.': ['FAC-A'], '03.9.6.': ['9L_LL'], '03.10.': ['URBAN'], '03.11.': ['DA'], '03.12.': ['date']
+            };
+            return dependencies[metlType] || [];
+        }
+
+        function getTrackerExpireDateClass(expireDate, signature) {
+            const currentDate = new Date();
+            const timeDiff = expireDate - currentDate;
+            const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+
+            if (daysDiff > 120) return 'expire-date green';
+            if (daysDiff > 30) return 'expire-date yellow';
+            if (daysDiff > 7) return 'expire-date orange';
+            return 'expire-date red';
+        }
+
+        function getMetlExpireDateClass(expireDate, signature) {
+            const currentDate = new Date();
+            const timeDiff = expireDate - currentDate;
+            const monthsDiff = timeDiff / (1000 * 60 * 60 * 24 * 30);
+            const currentUserRole = (JSON.parse(localStorage.getItem('currentUser') || '{}')).role;
+
+            if (monthsDiff > 11) return 'expire-date green';
+            if (monthsDiff <= 1 && monthsDiff > (7 / 30) && !signature && currentUserRole !== 'JTAC I' && currentUserRole !== 'JTAC I/E') {
+                return 'expire-date yellow';
+            }
+            if (monthsDiff <= (7 / 30) && !signature && currentUserRole !== 'JTAC I' && currentUserRole !== 'JTAC I/E') {
+                return 'expire-date red';
+            }
+            return 'expire-date green';
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('viewedUser');
+            window.location.href = 'index.html';
+        }
+
+        function downloadTable(tableId, fileNamePrefix) {
+            const table = document.getElementById(tableId);
+            const section = table.closest('.tracker-section, .metl-tracker-section');
+            const opt = {
+                margin: 1,
+                filename: `${fileNamePrefix}_${displayedUser.login || ''}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().from(section).set(opt).save();
+        }
+
+        function printTable(tableId) {
+            const table = document.getElementById(tableId);
+            const section = table.closest('.tracker-section, .metl-tracker-section');
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print ${tableId === 'trackerTable' ? 'Tracker' : 'METL Tracker'}</title>
+                    <style>
+                        body { font-family: 'Orbitron', sans-serif; margin: 20px; background-color: #000; color: #fff; }
+                        .tracker-section, .metl-tracker-section { background-color: rgba(0, 0, 0, 0.7); padding: 20px; border-radius: 10px; }
+                        h2 { text-align: center; color: #8b7314; }
+                        table { width: 100%; border-collapse: collapse; }
+                        table, th, td { border: 1px solid #8b7314; }
+                        th { background-color: #8b7314; color: #000; padding: 10px; }
+                        td { background-color: rgba(255, 255, 255, 0.1); color: #fff; padding: 10px; }
+                        .metl-header { background-color: #555; font-weight: bold; }
+                        .expire-date.green { color: #00ff00; }
+                        .expire-date.yellow { color: #ffff00; }
+                        .expire-date.orange { color: #ff8c00; }
+                        .expire-date.red { color: #ff0000; }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close();">
+                    ${section.outerHTML}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        console.log('Wywołanie initializeTracker dla Tracker...');
+        initializeTracker('trackerTable', trackerTypes);
+        console.log('Wywołanie initializeMetlTracker dla METL Tracker...');
+        initializeMetlTracker('metlTrackerTable', metlTrackerTypes);
+
+        if (!currentUser || !currentUser.login) {
+            console.log('Użytkownik nie jest prawidłowo zalogowany lub dane są niekompletne:', currentUser);
+            document.getElementById('call-sign').textContent = 'Nie zalogowano';
+            document.getElementById('role').textContent = 'Nieznana rola';
+        } else {
+            console.log('Użytkownik zalogowany:', currentUser);
+            const callSign = displayedUser.login || 'Nieznany';
+            document.getElementById('call-sign').textContent = callSign;
+            document.getElementById('role').textContent = displayedUser.role || 'Nieznana rola';
+
+            const buttonsSection = document.getElementById('buttons-section');
+            const allowedRoles = ['Instruktor', 'JTAC I', 'JTAC I/E', 'Program Manager', 'Właściciel'];
+            if (allowedRoles.includes(currentUser.role)) {
+                buttonsSection.innerHTML = `
+                    <a href="cas-log.html">ADD CONTROL</a>
+                    <a href="documents.html">DOCUMENTS</a>
+                    <a href="jtac_list.html" id="jtac-list-button" style="display: none;">JTAC LIST</a>
+                    <button onclick="logout()">LOGOUT</button>
+                `;
+                if (['JTAC I', 'JTAC I/E', 'Program Manager'].includes(currentUser.role)) {
+                    document.getElementById('jtac-list-button').style.display = 'inline-block';
+                }
+            } else {
+                buttonsSection.innerHTML = `
+                    <a href="cas-log.html">ADD CONTROL</a>
+                    <a href="documents.html">DOCUMENTS</a>
+                    <button onclick="logout()">LOGOUT</button>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JTAC App - Strona Główna</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('/images/jtac-tzkop.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #ffffff;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px; /* Ograniczenie szerokości na telefonach */
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 1.8em; /* Mniejszy na start dla telefonów */
+            color: #8b7314;
+            position: relative;
+        }
+        h1 .jet {
+            display: block;
+            font-size: 1.2em;
+            color: #928124;
+            text-shadow: 0 0 10px #8d1e08, 0 0 20px #434239, 0 0 30px #ff6a00;
+            margin-bottom: 5px;
+        }
+        h1 .subtitle {
+            font-size: 0.5em;
+            color: #8b7314;
+            display: block;
+            margin-top: 5px;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px; /* Ograniczenie szerokości */
+            box-sizing: border-box;
+            margin: 10px 0; /* Marginesy zamiast top */
+        }
+        p {
+            font-style: italic;
+            font-size: 1em;
+            margin: 0 0 10px;
+        }
+        .buttons {
+            display: flex;
+            flex-direction: column; /* Pionowy układ przycisków na telefonach */
+            gap: 10px; /* Odstęp między przyciskami */
+            width: 100%;
+        }
+        .buttons a {
+            padding: 10px 20px; /* Mniejsze paddingi dla telefonów */
+            font-size: 1em;
+            color: #8b7314;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #8b7314;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+            width: 100%; /* Pełna szerokość przycisków */
+            box-sizing: border-box;
+        }
+        .buttons a:hover {
+            background-color: #8b7314;
+            color: #000;
+        }
+        footer {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px;
+            width: 100%;
+            color: #ccc;
+            font-size: 0.8em;
+            box-sizing: border-box;
+        }
+
+        /* Responsywność dla telefonów */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em; /* Jeszcze mniejszy na małych ekranach */
+            }
+            h1 .jet {
+                font-size: 1em;
+            }
+            h1 .subtitle {
+                font-size: 0.4em;
+            }
+            p {
+                font-size: 0.9em;
+            }
+            .buttons a {
+                padding: 8px 15px; /* Mniejsze przyciski */
+                font-size: 0.9em;
+            }
+            header, .container {
+                padding: 10px;
+                width: 95%; /* Większa szerokość na małych ekranach */
+            }
+            footer {
+                font-size: 0.7em;
+            }
+        }
+
+        /* Dla większych ekranów (np. tablety, desktop) */
+        @media (min-width: 481px) {
+            h1 {
+                font-size: 2.5em; /* Większy na desktop */
+            }
+            h1 .jet {
+                font-size: 1.5em;
+            }
+            h1 .subtitle {
+                font-size: 0.6em;
+            }
+            .buttons {
+                flex-direction: row; /* Poziomy układ na większych ekranach */
+                justify-content: center;
+            }
+            .buttons a {
+                width: auto; /* Przyciski nie na pełną szerokość */
+                padding: 15px 30px;
+                font-size: 1.2em;
+                margin: 0 10px; /* Marginesy zamiast pełnej szerokości */
+            }
+            header, .container {
+                max-width: 600px; /* Większa szerokość na desktop */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>
+            <span class="jet">JET</span>
+            <span class="subtitle">/Jtac Electronic Tracker/</span>
+        </h1>
+    </header>
+    <div class="container">
+        <p>Fast log for fast controls</p>
+        <div class="buttons">
+            <a href="/signin.html" id="signin-btn">Sign in</a>
+            <a href="/login.html" id="login-btn">Login</a>
+        </div>
+    </div>
+    <footer>
+        <p>© 2025 JTAC App. by MadFrog 69  --- stay froggy---.</p>
+    </footer>
+    <script src="/js/app.js"></script>
+</body>
+</html>

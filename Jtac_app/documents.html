@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JTAC App - Documents</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* Sekcja 1: Style CSS */
+        body {
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+        }
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            height: 100vh;
+        }
+        .top-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .avatar-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #8b7314;
+            margin-right: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .avatar-upload {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: #8b7314;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .avatar-upload input {
+            display: none;
+        }
+        .user-info {
+            flex: 2;
+        }
+        .user-info h2 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #8b7314;
+        }
+        .user-info p {
+            margin: 5px 0;
+            font-size: 1em;
+            color: #ccc;
+        }
+        .buttons-section {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .buttons-section a, .buttons-section button {
+            padding: 10px 20px;
+            background-color: #8b7314;
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-size: 1em;
+            font-family: 'Orbitron', sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .buttons-section a:hover, .buttons-section button:hover {
+            background-color: #a68a2e;
+        }
+        .separator {
+            width: 100%;
+            height: 1px;
+            background-color: #8b7314;
+            margin: 20px 0;
+        }
+        .documents-section {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .documents-section h2 {
+            color: #8b7314;
+            margin-bottom: 10px;
+        }
+        table {
+            border-collapse: collapse;
+            margin-top: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #validityTable {
+            width: 90%;
+            margin-left: 20px;
+            table-layout: fixed;
+        }
+        table, th, td {
+            border: 1px solid #8b7314;
+        }
+        th, td {
+            padding: 3px;
+            text-align: center;
+            color: #fff;
+            font-size: 0.7em;
+            white-space: nowrap;
+        }
+        th {
+            background-color: #8b7314;
+            color: #000;
+            font-weight: 700;
+            min-width: 100px;
+        }
+        td {
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: background-color 0.3s;
+            min-width: 100px;
+        }
+        #validityTable tr:first-child td {
+            vertical-align: top;
+        }
+        #validityTable tr:first-child td input.custom-date-input {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 2px;
+            display: block;
+        }
+        #validityTable tr:first-child td .remarks-input {
+            width: 90%;
+            box-sizing: border-box;
+            display: block;
+            margin: 0 auto;
+        }
+        #validityTable tr:last-child td {
+            vertical-align: middle;
+            text-align: center;
+        }
+        .validity-cell {
+            padding: 2px;
+            text-align: center;
+            font-size: 0.7em;
+            font-family: 'Orbitron', sans-serif;
+        }
+        .valid-green { background-color: #00ff00; }
+        .valid-yellow { background-color: #ffff00; color: #000; }
+        .valid-red { background-color: #ff0000; color: #000; }
+        .custom-date-input {
+            padding: 2px 6px;
+            background-color: #8b7314;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7em;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        .custom-date-input:hover {
+            background-color: #a68a2e;
+        }
+        .remarks-input {
+            padding: 2px 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid #8b7314;
+            border-radius: 3px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7em;
+            width: 90%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .thumbnail {
+            width: 100px;
+            height: 120px;
+            border: 2px solid #8b7314;
+            cursor: pointer;
+            display: inline-block;
+            margin: 5px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .thumbnail img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+        .thumbnail p {
+            color: #fff;
+            font-size: 0.8em;
+            margin: 0;
+            word-wrap: break-word;
+        }
+        .edit-button {
+            background-color: #8b7314;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            padding: 6px 10px;
+            cursor: pointer;
+        }
+        .edit-button:hover {
+            background-color: #a68a2e;
+        }
+        .file-container {
+            border: 2px solid #8b7314;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .file-container h3 {
+            color: #8b7314;
+            margin-bottom: 10px;
+        }
+        .file-container .file-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .grade-Q { background-color: #00ff00; }
+        .grade-Q-minus { background-color: #ffff00; }
+        .grade-U { background-color: #ff0000; }
+        .grade-percent {
+            background-color: #ff0000;
+            transition: background-color 0.3s;
+        }
+        .grade-percent.green {
+            background-color: #00ff00;
+        }
+        .cas-log-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .cas-log-container thead {
+            position: sticky;
+            top: 0;
+            background-color: #8b7314;
+            z-index: 1;
+        }
+        .metl-tracker-section {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .metl-tracker-section::-webkit-scrollbar {
+            width: 10px;
+        }
+        .metl-tracker-section::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 5px;
+        }
+        .metl-tracker-section::-webkit-scrollbar-thumb {
+            background: #8b7314;
+            border-radius: 5px;
+        }
+        .metl-tracker-section::-webkit-scrollbar-thumb:hover {
+            background: #a68a2e;
+        }
+        .yellow-row { background-color: #ffff00 !important; color: #000 !important; }
+        .red-row { background-color: #ff0000 !important; color: #000 !important; }
+        .expire-date {
+            font-weight: bold;
+        }
+        .expire-date.green { background-color: #00ff00; color: #000; }
+        .expire-date.yellow { background-color: #ffff00; color: #000; }
+        .expire-date.red { background-color: #ff0000; color: #000; }
+        .metl-header {
+            background-color: #555;
+            font-weight: bold;
+        }
+        .tracker-buttons {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .tracker-buttons button {
+            padding: 8px 16px;
+            background-color: #8b7314;
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 5px;
+        }
+        .tracker-buttons button:hover {
+            background-color: #a68a2e;
+        }
+        @media print {
+            body { background-color: #fff; color: #000; }
+            .profile-container, .top-section, .buttons-section, .tracker-buttons { display: none; }
+            .documents-section, .metl-tracker-section { page-break-inside: avoid; }
+            table, th, td { border: 1px solid #000; }
+            th { background-color: #8b7314; color: #000; }
+            td { background-color: rgba(255, 255, 255, 0.1); }
+            .valid-green { background-color: #00ff00; }
+            .valid-yellow { background-color: #ffff00; color: #000; }
+            .valid-red { background-color: #ff0000; color: #000; }
+            .grade-Q { background-color: #00ff00; }
+            .grade-Q-minus { background-color: #ffff00; }
+            .grade-U { background-color: #ff0000; }
+            .grade-percent { background-color: #ff0000; }
+            .grade-percent.green { background-color: #00ff00; }
+            .expire-date.green { background-color: #00ff00; color: #000; }
+            .expire-date.yellow { background-color: #ffff00; color: #000; }
+            .expire-date.red { background-color: #ff0000; color: #000; }
+            .metl-header { background-color: #555; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sekcja 2: Struktura HTML -->
+    <div class="profile-container">
+        <!-- Sekcja Profilowa -->
+        <div class="top-section">
+            <div class="avatar-section">
+                <div class="avatar">
+                    <img src="images/avatar.jpg" alt="Awatar" id="avatar-img" class="avatar-img">
+                    <div class="avatar-upload">
+                        <input type="file" id="avatar-upload" accept="image/*">
+                        <label for="avatar-upload">+</label>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <h2>Call sign: <span id="call-sign"></span></h2>
+                    <p>Rola: <span id="role"></span></p>
+                </div>
+            </div>
+            <div class="buttons-section" id="buttons-section">
+                <button onclick="printAll()">Print</button>
+                <a href="cas-log.html">ADD CONTROL</a>
+                <a href="profile.html">PROFILE</a>
+                <a href="jtac_list.html" id="jtac-list-button" style="display: none;">JTAC LIST</a>
+                <button onclick="logout()">LOGOUT</button>
+            </div>
+        </div>
+
+        <!-- Sekcja TABLE OF CONTENTS -->
+        <div class="documents-section">
+            <h2>TABLE OF CONTENTS</h2>
+            <div style="display: flex;">
+                <ul>
+                    <li>Part I. Table of Contents</li>
+                    <li>Part II. Commander’s Designation Letters</li>
+                    <li>Part III. JTAC CAS Log</li>
+                    <li>Part IV. Documentation of Training</li>
+                    <li>Part V. Documentation of Evaluations</li>
+                    <li>Part VI. JTAC Formal School Diplomas</li>
+                    <li>Part VII. Other</li>
+                </ul>
+                <table id="validityTable" style="margin-left: 20px;">
+                    <thead>
+                        <tr>
+                            <th>Airspace</th>
+                            <th>IOL, RL</th>
+                            <th>Annual Phraseology</th>
+                            <th>6MthReview</th>
+                            <th>Academics</th>
+                            <th>JTAC</th>
+                            <th>JTAC-I Classroom</th>
+                            <th>JTAC-I</th>
+                            <th>JTAC E</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input type="date" id="airspaceStart" value="2025-01-23" onchange="updateValidityDates()" class="custom-date-input">
+                                <input type="text" class="remarks-input" placeholder="Remarks">
+                            </td>
+                            <td>
+                                <input type="date" id="iolRlStart" value="2023-01-01" onchange="updateValidityDates()" class="custom-date-input">
+                                <input type="text" class="remarks-input" placeholder="Remarks">
+                            </td>
+                            <td>
+                                <input type="date" id="phraseologyStart" value="2023-01-01" onchange="updateValidityDates()" class="custom-date-input">
+                                <input type="text" class="remarks-input" placeholder="Remarks">
+                            </td>
+                            <td id="6mthReviewStart">-</td>
+                            <td id="academicsStart">-</td>
+                            <td id="jtacStart">-</td>
+                            <td id="jtacIClassStart">-</td>
+                            <td id="jtacIStart">-</td>
+                            <td id="jtacEStart">-</td>
+                        </tr>
+                        <tr id="validityDates">
+                            <td id="airspaceEnd" class="validity-cell"></td>
+                            <td id="iolRlEnd" class="validity-cell"></td>
+                            <td id="phraseologyEnd" class="validity-cell"></td>
+                            <td id="6mthReviewEnd" class="validity-cell"></td>
+                            <td id="academicsEnd" class="validity-cell"></td>
+                            <td id="jtacEnd" class="validity-cell"></td>
+                            <td id="jtacIClassEnd" class="validity-cell"></td>
+                            <td id="jtacIEnd" class="validity-cell"></td>
+                            <td id="jtacEEnd" class="validity-cell"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sekcja I. 6MnthReview -->
+        <div class="documents-section">
+            <h2>I. 6MnthReview</h2>
+            <button class="edit-button" onclick="addReviewEntry()" id="addReviewButton">Add</button>
+            <button class="edit-button" onclick="editReviewEntries()" id="editReviewButton">Edit</button>
+            <table id="reviewTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Reviewer’s Remarks</th>
+                        <th>Reviewer’s Name and Rank, Signature</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Sekcja II. Commander’s Designation Letters -->
+        <div class="documents-section">
+            <h2>Part II. Commander’s Designation Letters</h2>
+            <button class="edit-button" onclick="addDesignationLetter()" id="addDesignationButton">Add</button>
+            <button class="edit-button" onclick="removeDesignationLetter()" id="removeDesignationButton">Remove</button>
+            <div class="file-container">
+                <h3>Designation Letters</h3>
+                <div class="file-list" id="designationLetters"></div>
+            </div>
+        </div>
+
+        <!-- Sekcja III. JTAC CAS Log -->
+        <div class="documents-section">
+            <h2>Part III. JTAC CAS Log</h2>
+            <div class="tracker-buttons">
+                <button onclick="downloadTable('casLogTable', 'CAS_Log')">Download PDF</button>
+                <button onclick="printTable('casLogTable')">Print</button>
+            </div>
+            <div class="cas-log-container">
+                <table id="casLogTable">
+                    <thead>
+                        <tr>
+                            <th>DATE</th>
+                            <th>Location</th>
+                            <th>No and Type of AC</th>
+                            <th>NBR of Controls</th>
+                            <th>TAC</th>
+                            <th>Remarks</th>
+                            <th>Signature</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sekcja IV. Documentation of Training -->
+        <div class="documents-section">
+            <h2>Part IV. Documentation of Training</h2>
+            <button class="edit-button" onclick="addTrainingEntry()" id="addTrainingButton">Add</button>
+            <button class="edit-button" onclick="removeTrainingEntry()" id="removeTrainingButton">Remove</button>
+            <table id="trainingTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Training Type</th>
+                        <th>Grade</th>
+                        <th>Instructor Name and Rank</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <button class="edit-button" onclick="addTrainingDocument()" id="addTrainingDocButton">Add</button>
+            <button class="edit-button" onclick="removeTrainingDocument()" id="removeTrainingDocButton">Remove</button>
+            <div class="file-container">
+                <h3>Gradesheets/Certificates</h3>
+                <div class="file-list" id="gradesheets"></div>
+            </div>
+            <div class="metl-tracker-section">
+                <h2>METL Tracker</h2>
+                <div class="tracker-buttons">
+                    <button onclick="downloadTable('metlTrackerTable', 'METL_Tracker')">Download PDF</button>
+                    <button onclick="printTable('metlTrackerTable')">Print</button>
+                </div>
+                <table id="metlTrackerTable">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Execution Date</th>
+                            <th>Expire Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="metlTrackerTbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sekcja V. Documentation of Evaluations -->
+        <div class="documents-section">
+            <h2>Part V. Documentation of Evaluations</h2>
+            <button class="edit-button" onclick="addEvaluationEntry()" id="addEvaluationButton">Add</button>
+            <button class="edit-button" onclick="removeEvaluationEntry()" id="removeEvaluationButton">Remove</button>
+            <table id="evaluationLog">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Evaluation Type</th>
+                        <th>Grade</th>
+                        <th>Supervisor’s Name and Rank</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <button class="edit-button" onclick="addEvaluationDocument()" id="addEvaluationDocButton">Add</button>
+            <button class="edit-button" onclick="removeEvaluationDocument()" id="removeEvaluationDocButton">Remove</button>
+            <div class="file-container">
+                <h3>Evaluation Documents</h3>
+                <div class="file-list" id="evaluationDocuments"></div>
+            </div>
+        </div>
+
+        <!-- Sekcja VI. JTAC Formal School Diplomas -->
+        <div class="documents-section">
+            <h2>Part VI. JTAC Formal School Diplomas</h2>
+            <button class="edit-button" onclick="addDiplomaDocument()" id="addDiplomaDocButton">Add</button>
+            <button class="edit-button" onclick="removeDiplomaDocument()" id="removeDiplomaDocButton">Remove</button>
+            <div class="file-container">
+                <h3>Diploma Scans</h3>
+                <div class="file-list" id="diplomaScans"></div>
+            </div>
+        </div>
+
+        <!-- Sekcja VII. Other -->
+        <div class="documents-section">
+            <h2>Part VII. Other</h2>
+            <button class="edit-button" onclick="addOtherDocument()" id="addOtherDocButton">Add</button>
+            <button class="edit-button" onclick="removeOtherDocument()" id="removeOtherDocButton">Remove</button>
+            <div class="file-container">
+                <h3>Other Documents</h3>
+                <div class="file-list" id="otherDocuments"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sekcja 3: Skrypty JavaScript -->
+    <!-- Sekcja 3.1: Inicjalizacja i funkcje podstawowe -->
+    <script>
+        // Pobierz dane użytkownika
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const viewedUser = JSON.parse(localStorage.getItem('viewedUser') || '{}');
+        const displayedUser = viewedUser.login ? viewedUser : currentUser;
+
+        if (!currentUser.login) {
+            window.location.href = 'index.html';
+        }
+
+        const callSign = displayedUser.login || 'Nieznany';
+        document.getElementById('call-sign').textContent = callSign;
+        document.getElementById('role').textContent = displayedUser.role || 'Nieznana rola';
+
+        let avatarSrc = localStorage.getItem('avatarSrc') || 'images/avatar.jpg';
+        document.getElementById('avatar-img').src = avatarSrc;
+
+        document.getElementById('avatar-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarSrc = e.target.result;
+                    document.getElementById('avatar-img').src = avatarSrc;
+                    localStorage.setItem('avatarSrc', avatarSrc);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('viewedUser');
+            window.location.href = 'index.html';
+        }
+
+        function getUserDocumentsKey() {
+            return `documentsData_${displayedUser.login || ''}`;
+        }
+
+        function getUserCasLogKey() {
+            return `casLogData_${displayedUser.login || ''}`;
+        }
+
+        function updateValidityDates() {
+            const today = new Date();
+            const inputs = {
+                airspaceStart: document.getElementById('airspaceStart').value,
+                iolRlStart: document.getElementById('iolRlStart').value,
+                phraseologyStart: document.getElementById('phraseologyStart').value
+            };
+
+            document.getElementById('airspaceEnd').textContent = inputs.airspaceStart || '-';
+            const airspaceExpiry = inputs.airspaceStart ? new Date(inputs.airspaceStart) : null;
+            if (airspaceExpiry) airspaceExpiry.setMonth(airspaceExpiry.getMonth() + 12);
+            document.getElementById('airspaceEnd').textContent = airspaceExpiry ? airspaceExpiry.toISOString().split('T')[0] : '-';
+
+            document.getElementById('iolRlEnd').textContent = inputs.iolRlStart || '-';
+            const iolRlExpiry = inputs.iolRlStart ? new Date(inputs.iolRlStart) : null;
+            if (iolRlExpiry) iolRlExpiry.setMonth(iolRlExpiry.getMonth() + 12);
+            document.getElementById('iolRlEnd').textContent = iolRlExpiry ? iolRlExpiry.toISOString().split('T')[0] : '-';
+
+            document.getElementById('phraseologyEnd').textContent = inputs.phraseologyStart || '-';
+            const phraseologyExpiry = inputs.phraseologyStart ? new Date(inputs.phraseologyStart) : null;
+            if (phraseologyExpiry) phraseologyExpiry.setMonth(phraseologyExpiry.getMonth() + 12);
+            document.getElementById('phraseologyEnd').textContent = phraseologyExpiry ? phraseologyExpiry.toISOString().split('T')[0] : '-';
+
+            const reviews = documentsData['6MnthReview'] || [];
+            const evaluations = documentsData['evaluationEntries'] || [];
+
+            if (reviews.length > 0) {
+                const latestReviewDate = reviews.map(entry => entry.date).sort((a, b) => new Date(b) - new Date(a))[0];
+                document.getElementById('6mthReviewStart').textContent = latestReviewDate || '-';
+                const expiryDate = new Date(latestReviewDate);
+                expiryDate.setMonth(expiryDate.getMonth() + 12);
+                document.getElementById('6mthReviewEnd').textContent = expiryDate.toISOString().split('T')[0] || '-';
+            } else {
+                document.getElementById('6mthReviewStart').textContent = '-';
+                document.getElementById('6mthReviewEnd').textContent = '-';
+            }
+
+            const testArea1Entries = evaluations.filter(e => e.type === 'Test Area 1' && !isNaN(parseInt(e.grade)) && parseInt(e.grade) >= 80);
+            if (testArea1Entries.length > 0) {
+                const latestTestArea1Date = testArea1Entries.map(entry => entry.date).sort((a, b) => new Date(b) - new Date(a))[0];
+                document.getElementById('academicsStart').textContent = latestTestArea1Date || '-';
+                const expiryDate = new Date(latestTestArea1Date);
+                expiryDate.setMonth(expiryDate.getMonth() + 12);
+                document.getElementById('academicsEnd').textContent = expiryDate.toISOString().split('T')[0] || '-';
+            } else {
+                document.getElementById('academicsStart').textContent = '-';
+                document.getElementById('academicsEnd').textContent = '-';
+            }
+
+            const jtacEntries = evaluations.filter(e => e.type === 'JTAC' && (e.grade === 'Q' || e.grade === '-Q'));
+            if (jtacEntries.length > 0) {
+                const latestJtacDate = jtacEntries.map(entry => entry.date).sort((a, b) => new Date(b) - new Date(a))[0];
+                document.getElementById('jtacStart').textContent = latestJtacDate || '-';
+                const expiryDate = new Date(latestJtacDate);
+                expiryDate.setMonth(expiryDate.getMonth() + 18);
+                document.getElementById('jtacEnd').textContent = expiryDate.toISOString().split('T')[0] || '-';
+            } else {
+                document.getElementById('jtacStart').textContent = '-';
+                document.getElementById('jtacEnd').textContent = '-';
+            }
+
+            const classroomEntries = evaluations.filter(e => e.type === 'Classroom' && (e.grade === 'Q' || e.grade === '-Q'));
+            if (classroomEntries.length > 0) {
+                const latestClassroomDate = classroomEntries.map(entry => entry.date).sort((a, b) => new Date(b) - new Date(a))[0];
+                document.getElementById('jtacIClassStart').textContent = latestClassroomDate || '-';
+                const expiryDate = new Date(latestClassroomDate);
+                expiryDate.setMonth(expiryDate.getMonth() + 18);
+                document.getElementById('jtacIClassEnd').textContent = expiryDate.toISOString().split('T')[0] || '-';
+            } else {
+                document.getElementById('jtacIClassStart').textContent = '-';
+                document.getElementById('jtacIClassEnd').textContent = '-';
+            }
+
+            const jtacIEntries = evaluations.filter(e => e.type === 'JTAC I' && (e.grade === 'Q' || e.grade === '-Q'));
+            if (jtacIEntries.length > 0) {
+                const latestJtacIDate = jtacIEntries.map(entry => entry.date).sort((a, b) => new Date(b) - new Date(a))[0];
+                document.getElementById('jtacIStart').textContent = latestJtacIDate || '-';
+                const expiryDate = new Date(latestJtacIDate);
+                expiryDate.setMonth(expiryDate.getMonth() + 18);
+                document.getElementById('jtacIEnd').textContent = expiryDate.toISOString().split('T')[0] || '-';
+            } else {
+                document.getElementById('jtacIStart').textContent = '-';
+                document.getElementById('jtacIEnd').textContent = '-';
+            }
+
+            const jtacEEntries = evaluations.filter(e => e.type === 'JTAC E' && (e.grade === 'Q' || e.grade === '-Q'));
+            if (jtacEEntries.length > 0) {
+                const latestJtacEDate = jtacEEntries.map(entry => entry.date).sort((a, b) => new Date(b) - new Date(a))[0];
+                document.getElementById('jtacEStart').textContent = latestJtacEDate || '-';
+                const expiryDate = new Date(latestJtacEDate);
+                expiryDate.setMonth(expiryDate.getMonth() + 18);
+                document.getElementById('jtacEEnd').textContent = expiryDate.toISOString().split('T')[0] || '-';
+            } else {
+                document.getElementById('jtacEStart').textContent = '-';
+                document.getElementById('jtacEEnd').textContent = '-';
+            }
+
+            const allCells = document.querySelectorAll('#validityDates .validity-cell');
+            allCells.forEach(cell => {
+                const cellDate = cell.textContent !== '-' ? new Date(cell.textContent) : null;
+                if (cellDate) {
+                    const timeDiff = (cellDate - today) / (1000 * 60 * 60 * 24);
+                    if (timeDiff > 30) {
+                        cell.className = 'validity-cell valid-green';
+                    } else if (timeDiff > 7) {
+                        cell.className = 'validity-cell valid-yellow';
+                    } else if (timeDiff > 0 && timeDiff <= 7) {
+                        cell.className = 'validity-cell valid-red';
+                    } else if (timeDiff <= 0) {
+                        cell.className = 'validity-cell valid-red';
+                    }
+                } else {
+                    cell.className = 'validity-cell';
+                }
+            });
+
+            document.getElementById('airspaceStart').addEventListener('change', updateValidityDates);
+            document.getElementById('iolRlStart').addEventListener('change', updateValidityDates);
+            document.getElementById('phraseologyStart').addEventListener('change', updateValidityDates);
+        }
+
+        let documentsData = JSON.parse(localStorage.getItem(getUserDocumentsKey()) || '{}');
+        let casLogData = JSON.parse(localStorage.getItem(getUserCasLogKey()) || '[]');
+
+        function saveDocumentsData() {
+            localStorage.setItem(getUserDocumentsKey(), JSON.stringify(documentsData));
+        }
+
+        function saveCasLogData() {
+            localStorage.setItem(getUserCasLogKey(), JSON.stringify(casLogData));
+        }
+    </script>
+
+    <!-- Sekcja 3.2: Funkcje dla sekcji dokumentów -->
+    <script>
+        // Funkcje dla sekcji I. 6MnthReview
+        function addReviewEntry() {
+            if (!['JTAC I', 'JTAC I/E'].includes(currentUser.role)) {
+                alert('Tylko JTAC I i JTAC I/E mogą dodawać wpisy!');
+                return;
+            }
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 20px; border: 2px solid #8b7314; border-radius: 5px; z-index: 1000;';
+            modal.innerHTML = `
+                <h3 style="color: #8b7314;">Dodaj wpis do 6MnthReview</h3>
+                <label style="display: block; margin: 10px 0; color: #fff;">Data:</label>
+                <input type="date" id="reviewDate" class="custom-date-input" style="width: 100%;">
+                <label style="display: block; margin: 10px 0; color: #fff;">Uwagi recenzenta:</label>
+                <input type="text" id="reviewRemarks" style="width: 100%; padding: 5px; background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid #8b7314;">
+                <label style="display: block; margin: 10px 0; color: #fff;">Imię, nazwisko i stopień:</label>
+                <input type="text" id="reviewName" style="width: 100%; padding: 5px; background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid #8b7314;">
+                <div style="margin-top: 20px; text-align: right;">
+                    <button onclick="saveReviewFromModal()" style="background: #8b7314; color: #000; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;">Zapisz</button>
+                    <button onclick="this.parentElement.parentElement.remove()" style="background: #ff0000; color: #fff; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;">Anuluj</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function saveReviewFromModal() {
+            const date = document.getElementById('reviewDate').value;
+            const remarks = document.getElementById('reviewRemarks').value;
+            const name = document.getElementById('reviewName').value;
+            if (date && remarks && name) {
+                documentsData['6MnthReview'] = documentsData['6MnthReview'] || [];
+                documentsData['6MnthReview'].push({ date, remarks, name });
+                saveDocumentsData();
+                renderReviewTable();
+                updateValidityDates();
+                document.querySelector('.profile-container').nextElementSibling.remove();
+            } else {
+                alert('Wszystkie pola muszą być wypełnione!');
+            }
+        }
+
+        function editReviewEntries() {
+            if (!['JTAC I', 'JTAC I/E'].includes(currentUser.role)) {
+                alert('Tylko JTAC I i JTAC I/E mogą edytować wpisy!');
+                return;
+            }
+            const rows = document.querySelectorAll('#reviewTable tbody tr');
+            rows.forEach((row, index) => {
+                const cells = row.getElementsByTagName('td');
+                for (let i = 0; i < cells.length; i++) {
+                    const cell = cells[i];
+                    const text = cell.textContent;
+                    cell.innerHTML = `<input type="text" value="${text}" onchange="saveReviewEdit(${index}, ${i}, this.value)">`;
+                }
+            });
+        }
+
+        function saveReviewEdit(index, cellIndex, value) {
+            documentsData['6MnthReview'][index][['date', 'remarks', 'name'][cellIndex]] = value;
+            saveDocumentsData();
+            renderReviewTable();
+            updateValidityDates();
+        }
+
+        function renderReviewTable() {
+            const tbody = document.querySelector('#reviewTable tbody');
+            tbody.innerHTML = '';
+            const reviews = documentsData['6MnthReview'] || [];
+            reviews.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entry.date}</td>
+                    <td>${entry.remarks}</td>
+                    <td>${entry.name}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            const addButton = document.getElementById('addReviewButton');
+            const editButton = document.getElementById('editReviewButton');
+            addButton.style.display = ['JTAC I', 'JTAC I/E'].includes(currentUser.role) ? 'inline-block' : 'none';
+            editButton.style.display = ['JTAC I', 'JTAC I/E'].includes(currentUser.role) ? 'inline-block' : 'none';
+        }
+
+        // Funkcje dla sekcji II. Commander’s Designation Letters
+        function addDesignationLetter() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'application/pdf';
+            fileInput.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        documentsData['designationLetters'] = documentsData['designationLetters'] || [];
+                        documentsData['designationLetters'].push({ src: e.target.result, name: file.name });
+                        saveDocumentsData();
+                        renderDesignationLetters();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            fileInput.click();
+        }
+
+        function removeDesignationLetter() {
+            documentsData['designationLetters'] = documentsData['designationLetters'] || [];
+            if (documentsData['designationLetters'].length > 0) {
+                documentsData['designationLetters'].pop();
+                saveDocumentsData();
+                renderDesignationLetters();
+            }
+        }
+
+        function renderDesignationLetters() {
+            const container = document.getElementById('designationLetters');
+            container.innerHTML = '';
+            const letters = documentsData['designationLetters'] || [];
+            letters.forEach((file, index) => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'thumbnail';
+                thumbnail.innerHTML = `
+                    <div style="text-align: center;">
+                        <img src="images/pdf-icon.png" alt="PDF Icon" style="width: 50px; height: 50px;">
+                        <p>${file.name}</p>
+                    </div>
+                `;
+                thumbnail.onclick = () => openDocument(file.src);
+                container.appendChild(thumbnail);
+            });
+        }
+
+        function openDocument(src) {
+            window.open(src, '_blank');
+        }
+
+        // Funkcje dla sekcji III. JTAC CAS Log
+        const tacValidity = {
+            'FW 1': 6, 'FW 2': 6, 'RW': 6, 'TYPE1': 6, 'TYPE2': 6, 'TYPE3': 6,
+            'BOT': 6, 'BOC': 6, 'ORDNANCE': 6, 'TO': 6, 'VDL': 6, 'ETD': 6,
+            '9L_LL': 6, 'MH': 6, 'LASER': 6, 'DAY': 6, 'NIGHT': 6, 'IR': 6,
+            'RO': 6, 'SEAD': 6, 'URBAN': 6,
+            'Comms P.': 12, 'Decon.': 12, 'Fires decon.': 12, 'Fire Sup': 12,
+            'GTP': 12, 'INTEL': 12, 'Map Plot': 12, 'Match TGT Loc.': 12,
+            'Surface Fire': 12, 'TACT. TAG Syst.': 12, 'TGT Acq Day': 12,
+            'TGT Acq Night': 12, 'TGT Acq RO': 12, 'GPS/LRF': 12, 'UAV': 12,
+            'FAC-A': 12, 'DA': 12, 'ACO': 12, 'WP': 12, 'SMK': 12, 'IDF': 12,
+            'DF': 12, 'ATO': 12
+        };
+
+        function renderCasLogTable() {
+            const tbody = document.querySelector('#casLogTable tbody');
+            tbody.innerHTML = '';
+            casLogData.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                const tacElements = entry.tac ? entry.tac.split('/') : [];
+                let isYellow = false;
+                let isRed = false;
+
+                tacElements.forEach(tac => {
+                    const validityMonths = tacValidity[tac] || 12;
+                    const lastEntry = casLogData.slice(0, index).reverse().find(e => e.tac.includes(tac));
+                    const entryDate = new Date(entry.date);
+                    const currentDate = new Date();
+                    let timeDiff;
+                    if (lastEntry) {
+                        const lastDate = new Date(lastEntry.date);
+                        timeDiff = (entryDate - lastDate) / (1000 * 60 * 60 * 24 * 30);
+                    } else if (tac) {
+                        timeDiff = (currentDate - entryDate) / (1000 * 60 * 60 * 24 * 30);
+                    }
+                    if (timeDiff > validityMonths && !entry.signature) isRed = true;
+                    else if (timeDiff > (validityMonths / 2) && !entry.signature && !entry.remarks) isYellow = true;
+                });
+
+                if (isRed) row.classList.add('red-row');
+                else if (isYellow) row.classList.add('yellow-row');
+
+                const canEditSignature = ['JTAC I', 'JTAC I/E'].includes(currentUser.role);
+                const canEditRemarks = ['JTAC', 'JTAC I', 'JTAC I/E'].includes(currentUser.role);
+                row.innerHTML = `
+                    <td>${entry.date}</td>
+                    <td>${entry.location}</td>
+                    <td>${entry.noAndTypeOfAC}</td>
+                    <td>${entry.nbrOfControls}</td>
+                    <td>${entry.tac || 'N/A'}</td>
+                    <td><input type="text" value="${entry.remarks || ''}" ${canEditRemarks ? '' : 'disabled'} onchange="updateRemarks(${index}, this.value)"></td>
+                    <td><input type="text" value="${entry.signature || ''}" ${canEditSignature ? '' : 'disabled'} onchange="updateSignature(${index}, this.value)"></td>
+                    <td>
+                        <button class="edit-button" onclick="editEntry(${index})" style="display: ${canEdit() ? 'inline-block' : 'none'}">Edit</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateRemarks(index, value) {
+            if (!['JTAC', 'JTAC I', 'JTAC I/E'].includes(currentUser.role)) {
+                alert('Tylko JTAC, JTAC I lub JTAC I/E mogą edytować pole Remarks!');
+                renderCasLogTable();
+                return;
+            }
+            casLogData[index].remarks = value;
+            saveCasLogData();
+            renderCasLogTable();
+        }
+
+        function updateSignature(index, value) {
+            if (!['JTAC I', 'JTAC I/E'].includes(currentUser.role)) {
+                alert('Tylko JTAC I lub JTAC I/E mogą edytować pole Signature!');
+                renderCasLogTable();
+                return;
+            }
+            casLogData[index].signature = value;
+            saveCasLogData();
+            renderCasLogTable();
+        }
+
+        function editEntry(index) {
+            if (!canEdit()) {
+                alert('Tylko JTAC I lub JTAC I/E mogą edytować wpisy!');
+                return;
+            }
+            const entry = casLogData[index];
+            const newDate = prompt('Nowa data (YYYY-MM-DD):', entry.date);
+            const newLocation = prompt('Nowa lokalizacja:', entry.location);
+            const newNoAndTypeOfAC = prompt('Nowy numer i typ AC:', entry.noAndTypeOfAC);
+            const newNbrOfControls = prompt('Nowa liczba kontroli:', entry.nbrOfControls);
+            const newTac = prompt('Nowy TAC (oddzielone "/"):', entry.tac || '');
+            const newRemarks = prompt('Nowe uwagi:', entry.remarks || '');
+
+            if (newDate && newLocation && newNoAndTypeOfAC && newNbrOfControls) {
+                casLogData[index] = {
+                    date: newDate,
+                    location: newLocation,
+                    noAndTypeOfAC: newNoAndTypeOfAC,
+                    nbrOfControls: parseInt(newNbrOfControls),
+                    tac: newTac,
+                    remarks: newRemarks || '',
+                    signature: entry.signature
+                };
+                saveCasLogData();
+                renderCasLogTable();
+            }
+        }
+
+        function canEdit() {
+            return ['JTAC I', 'JTAC I/E'].includes(currentUser.role);
+        }
+
+        // Funkcje dla sekcji IV. Documentation of Training
+        function addTrainingEntry() {
+            if (!['JTAC I/E'].includes(currentUser.role)) {
+                alert('Tylko JTAC I/E mogą dodawać wpisy!');
+                return;
+            }
+            const date = prompt('Podaj datę (yyyy-mm-dd):');
+            const type = prompt('Podaj typ szkolenia:');
+            const grade = prompt('Podaj ocenę (Q, -Q, U):');
+            const instructor = prompt('Podaj imię, nazwisko i stopień instruktora:');
+            if (date && type && grade && instructor) {
+                documentsData['trainingEntries'] = documentsData['trainingEntries'] || [];
+                documentsData['trainingEntries'].push({ date, type, grade, instructor });
+                saveDocumentsData();
+                renderTrainingTable();
+                updateValidityDates();
+                updateMetlTracker();
+            }
+        }
+
+        function removeTrainingEntry() {
+            if (!['JTAC I/E'].includes(currentUser.role)) {
+                alert('Tylko JTAC I/E mogą usuwać wpisy!');
+                return;
+            }
+            documentsData['trainingEntries'] = documentsData['trainingEntries'] || [];
+            if (documentsData['trainingEntries'].length > 0) {
+                documentsData['trainingEntries'].pop();
+                saveDocumentsData();
+                renderTrainingTable();
+                updateValidityDates();
+                updateMetlTracker();
+            }
+        }
+
+        function renderTrainingTable() {
+            const tbody = document.querySelector('#trainingTable tbody');
+            tbody.innerHTML = '';
+            const entries = documentsData['trainingEntries'] || [];
+            entries.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entry.date}</td>
+                    <td>${entry.type}</td>
+                    <td class="${entry.grade === 'U' ? 'grade-U' : entry.grade === '-Q' ? 'grade-Q-minus' : 'grade-Q'}">${entry.grade}</td>
+                    <td>${entry.instructor}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            const addButton = document.getElementById('addTrainingButton');
+            const removeButton = document.getElementById('removeTrainingButton');
+            addButton.style.display = ['JTAC I/E'].includes(currentUser.role) ? 'inline-block' : 'none';
+            removeButton.style.display = ['JTAC I/E'].includes(currentUser.role) ? 'inline-block' : 'none';
+        }
+
+        function addTrainingDocument() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'application/pdf';
+            fileInput.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        documentsData['trainingDocuments'] = documentsData['trainingDocuments'] || [];
+                        documentsData['trainingDocuments'].push({ src: e.target.result, name: file.name });
+                        saveDocumentsData();
+                        renderTrainingDocuments();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            fileInput.click();
+        }
+
+        function removeTrainingDocument() {
+            documentsData['trainingDocuments'] = documentsData['trainingDocuments'] || [];
+            if (documentsData['trainingDocuments'].length > 0) {
+                documentsData['trainingDocuments'].pop();
+                saveDocumentsData();
+                renderTrainingDocuments();
+            }
+        }
+
+        function renderTrainingDocuments() {
+            const container = document.getElementById('gradesheets');
+            container.innerHTML = '';
+            const documents = documentsData['trainingDocuments'] || [];
+            documents.forEach(file => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'thumbnail';
+                thumbnail.innerHTML = `
+                    <div style="text-align: center;">
+                        <img src="images/pdf-icon.png" alt="PDF Icon" style="width: 50px; height: 50px;">
+                        <p>${file.name}</p>
+                    </div>
+                `;
+                thumbnail.onclick = () => openDocument(file.src);
+                container.appendChild(thumbnail);
+            });
+            const addDocButton = document.getElementById('addTrainingDocButton');
+            const removeDocButton = document.getElementById('removeTrainingDocButton');
+            addDocButton.style.display = 'inline-block';
+            removeDocButton.style.display = ['JTAC I', 'JTAC I/E'].includes(currentUser.role) ? 'inline-block' : 'none';
+        }
+
+        // Funkcje dla sekcji V. Documentation of Evaluations
+        function addEvaluationEntry() {
+            if (!['JTAC I/E'].includes(currentUser.role)) {
+                alert('Tylko JTAC I/E mogą dodawać wpisy!');
+                return;
+            }
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 20px; border: 2px solid #8b7314; border-radius: 5px; z-index: 1000;';
+            modal.innerHTML = `
+                <h3 style="color: #8b7314;">Dodaj wpis do Evaluations</h3>
+                <label style="display: block; margin: 10px 0; color: #fff;">Data:</label>
+                <input type="date" id="evalDate" class="custom-date-input" style="width: 100%;">
+                <label style="display: block; margin: 10px 0; color: #fff;">Typ ewaluacji:</label>
+                <select id="evalType" style="width: 100%; padding: 5px; background: #8b7314; color: #000; border: none; border-radius: 5px;">
+                    <option value="JTAC">JTAC</option>
+                    <option value="JTAC I">JTAC I</option>
+                    <option value="JTAC E">JTAC E</option>
+                    <option value="Classroom">Classroom</option>
+                    <option value="Test Area 1">Test Area 1</option>
+                </select>
+                <label style="display: block; margin: 10px 0; color: #fff;">Ocena:</label>
+                <div id="gradeInputContainer">
+                    <select id="evalGrade" style="width: 100%; padding: 5px; background: #8b7314; color: #000; border: none; border-radius: 5px;">
+                        <option value="Q">Q</option>
+                        <option value="-Q">-Q</option>
+                        <option value="U">U</option>
+                    </select>
+                </div>
+                <label style="display: block; margin: 10px 0; color: #fff;">Imię, nazwisko i stopień przełożonego:</label>
+                <input type="text" id="evalSupervisor" style="width: 100%; padding: 5px; background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid #8b7314;">
+                <div style="margin-top: 20px; text-align: right;">
+                    <button onclick="saveEvaluationFromModal()" style="background: #8b7314; color: #000; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;">Zapisz</button>
+                    <button onclick="this.parentElement.parentElement.remove()" style="background: #ff0000; color: #fff; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;">Anuluj</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            document.getElementById('evalType').addEventListener('change', function() {
+                const gradeContainer = document.getElementById('gradeInputContainer');
+                if (this.value === 'Test Area 1') {
+                    gradeContainer.innerHTML = `<input type="number" id="evalGrade" min="1" max="100" style="width: 100%; padding: 5px; background: #8b7314; color: #000; border: none; border-radius: 5px;" placeholder="1-100">`;
+                } else {
+                    gradeContainer.innerHTML = `
+                        <select id="evalGrade" style="width: 100%; padding: 5px; background: #8b7314; color: #000; border: none; border-radius: 5px;">
+                            <option value="Q">Q</option>
+                            <option value="-Q">-Q</option>
+                            <option value="U">U</option>
+                        </select>
+                    `;
+                }
+            });
+        }
+
+        function saveEvaluationFromModal() {
+            const date = document.getElementById('evalDate').value;
+            const type = document.getElementById('evalType').value;
+            const gradeInput = document.getElementById('evalGrade');
+            const grade = gradeInput.tagName === 'SELECT' ? gradeInput.value : gradeInput.value;
+            const supervisor = document.getElementById('evalSupervisor').value;
+
+            if (date && type && grade && supervisor) {
+                if ((type === 'Test Area 1') && gradeInput.tagName === 'INPUT' && (isNaN(grade) || grade < 1 || grade > 100)) {
+                    alert('Ocena dla Test Area 1 musi być liczbą od 1 do 100!');
+                    return;
+                }
+                documentsData['evaluationEntries'] = documentsData['evaluationEntries'] || [];
+                documentsData['evaluationEntries'].push({ date, type, grade, supervisor });
+                saveDocumentsData();
+                renderEvaluationTable();
+                updateValidityDates();
+                if (type === 'Test Area 1' && !isNaN(parseInt(grade)) && parseInt(grade) >= 80) {
+                    updateMetlTrackerTestArea1(date);
+                }
+                document.querySelector('.profile-container').nextElementSibling.remove();
+            } else {
+                alert('Wszystkie pola muszą być wypełnione!');
+            }
+        }
+
+        function removeEvaluationEntry() {
+            if (!['JTAC I/E'].includes(currentUser.role)) {
+                alert('Tylko JTAC I/E mogą usuwać wpisy!');
+                return;
+            }
+            documentsData['evaluationEntries'] = documentsData['evaluationEntries'] || [];
+            if (documentsData['evaluationEntries'].length > 0) {
+                documentsData['evaluationEntries'].pop();
+                saveDocumentsData();
+                renderEvaluationTable();
+                updateValidityDates();
+                updateMetlTracker();
+            }
+        }
+
+        function renderEvaluationTable() {
+            const tbody = document.querySelector('#evaluationLog tbody');
+            tbody.innerHTML = '';
+            const entries = documentsData['evaluationEntries'] || [];
+            entries.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                let gradeClass = '';
+                let gradeDisplay = entry.grade;
+                if ((entry.type === 'Test Area 1') && !isNaN(parseInt(entry.grade))) {
+                    gradeClass = 'grade-percent';
+                    gradeDisplay = `${entry.grade}%`;
+                    if (parseInt(entry.grade) >= 80) {
+                        gradeClass += ' green';
+                    }
+                } else {
+                    gradeClass = entry.grade === 'U' ? 'grade-U' : entry.grade === '-Q' ? 'grade-Q-minus' : 'grade-Q';
+                }
+                row.innerHTML = `
+                    <td>${entry.date}</td>
+                    <td>${entry.type}</td>
+                    <td class="${gradeClass}">${gradeDisplay}</td>
+                    <td>${entry.supervisor}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            const addButton = document.getElementById('addEvaluationButton');
+            const removeButton = document.getElementById('removeEvaluationButton');
+            addButton.style.display = ['JTAC I/E'].includes(currentUser.role) ? 'inline-block' : 'none';
+            removeButton.style.display = ['JTAC I/E'].includes(currentUser.role) ? 'inline-block' : 'none';
+        }
+
+        function addEvaluationDocument() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'application/pdf';
+            fileInput.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        documentsData['evaluationDocuments'] = documentsData['evaluationDocuments'] || [];
+                        documentsData['evaluationDocuments'].push({ src: e.target.result, name: file.name });
+                        saveDocumentsData();
+                        renderEvaluationDocuments();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            fileInput.click();
+        }
+
+        function removeEvaluationDocument() {
+            documentsData['evaluationDocuments'] = documentsData['evaluationDocuments'] || [];
+            if (documentsData['evaluationDocuments'].length > 0) {
+                documentsData['evaluationDocuments'].pop();
+                saveDocumentsData();
+                renderEvaluationDocuments();
+            }
+        }
+
+        function renderEvaluationDocuments() {
+            const container = document.getElementById('evaluationDocuments');
+            container.innerHTML = '';
+            const documents = documentsData['evaluationDocuments'] || [];
+            documents.forEach(file => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'thumbnail';
+                thumbnail.innerHTML = `
+                    <div style="text-align: center;">
+                        <img src="images/pdf-icon.png" alt="PDF Icon" style="width: 50px; height: 50px;">
+                        <p>${file.name}</p>
+                    </div>
+                `;
+                thumbnail.onclick = () => openDocument(file.src);
+                container.appendChild(thumbnail);
+            });
+            const addDocButton = document.getElementById('addEvaluationDocButton');
+            const removeDocButton = document.getElementById('removeEvaluationDocButton');
+            addDocButton.style.display = 'inline-block';
+            removeDocButton.style.display = ['JTAC I', 'JTAC I/E'].includes(currentUser.role) ? 'inline-block' : 'none';
+        }
+
+        // Funkcje dla sekcji VI. JTAC Formal School Diplomas
+        function addDiplomaDocument() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'application/pdf';
+            fileInput.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        documentsData['diplomaScans'] = documentsData['diplomaScans'] || [];
+                        documentsData['diplomaScans'].push({ src: e.target.result, name: file.name });
+                        saveDocumentsData();
+                        renderDiplomaDocuments();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            fileInput.click();
+        }
+
+        function removeDiplomaDocument() {
+            documentsData['diplomaScans'] = documentsData['diplomaScans'] || [];
+            if (documentsData['diplomaScans'].length > 0) {
+                documentsData['diplomaScans'].pop();
+                saveDocumentsData();
+                renderDiplomaDocuments();
+            }
+        }
+
+        function renderDiplomaDocuments() {
+            const container = document.getElementById('diplomaScans');
+            container.innerHTML = '';
+            const documents = documentsData['diplomaScans'] || [];
+            documents.forEach(file => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'thumbnail';
+                thumbnail.innerHTML = `
+                    <div style="text-align: center;">
+                        <img src="images/pdf-icon.png" alt="PDF Icon" style="width: 50px; height: 50px;">
+                        <p>${file.name}</p>
+                    </div>
+                `;
+                thumbnail.onclick = () => openDocument(file.src);
+                container.appendChild(thumbnail);
+            });
+            const addDocButton = document.getElementById('addDiplomaDocButton');
+            const removeDocButton = document.getElementById('removeDiplomaDocButton');
+            addDocButton.style.display = 'inline-block';
+            removeDocButton.style.display = ['JTAC I', 'JTAC I/E'].includes(currentUser.role) ? 'inline-block' : 'none';
+        }
+
+        // Funkcje dla sekcji VII. Other
+        function addOtherDocument() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'application/pdf';
+            fileInput.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        documentsData['otherDocuments'] = documentsData['otherDocuments'] || [];
+                        documentsData['otherDocuments'].push({ src: e.target.result, name: file.name });
+                        saveDocumentsData();
+                        renderOtherDocuments();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            fileInput.click();
+        }
+
+        function removeOtherDocument() {
+            documentsData['otherDocuments'] = documentsData['otherDocuments'] || [];
+            if (documentsData['otherDocuments'].length > 0) {
+                documentsData['otherDocuments'].pop();
+                saveDocumentsData();
+                renderOtherDocuments();
+            }
+        }
+
+        function renderOtherDocuments() {
+            const container = document.getElementById('otherDocuments');
+            container.innerHTML = '';
+            const documents = documentsData['otherDocuments'] || [];
+            documents.forEach(file => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'thumbnail';
+                thumbnail.innerHTML = `
+                    <div style="text-align: center;">
+                        <img src="images/pdf-icon.png" alt="PDF Icon" style="width: 50px; height: 50px;">
+                        <p>${file.name}</p>
+                    </div>
+                `;
+                thumbnail.onclick = () => openDocument(file.src);
+                container.appendChild(thumbnail);
+            });
+            const addDocButton = document.getElementById('addOtherDocButton');
+            const removeDocButton = document.getElementById('removeOtherDocButton');
+            addDocButton.style.display = 'inline-block';
+            removeDocButton.style.display = ['JTAC I', 'JTAC I/E'].includes(currentUser.role) ? 'inline-block' : 'none';
+        }
+    </script>
+
+    <!-- Sekcja 3.3: METL Tracker i funkcje drukowania (ciąg dalszy) -->
+<script>
+    // Klasy CSS dla dat wygaśnięcia w METL Tracker
+    function getMetlExpireDateClass(expireDate, signature) {
+        const currentDate = new Date();
+        const timeDiff = expireDate - currentDate;
+        const monthsDiff = timeDiff / (1000 * 60 * 60 * 24 * 30);
+        const currentUserRole = currentUser.role;
+
+        if (monthsDiff > 11) return 'expire-date green';
+        if (monthsDiff <= 1 && monthsDiff > (7 / 30) && !signature && currentUserRole !== 'JTAC I' && currentUserRole !== 'JTAC I/E') {
+            return 'expire-date yellow';
+        }
+        if (monthsDiff <= (7 / 30) && !signature && currentUserRole !== 'JTAC I' && currentUserRole !== 'JTAC I/E') {
+            return 'expire-date red';
+        }
+        return 'expire-date green';
+    }
+
+    // Pobieranie tabeli jako PDF
+    function downloadTable(tableId, fileNamePrefix) {
+        const table = document.getElementById(tableId);
+        const section = table.closest('.documents-section');
+        const opt = {
+            margin: 1,
+            filename: `${fileNamePrefix}_${callSign}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().from(section).set(opt).save();
+    }
+
+    // Drukowanie wszystkich sekcji
+    function printAll() {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Print All</title>
+                <style>
+                    body { font-family: 'Orbitron', sans-serif; margin: 20px; background-color: #000; color: #fff; }
+                    .documents-section { background-color: rgba(0, 0, 0, 0.7); padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+                    h2 { text-align: center; color: #8b7314; }
+                    table { width: 100%; border-collapse: collapse; }
+                    table, th, td { border: 1px solid #8b7314; }
+                    th { background-color: #8b7314; color: #000; padding: 10px; }
+                    td { background-color: rgba(255, 255, 255, 0.1); color: #fff; padding: 10px; }
+                    .grade-Q { background-color: #00ff00; }
+                    .grade-Q-minus { background-color: #ffff00; }
+                    .grade-U { background-color: #ff0000; }
+                    .grade-percent { background-color: #ff0000; }
+                    .grade-percent.green { background-color: #00ff00; }
+                    .valid-green { background-color: #00ff00; }
+                    .valid-yellow { background-color: #ffff00; color: #000; }
+                    .valid-red { background-color: #ff0000; color: #000; }
+                    .expire-date.green { color: #00ff00; }
+                    .expire-date.yellow { color: #ffff00; }
+                    .expire-date.red { color: #ff0000; }
+                    .metl-header { background-color: #555; }
+                </style>
+            </head>
+            <body onload="window.print(); window.close();">
+                ${Array.from(document.querySelectorAll('.documents-section')).map(section => section.outerHTML).join('')}
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+
+    // Drukowanie pojedynczej tabeli
+    function printTable(tableId) {
+        const table = document.getElementById(tableId);
+        const section = table.closest('.documents-section');
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Print ${tableId === 'casLogTable' ? 'CAS Log' : tableId.replace('Table', '')}</title>
+                <style>
+                    body { font-family: 'Orbitron', sans-serif; margin: 20px; background-color: #000; color: #fff; }
+                    .documents-section { background-color: rgba(0, 0, 0, 0.7); padding: 20px; border-radius: 10px; }
+                    h2 { text-align: center; color: #8b7314; }
+                    table { width: 100%; border-collapse: collapse; }
+                    table, th, td { border: 1px solid #8b7314; }
+                    th { background-color: #8b7314; color: #000; padding: 10px; }
+                    td { background-color: rgba(255, 255, 255, 0.1); color: #fff; padding: 10px; }
+                    .grade-Q { background-color: #00ff00; }
+                    .grade-Q-minus { background-color: #ffff00; }
+                    .grade-U { background-color: #ff0000; }
+                    .grade-percent { background-color: #ff0000; }
+                    .grade-percent.green { background-color: #00ff00; }
+                    .valid-green { background-color: #00ff00; }
+                    .valid-yellow { background-color: #ffff00; color: #000; }
+                    .valid-red { background-color: #ff0000; color: #000; }
+                    .expire-date.green { color: #00ff00; }
+                    .expire-date.yellow { color: #ffff00; }
+                    .expire-date.red { color: #ff0000; }
+                    .metl-header { background-color: #555; }
+                </style>
+            </head>
+            <body onload="window.print(); window.close();">
+                ${section.outerHTML}
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+
+    // Dostosowanie widoczności przycisków na podstawie roli
+    const allowedRolesForList = ['JTAC I', 'JTAC I/E', 'Program Manager'];
+    const jtacListButton = document.getElementById('jtac-list-button');
+    jtacListButton.style.display = allowedRolesForList.includes(currentUser.role) ? 'inline-block' : 'none';
+    </script>
+
+    <!-- Sekcja 3.4: Inicjalizacja strony -->
+    <script>
+        // Inicjalizacja strony
+        window.onload = function() {
+            documentsData = JSON.parse(localStorage.getItem(getUserDocumentsKey()) || '{}');
+            casLogData = JSON.parse(localStorage.getItem(getUserCasLogKey()) || '[]');
+            renderReviewTable();
+            renderDesignationLetters();
+            renderTrainingTable();
+            renderTrainingDocuments();
+            renderEvaluationTable();
+            renderEvaluationDocuments();
+            renderDiplomaDocuments();
+            renderOtherDocuments();
+            renderCasLogTable();
+            updateMetlTracker();
+            updateValidityDates();
+        };
+    </script>
+</body>
+</html>
