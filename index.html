@@ -26,13 +26,13 @@
             padding: 15px;
             border-radius: 10px;
             width: 90%;
-            max-width: 400px; /* Ograniczenie szerokości na telefonach */
+            max-width: 400px;
             box-sizing: border-box;
             margin-top: 10px;
         }
         h1 {
             margin: 0;
-            font-size: 1.8em; /* Mniejszy na start dla telefonów */
+            font-size: 1.8em;
             color: #8b7314;
             position: relative;
         }
@@ -54,9 +54,9 @@
             padding: 15px;
             border-radius: 10px;
             width: 90%;
-            max-width: 400px; /* Ograniczenie szerokości */
+            max-width: 400px;
             box-sizing: border-box;
-            margin: 10px 0; /* Marginesy zamiast top */
+            margin: 10px 0;
         }
         p {
             font-style: italic;
@@ -65,12 +65,12 @@
         }
         .buttons {
             display: flex;
-            flex-direction: column; /* Pionowy układ przycisków na telefonach */
-            gap: 10px; /* Odstęp między przyciskami */
+            flex-direction: column;
+            gap: 10px;
             width: 100%;
         }
         .buttons a {
-            padding: 10px 20px; /* Mniejsze paddingi dla telefonów */
+            padding: 10px 20px;
             font-size: 1em;
             color: #8b7314;
             background-color: rgba(0, 0, 0, 0.7);
@@ -78,7 +78,7 @@
             border-radius: 5px;
             text-decoration: none;
             transition: background-color 0.3s, color 0.3s;
-            width: 100%; /* Pełna szerokość przycisków */
+            width: 100%;
             box-sizing: border-box;
         }
         .buttons a:hover {
@@ -97,7 +97,7 @@
         /* Responsywność dla telefonów */
         @media (max-width: 480px) {
             h1 {
-                font-size: 1.5em; /* Jeszcze mniejszy na małych ekranach */
+                font-size: 1.5em;
             }
             h1 .jet {
                 font-size: 1em;
@@ -109,12 +109,12 @@
                 font-size: 0.9em;
             }
             .buttons a {
-                padding: 8px 15px; /* Mniejsze przyciski */
+                padding: 8px 15px;
                 font-size: 0.9em;
             }
             header, .container {
                 padding: 10px;
-                width: 95%; /* Większa szerokość na małych ekranach */
+                width: 95%;
             }
             footer {
                 font-size: 0.7em;
@@ -124,7 +124,7 @@
         /* Dla większych ekranów (np. tablety, desktop) */
         @media (min-width: 481px) {
             h1 {
-                font-size: 2.5em; /* Większy na desktop */
+                font-size: 2.5em;
             }
             h1 .jet {
                 font-size: 1.5em;
@@ -133,17 +133,17 @@
                 font-size: 0.6em;
             }
             .buttons {
-                flex-direction: row; /* Poziomy układ na większych ekranach */
+                flex-direction: row;
                 justify-content: center;
             }
             .buttons a {
-                width: auto; /* Przyciski nie na pełną szerokość */
+                width: auto;
                 padding: 15px 30px;
                 font-size: 1.2em;
-                margin: 0 10px; /* Marginesy zamiast pełnej szerokości */
+                margin: 0 10px;
             }
             header, .container {
-                max-width: 600px; /* Większa szerokość na desktop */
+                max-width: 600px;
             }
         }
     </style>
@@ -158,8 +158,8 @@
     <div class="container">
         <p>Fast log for fast controls</p>
         <div class="buttons">
-            <a href="/signin.html" id="signin-btn">Sign in</a>
-            <a href="/login.html" id="login-btn">Login</a>
+            <a href="/signin.html" id="signin-btn">Sign In</a>
+            <a href="/register.html" id="register-btn">Register</a>
         </div>
     </div>
     <footer>

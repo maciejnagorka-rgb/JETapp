@@ -11,7 +11,7 @@
             margin: 0;
             padding: 0;
             display: flex;
-            flex-direction: column; /* Pionowy układ na telefonach */
+            flex-direction: column;
             min-height: 100vh;
             background-color: #000;
             color: #fff;
@@ -31,11 +31,11 @@
             background-size: cover;
             background-position: center 30%;
             background-repeat: no-repeat;
-            height: 50vh; /* Połowa wysokości na telefonach */
+            height: 50vh;
             width: 100%;
         }
         h1 {
-            font-size: 1.8em; /* Mniejszy na start dla telefonów */
+            font-size: 1.8em;
             color: #8b7314;
             margin-bottom: 15px;
             text-transform: uppercase;
@@ -44,7 +44,7 @@
         }
         form {
             width: 90%;
-            max-width: 350px; /* Ograniczenie szerokości */
+            max-width: 350px;
         }
         label {
             display: block;
@@ -56,31 +56,24 @@
             width: 100%;
             padding: 8px;
             margin-bottom: 15px;
-            border: 2px solid #2F4F2F; /* Wojskowa zieleń na obwódki */
+            border: 2px solid #2F4F2F;
             border-radius: 5px;
             background-color: #000;
             color: #fff;
             font-family: 'Roboto Condensed', sans-serif;
             box-sizing: border-box;
         }
-        input[type="number"] {
-            width: 60%; /* Lekko szersze niż 50% na telefonach */
-        }
         button {
             width: 100%;
             padding: 12px;
             background-color: #8b7314;
-            border: 2px solid #2F4F2F; /* Zieleń na obwódce */
+            border: 2px solid #2F4F2F;
             border-radius: 5px;
             color: #000;
             font-size: 1em;
             font-family: 'Roboto Condensed', sans-serif;
             cursor: pointer;
             transition: background-color 0.3s;
-        }
-        button:disabled {
-            background-color: #555;
-            cursor: not-allowed;
         }
         button:hover:not(:disabled) {
             background-color: #a68a2e;
@@ -96,194 +89,71 @@
         .login-link:hover {
             text-decoration: underline;
         }
-        #custom-username-container {
-            display: none;
-        }
-
-        /* Responsywność dla telefonów */
         @media (max-width: 480px) {
-            h1 {
-                font-size: 1.5em; /* Mniejszy na małych ekranach */
-            }
-            label {
-                font-size: 0.8em;
-            }
-            input, select {
-                padding: 6px; /* Mniejszy padding */
-                margin-bottom: 10px;
-            }
-            button {
-                padding: 10px;
-                font-size: 0.9em;
-            }
-            .login-link {
-                font-size: 0.7em;
-            }
-            .left-side {
-                padding: 10px;
-            }
-            .right-side {
-                height: 40vh; /* Mniejsza wysokość zdjęcia */
-            }
+            h1 { font-size: 1.5em; }
+            label { font-size: 0.8em; }
+            input, select { padding: 6px; margin-bottom: 10px; }
+            button { padding: 10px; font-size: 0.9em; }
+            .login-link { font-size: 0.7em; }
+            .left-side { padding: 10px; }
+            .right-side { height: 40vh; }
         }
-
-        /* Dla większych ekranów (tablety, desktop) */
         @media (min-width: 481px) {
-            body {
-                flex-direction: row; /* Poziomy układ na większych ekranach */
-            }
-            .left-side {
-                flex: 1;
-                padding: 20px;
-            }
-            .right-side {
-                flex: 1;
-                height: auto; /* Pełna wysokość na desktop */
-            }
-            h1 {
-                font-size: 2.5em; /* Większy na desktop */
-            }
-            label {
-                font-size: 1em;
-            }
-            input, select {
-                padding: 10px;
-                margin-bottom: 20px;
-            }
-            button {
-                padding: 15px;
-                font-size: 1em;
-            }
-            .login-link {
-                font-size: 0.9em;
-            }
-            form {
-                max-width: 400px;
-            }
+            body { flex-direction: row; }
+            .left-side { flex: 1; padding: 20px; }
+            .right-side { flex: 1; height: auto; }
+            h1 { font-size: 2.5em; }
+            label { font-size: 1em; }
+            input, select { padding: 10px; margin-bottom: 20px; }
+            button { padding: 15px; font-size: 1em; }
+            .login-link { font-size: 0.9em; }
+            form { max-width: 400px; }
         }
     </style>
 </head>
 <body>
     <div class="left-side">
         <h1>SIGN IN NOW</h1>
-        <form action="#" method="POST" onsubmit="return validateForm()">
-            <label for="username">Choose your call-sign:</label>
-            <select id="username" name="username" required onchange="toggleCustomUsername()">
-                <option value="" selected disabled>-</option>
-                <option value="Madfrog">Madfrog</option>
-                <option value="Pervert">Pervert</option>
-                <option value="Spider">Spider</option>
-                <option value="Revoke">Revoke</option>
-                <option value="Dragon">Dragon</option> <!-- Dodana opcja DRAGON -->
-                <option value="Other">Other</option>
-            </select>
-
-            <div id="custom-username-container">
-                <label for="custom-username">Enter custom call-sign:</label>
-                <input type="text" id="custom-username" name="custom-username" placeholder="Your call-sign">
-            </div>
-
-            <label for="number">Choose your prefix (1-99):</label>
-            <input type="number" id="number" name="number" min="1" max="99" required>
-
+        <form id="loginForm">
+            <label for="login">Login (np. Madfrog11):</label>
+            <input type="text" id="login" name="login" placeholder="Enter your login" required>
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-
-            <label for="confirm-password">Confirm-password:</label>
-            <input type="password" id="confirm-password" name="confirm-password" required>
-
-            <label for="role"> (ROLE):</label>
-            <select id="role" name="role" required>
-                <option value="JTAC">JTAC</option>
-                <option value="JTAC I">JTAC I</option>
-                <option value="JTAC I/E">JTAC I/E</option>
-                <option value="Program Manager">Program Manager</option>
-            </select>
-
-            <label for="registration-code">Activation code:</label>
-            <input type="password" id="registration-code" name="registration-code" required>
-
-            <button type="submit" id="register-button" disabled>Register</button>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            <button type="submit">Sign In</button>
         </form>
-        <a href="/login.html" class="login-link">Already have an account? Log in here.</a>
+        <a href="/register.html" class="login-link">Don't have an account? Register here.</a>
     </div>
     <div class="right-side"></div>
 
     <script>
-        const registrationCodeInput = document.getElementById('registration-code');
-        const registerButton = document.getElementById('register-button');
-        const usernameSelect = document.getElementById('username');
-        const customUsernameContainer = document.getElementById('custom-username-container');
-        const customUsernameInput = document.getElementById('custom-username');
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('loginForm');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const login = document.getElementById('login').value;
+                const password = document.getElementById('password').value;
 
-        registrationCodeInput.addEventListener('input', function() {
-            const inputValue = this.value.trim().toLowerCase();
-            const correctCode = '#formoza_pany';
-            registerButton.disabled = inputValue !== correctCode;
+                try {
+                    const res = await fetch('http://localhost:5000/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ login, password })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.token) {
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        console.log('Logowanie udane, przekierowanie na profile.html');
+                        window.location.href = '/profile.html';
+                    } else {
+                        alert(data.error || 'Błąd logowania');
+                    }
+                } catch (err) {
+                    console.error('Błąd połączenia:', err);
+                    alert('Problem z serwerem: ' + err.message);
+                }
+            });
         });
-
-        function toggleCustomUsername() {
-            if (usernameSelect.value === 'Other') {
-                customUsernameContainer.style.display = 'block';
-                customUsernameInput.required = true;
-            } else {
-                customUsernameContainer.style.display = 'none';
-                customUsernameInput.required = false;
-                customUsernameInput.value = ''; // Resetuje pole, gdy nie jest widoczne
-            }
-        }
-
-        function validateForm() {
-            const username = usernameSelect.value === 'Other' ? customUsernameInput.value.trim() : usernameSelect.value;
-            const number = document.getElementById('number').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            const role = document.getElementById('role').value;
-            const registrationCode = document.getElementById('registration-code').value.trim().toLowerCase();
-            const correctCode = '#formoza_pany';
-
-            if (!username) {
-                alert('Wybierz lub wpisz call-sign!');
-                return false;
-            }
-
-            if (number < 1 || number > 99) {
-                alert('Numer musi być w zakresie od 1 do 99!');
-                return false;
-            }
-
-            if (password !== confirmPassword) {
-                alert('Hasła nie są identyczne!');
-                return false;
-            }
-
-            if (registrationCode !== correctCode) {
-                alert('Niepoprawny kod aktywacyjny!');
-                return false;
-            }
-
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-            const login = username + number;
-            const userExists = users.some(u => u.login === login);
-            if (userExists) {
-                alert('Ten login już istnieje!');
-                return false;
-            }
-
-            const user = {
-                login: login,
-                password: password,
-                role: role
-            };
-            users.push(user);
-            localStorage.setItem('users', JSON.stringify(users));
-            localStorage.setItem('currentUser', JSON.stringify(user));
-
-            alert('Rejestracja zakończona pomyślnie!');
-            window.location.href = '/profile.html';
-
-            return false;
-        }
     </script>
 </body>
 </html>
