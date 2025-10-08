@@ -1,54 +1,45 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
 const dotenv = require('dotenv');
-const http = require('http');
-const socketIo = require('socket.io');
-const chalk = require('chalk');
+const path = require('path');
+const cors = require('cors');
 
+// Załaduj zmienne środowiskowe
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server, { cors: { origin: '*' } });
 
+// Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '..'))); // Wskazuje na C:\projekty\Jtac_app
 
-// Funkcja logowania z timestampem i kolorem
-const log = (message, type = 'info') => {
-    const timestamp = new Date().toLocaleString('pl-PL', { timeZone: 'Europe/Warsaw' });
-    const color = type === 'error' ? chalk.red : type === 'success' ? chalk.green : chalk.blue;
-    console.log(`${color(`[${timestamp}] [${type.toUpperCase()}]`)} ${message}`);
-};
+// Połączenie z MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('[SUCCESS] MongoDB połączony!'))
+.catch(err => console.log('[ERROR] Błąd połączenia z MongoDB:', err));
 
-log('Dotenv załadowany', 'info');
-log(`MONGO_URI? ${process.env.MONGO_URI ? 'TAK' : 'NIE'}`, 'info');
-log(`JWT_SECRET? ${process.env.JWT_SECRET ? 'TAK' : 'NIE'}`, 'info');
-
-log('Łączenie z MongoDB...', 'info');
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => log('MongoDB połączony!', 'success'))
-    .catch(err => log(`BŁĄD DB: ${err.message}`, 'error'));
-
-log('Ładowanie routes/auth...', 'info');
+// Routes
 app.use('/api/auth', require('./routes/auth'));
-log('Routes/auth OK', 'success');
+app.use('/api/auth/data', require('./routes/data'));
 
-log('Ładowanie routes/admin...', 'info');
-app.use('/api/admin', require('./routes/admin'));
-log('Routes/admin OK', 'success');
-
-app.use(express.static('../')); // Serwuje pliki z folderu nadrzędnego względem backend
-log('Frontend serwowany', 'info');
-
-io.on('connection', (socket) => {
-    log('Użytkownik połączony', 'info');
-    socket.on('chat message', (msg) => {
-        io.emit('chat message', msg);
-    });
-    socket.on('disconnect', () => log('Odłączony', 'info'));
+// Serwowanie plików HTML
+app.get('/register.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../register.html'));
 });
+app.get('/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../login.html'));
+});
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
+});
+// Usuwamy '*' jako domyślną trasę, bo może powodować konflikty
 
+// Uruchomienie serwera
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => log(`Serwer na porcie ${PORT}`, 'success'));
+app.listen(PORT, () => {
+  console.log(`[SUCCESS] Serwer na porcie ${PORT}`);
+});

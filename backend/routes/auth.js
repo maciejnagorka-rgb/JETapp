@@ -1,60 +1,49 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
+const auth = require('../middleware/auth');
 const router = express.Router();
 
-// Middleware authenticateToken (na górze)
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Access token required' });
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: 'Invalid token' });
-    req.user = user;
-    next();
-  });
-}
-
-// Register
+// Rejestracja z kodem aktywacyjnym (bez emaila)
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
-    const user = new User({ username, email, password, role });
+    const { username, password, role, activationCode } = req.body;
+    console.log('Rejestracja - dane:', { username, password, role, activationCode }); // Debug
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Nazwa i hasło są wymagane' });
+    }
+    if (activationCode !== '#formoza_pany') {
+      return res.status(401).json({ message: 'Nieprawidłowy kod aktywacyjny' });
+    }
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Użytkownik już istnieje' });
+    }
+    const user = new User({ username, password, role: role || 'user' });
     await user.save();
-    const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, { expiresIn: '24h' });
-    res.status(201).json({ token, user: { id: user._id, username, role: user.role, isAdmin: user.isAdmin } });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    res.status(201).json({ token, user: { id: user._id, username: user.username, role: user.role } });
+  } catch (error) {
+    console.error('Błąd rejestracji:', error);
+    res.status(500).json({ message: error.message });
   }
 });
 
-// Login
+// Logowanie
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user || !await bcrypt.compare(password, user.password)) {
-      return res.status(400).json({ error: 'Invalid credentials' });
+    const { username, password } = req.body;
+    console.log('Logowanie - dane:', { username, password }); // Debug
+    const user = await User.findOne({ username });
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({ message: 'Nieprawidłowy login lub hasło' });
     }
-    const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, { expiresIn: '24h' });
-    res.json({ token, user: { id: user._id, username: user.username, role: user.role, isAdmin: user.isAdmin } });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    res.json({ token, user: { id: user._id, username: user.username, role: user.role } });
+  } catch (error) {
+    console.error('Błąd logowania:', error);
+    res.status(500).json({ message: error.message });
   }
-});
-
-// Get profile
-router.get('/profile', authenticateToken, async (req, res) => {
-  const user = await User.findById(req.user.id).select('-password');
-  res.json(user);
-});
-
-// Update profile
-router.put('/profile', authenticateToken, async (req, res) => {
-  const updates = req.body;
-  const user = await User.findByIdAndUpdate(req.user.id, { profile: updates.profile, tests: updates.tests }, { new: true }).select('-password');
-  res.json(user);
 });
 
 module.exports = router;

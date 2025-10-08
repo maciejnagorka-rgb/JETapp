@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JTAC App - Register</title>
+    <title>JTAC App - Sign In</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -11,70 +11,68 @@
             margin: 0;
             padding: 0;
             display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            height: 100vh;
             background-color: #000;
             color: #fff;
         }
         .left-side {
+            flex: 1;
             background-color: rgba(0, 0, 0, 0.8);
-            padding: 15px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            width: 100%;
-            box-sizing: border-box;
+            padding: 20px;
         }
         .right-side {
+            flex: 1;
             background-image: url('/images/jtac-2.jpeg');
             background-size: cover;
             background-position: center 30%;
             background-repeat: no-repeat;
-            height: 50vh;
-            width: 100%;
         }
         h1 {
-            font-size: 1.8em;
+            font-size: 2.5em;
             color: #8b7314;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            text-align: center;
+            letter-spacing: 2px;
         }
         form {
-            width: 90%;
-            max-width: 350px;
+            width: 100%;
+            max-width: 400px;
         }
         label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 0.9em;
+            margin-bottom: 10px;
+            font-size: 1em;
             color: #8b7314;
         }
         input, select {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-            border: 2px solid #2F4F2F;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #8b7314;
             border-radius: 5px;
             background-color: #000;
             color: #fff;
-            font-family: 'Roboto Condensed', sans-serif;
-            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
         }
         input[type="number"] {
-            width: 60%;
+            width: 50%;
+        }
+        #custom-username-container {
+            display: none;
         }
         button {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             background-color: #8b7314;
-            border: 2px solid #2F4F2F;
+            border: none;
             border-radius: 5px;
             color: #000;
             font-size: 1em;
-            font-family: 'Roboto Condensed', sans-serif;
+            font-family: 'Orbitron', sans-serif;
             cursor: pointer;
             transition: background-color 0.3s;
         }
@@ -86,46 +84,21 @@
             background-color: #a68a2e;
         }
         .login-link {
-            margin-top: 15px;
-            font-size: 0.8em;
+            margin-top: 20px;
+            font-size: 0.9em;
             color: #8b7314;
             text-decoration: none;
-            text-align: center;
-            display: block;
         }
         .login-link:hover {
             text-decoration: underline;
-        }
-        #custom-username-container {
-            display: none;
-        }
-        @media (max-width: 480px) {
-            h1 { font-size: 1.5em; }
-            label { font-size: 0.8em; }
-            input, select { padding: 6px; margin-bottom: 10px; }
-            button { padding: 10px; font-size: 0.9em; }
-            .login-link { font-size: 0.7em; }
-            .left-side { padding: 10px; }
-            .right-side { height: 40vh; }
-        }
-        @media (min-width: 481px) {
-            body { flex-direction: row; }
-            .left-side { flex: 1; padding: 20px; }
-            .right-side { flex: 1; height: auto; }
-            h1 { font-size: 2.5em; }
-            label { font-size: 1em; }
-            input, select { padding: 10px; margin-bottom: 20px; }
-            button { padding: 15px; font-size: 1em; }
-            .login-link { font-size: 0.9em; }
-            form { max-width: 400px; }
         }
     </style>
 </head>
 <body>
     <div class="left-side">
-        <h1>REGISTER NOW</h1>
+        <h1>SIGN IN NOW</h1>
         <form id="registerForm">
-            <label for="username">Choose your call-sign:</label>
+            <label for="username">Wybierz nazwę użytkownika:</label>
             <select id="username" name="username" required onchange="toggleCustomUsername()">
                 <option value="" selected disabled>-</option>
                 <option value="Madfrog">Madfrog</option>
@@ -136,109 +109,35 @@
                 <option value="Other">Other</option>
             </select>
             <div id="custom-username-container">
-                <label for="custom-username">Enter custom call-sign:</label>
-                <input type="text" id="custom-username" name="custom-username" placeholder="Your call-sign">
+                <label for="custom-username">Wpisz własną nazwę:</label>
+                <input type="text" id="custom-username" name="custom-username" placeholder="Twoja nazwa">
             </div>
-            <label for="number">Choose your prefix (1-99):</label>
+
+            <label for="number">Wpisz numer (1-99):</label>
             <input type="number" id="number" name="number" min="1" max="99" required>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email" required>
-            <label for="password">Password:</label>
+
+            <label for="password">Hasło:</label>
             <input type="password" id="password" name="password" required>
-            <label for="confirm-password">Confirm-password:</label>
+
+            <label for="confirm-password">Powtórz hasło:</label>
             <input type="password" id="confirm-password" name="confirm-password" required>
-            <label for="role">Role:</label>
+
+            <label for="role">Wybierz uprawnienia (ROLE):</label>
             <select id="role" name="role" required>
                 <option value="JTAC">JTAC</option>
                 <option value="JTAC I">JTAC I</option>
                 <option value="JTAC I/E">JTAC I/E</option>
-                <option value="Program Manager">Program Manager</option>
+                <option value="Instruktor">Instruktor</option>
             </select>
-            <label for="registration-code">Activation code:</label>
+
+            <label for="registration-code">Wpisz kod aktywacyjny:</label>
             <input type="password" id="registration-code" name="registration-code" required>
-            <button type="submit" id="register-button" disabled>Register</button>
+
+            <button type="submit" id="register-button" disabled>Zarejestruj się</button>
         </form>
-        <a href="/signin.html" class="login-link">Already have an account? Sign in here.</a>
+        <a href="/login.html" class="login-link">Already have an account? Log in here.</a>
     </div>
     <div class="right-side"></div>
-
-    <script>
-        const registrationCodeInput = document.getElementById('registration-code');
-        const registerButton = document.getElementById('register-button');
-        const usernameSelect = document.getElementById('username');
-        const customUsernameContainer = document.getElementById('custom-username-container');
-        const customUsernameInput = document.getElementById('custom-username');
-
-        registrationCodeInput.addEventListener('input', function() {
-            const inputValue = this.value.trim().toLowerCase();
-            const correctCode = '#formoza_pany';
-            registerButton.disabled = inputValue !== correctCode;
-        });
-
-        function toggleCustomUsername() {
-            if (usernameSelect.value === 'Other') {
-                customUsernameContainer.style.display = 'block';
-                customUsernameInput.required = true;
-            } else {
-                customUsernameContainer.style.display = 'none';
-                customUsernameInput.required = false;
-                customUsernameInput.value = '';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('registerForm');
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const username = usernameSelect.value === 'Other' ? customUsernameInput.value.trim() : usernameSelect.value;
-                const number = document.getElementById('number').value;
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                const confirmPassword = document.getElementById('confirm-password').value;
-                const role = document.getElementById('role').value;
-                const registrationCode = document.getElementById('registration-code').value.trim().toLowerCase();
-                const correctCode = '#formoza_pany';
-
-                if (!username) {
-                    alert('Wybierz lub wpisz call-sign!');
-                    return;
-                }
-                if (number < 1 || number > 99) {
-                    alert('Numer musi być w zakresie od 1 do 99!');
-                    return;
-                }
-                if (password !== confirmPassword) {
-                    alert('Hasła nie są identyczne!');
-                    return;
-                }
-                if (registrationCode !== correctCode) {
-                    alert('Niepoprawny kod aktywacyjny!');
-                    return;
-                }
-
-                const fullUsername = `${username}${number}`;
-
-                try {
-                    const res = await fetch('http://localhost:5000/api/auth/register', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username: fullUsername, email, password, role })
-                    });
-                    const data = await res.json();
-                    if (res.ok && data.token) {
-                        localStorage.setItem('token', data.token);
-                        localStorage.setItem('user', JSON.stringify(data.user));
-                        console.log('Rejestracja udana, przekierowanie na profile.html');
-                        window.location.href = '/profile.html';
-                    } else {
-                        alert(data.error || 'Błąd rejestracji');
-                    }
-                } catch (err) {
-                    console.error('Błąd połączenia:', err);
-                    alert('Problem z serwerem: ' + err.message);
-                }
-            });
-        });
-    </script>
+    <script src="/js/app.js"></script>
 </body>
 </html>
